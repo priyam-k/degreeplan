@@ -21,4 +21,4 @@
    - Flowchart: switch scenarios, add/move/swap/drop from the panel, explore + add with prerequisites, Compare table.
 
 ## Catalog offering data
-`public/courses.json` gets a `t` field (semesters offered) from `npm run fetch-courses`. umd.io is very slow (about 10+ min per semester), so run it in the background and commit the result.
+`public/courses.json` gets a `t` field (semesters offered) from `npm run fetch-courses`. The refresh workflow keeps it current; see "Deploying" in the README.

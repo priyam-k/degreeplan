@@ -6,7 +6,7 @@ A semester-by-semester planner for UMD students. It audits requirements for CS, 
 npm install
 npm run dev            # http://localhost:5173
 npm test               # engine tests
-npm run fetch-courses  # rebuild public/courses.json (Jupiterp + umd.io history; umd.io is slow)
+npm run fetch-courses  # refresh public/courses.json (Jupiterp + umd.io history; FULL=1 rebuilds every semester)
 ```
 
 ## Views
@@ -33,9 +33,19 @@ Every change can be undone (⌘Z / ⌘⇧Z, or Undo in the notice that appears).
 
 - **Plans** are saved in this browser's localStorage under `degreeplan.v2`. That key holds all plans; the older `degreeplan.v1` is only read once, for migration. Nothing is uploaded. Storage is per browser and per address (port).
 - **Export / Load** writes and reads every plan as one JSON file. Loading an older single-plan export replaces only the current plan.
-- **Course catalog:** `public/courses.json`, built by `npm run fetch-courses`.
+- **Course catalog:** `public/courses.json`, a static file fetched on page load (the browser caches it). Built by `npm run fetch-courses`.
+  - The script reads the last 4 years of schedules from umd.io, working out the term list itself. umd.io is slow, so it only re-downloads the 3 newest terms and any term missing from the current file; older terms are reused from it.
   - `p` is the prerequisite text. `src/prereqs.ts` parses it into and/or trees; course-free alternatives such as permission or placement are dropped.
   - `t` lists the semesters the course appeared on the schedule (umd.io, 2023 on). It drives the offering warnings. Without it, offerings show as unknown.
+
+## Deploying
+
+Everything runs in the browser, so the site is static files on GitHub Pages.
+
+- **Deploy** (`.github/workflows/deploy.yml`): every push to `main` runs the tests, builds and publishes `dist/`. It can also be run by hand.
+- **Refresh course catalog** (`.github/workflows/refresh-catalog.yml`): on the 1st and 15th of each month it runs `fetch-courses`, tests and builds. If the catalog changed it commits it to `main` and deploys. Run it by hand from the Actions tab, with "full" ticked to re-fetch every semester.
+- **CI** (`.github/workflows/ci.yml`): tests and builds every pull request.
+- One-time setup: in the repo's Settings → Pages, set Source to "GitHub Actions". For a custom domain such as `degreeplan.example.com`, enter it there and add a DNS `CNAME` record pointing at `<user>.github.io`. The build uses relative paths, so it works at a subdomain or a subpath.
 
 ## Programs encoded
 
