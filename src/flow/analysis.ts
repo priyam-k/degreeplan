@@ -1,7 +1,7 @@
 // Course-sequence analysis behind the flowchart: where each course sits in time, whether its
 // prerequisites are met by then, when it is usually offered, the earliest term an unplanned course
 // could be taken, options for unmet requirements, and solver-backed "what if" comparisons.
-import type { AuditResult, Matcher, Plan, PlanCourse, Program, SolverCourse } from "../types";
+import type { AuditResult, Matcher, Plan, PlanCourse, Program, ProgramResult, SolverCourse } from "../types";
 import type { Catalog } from "../catalog";
 import { concurrentCodes, formatReq as formatMissing, isSatisfied, missingReq, parsePrereq, reqCodes, type Req } from "../prereqs";
 import { TRANSFER_TERM } from "../transcript";
@@ -229,6 +229,15 @@ export interface Need {
   detail: string;
   match?: Matcher; // courses that could help
   gened?: string[];
+  broad?: boolean; // "one of many sets" rules: any course from any option matches, too vague to suggest
+}
+
+// "At least N from bucket X" where X itself requires N courses restates that requirement.
+export function redundantConstraint(pr: ProgramResult, id: string): boolean {
+  const con = pr.program.constraints?.find((x) => x.id === id);
+  if (con?.kind !== "minFrom" || con.buckets.length !== 1) return false;
+  const b = pr.buckets.find((x) => x.bucket.id === con.buckets[0]);
+  return !!b && b.bucket.courses === con.courses;
 }
 
 export function unmetNeeds(audit: AuditResult): Need[] {
@@ -252,13 +261,13 @@ export function unmetNeeds(audit: AuditResult): Need[] {
       });
     }
     for (const c of pr.constraints) {
-      if (c.satisfied) continue;
+      if (c.satisfied || redundantConstraint(pr, c.id)) continue;
       const con = p.constraints?.find((x) => x.id === c.id);
       let match: Matcher | undefined;
       if (con?.kind === "minFrom") match = con.match;
       else if (con?.kind === "distinct") match = (code, ctx) => con.groups.some((g) => g.match(code, ctx));
       else if (con?.kind === "anySet") match = (code, ctx) => con.options.some((o) => o.slots.some((s) => s.match(code, ctx)));
-      out.push({ ...base, key: `${p.id}/${c.id}`, label: c.label, detail: c.detail, match });
+      out.push({ ...base, key: `${p.id}/${c.id}`, label: c.label, detail: c.detail, match, broad: con?.kind === "anySet" });
     }
   }
   for (const s of audit.sharing)
@@ -283,6 +292,7 @@ export function optionsFor(need: Need, needs: Need[], tl: Timeline, catalog: Cat
   const out: Option[] = [];
   for (const c of catalog.values()) {
     if (!isCurrent(c.c, catalog) || inPlan(c.c) || c.cr === 0) continue;
+    if (c.c.endsWith("H") && catalog.has(c.c.slice(0, -1))) continue; // honors section of a listed course
     const ctx = { term: "", transfer: false, ap: false };
     if (!need.match(c.c, ctx)) continue;
     const pj = project(c.c);

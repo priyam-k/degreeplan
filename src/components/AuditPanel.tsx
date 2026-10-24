@@ -1,5 +1,6 @@
 import type { AuditResult, ConstraintResult, PlanCourse, ProgramResult } from "../types";
 import { Popover } from "../ui/Popover";
+import { redundantConstraint } from "../flow/analysis";
 import { Icon } from "../ui/icons";
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 const GENED_CODES = ["FSAW", "FSPW", "FSOC", "FSMA", "FSAR", "DSNL", "DSNS", "DSHS", "DSHU", "DSSP", "SCIS", "DVUP", "DVCC"];
 
 export function progressOf(p: ProgramResult): { done: number; total: number } {
-  const items = [...p.buckets.map((b) => b.satisfied), ...p.constraints.map((c) => c.satisfied)];
+  const items = [...p.buckets.map((b) => b.satisfied), ...p.constraints.filter((c) => !redundantConstraint(p, c.id)).map((c) => c.satisfied)];
   return { done: items.filter(Boolean).length, total: items.length };
 }
 

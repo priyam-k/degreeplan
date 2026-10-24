@@ -11,11 +11,14 @@ export function ImportDialog({ onApply, onClose }: Props) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [over, setOver] = useState(false);
+  const [fileName, setFileName] = useState("");
   const parsed = text.trim() ? parseTranscript(text) : null;
 
   const onFile = async (f: File | undefined) => {
     if (!f) return;
     setErr("");
+    setFileName(f.name);
     setBusy(true);
     try {
       if (f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")) {
@@ -36,15 +39,28 @@ export function ImportDialog({ onApply, onClose }: Props) {
     <div className="modal-bg" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>Import Testudo unofficial transcript</h2>
-        <p className="muted">
+        <p className="modal-sub">
           Testudo → Unofficial Transcript → print/save as PDF and upload it, or select all on the page and paste the text. Completed,
           in-progress and transfer/AP courses replace what's in your plan; planned courses are kept.
         </p>
-        <div className="import-row">
-          <input type="file" accept=".pdf,.txt,application/pdf,text/plain" onChange={(e) => onFile(e.target.files?.[0])} />
-          {busy && <span>Reading PDF…</span>}
-          {err && <span className="error">{err}</span>}
-        </div>
+        <label
+          className={`dropzone ${over ? "over" : ""}`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setOver(true);
+          }}
+          onDragLeave={() => setOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setOver(false);
+            onFile(e.dataTransfer.files?.[0]);
+          }}
+        >
+          <input type="file" accept=".pdf,.txt,application/pdf,text/plain" hidden onChange={(e) => onFile(e.target.files?.[0])} />
+          <b>{busy ? "Reading PDF…" : fileName ? fileName : "Drop your transcript PDF here"}</b>
+          <span className="muted">{fileName && !busy ? "Drop another file to replace it" : "or click to choose a file"}</span>
+        </label>
+        {err && <div className="error">{err}</div>}
         <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="…or paste transcript text here" rows={8} />
         {parsed && (
           <div className="preview">
@@ -78,8 +94,10 @@ export function ImportDialog({ onApply, onClose }: Props) {
           </div>
         )}
         <div className="modal-actions">
-          <button onClick={onClose}>Cancel</button>
-          <button className="primary" disabled={!parsed?.courses.length} onClick={() => parsed && onApply(parsed)}>
+          <button className="btn" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="btn primary" disabled={!parsed?.courses.length} onClick={() => parsed && onApply(parsed)}>
             Import {parsed?.courses.length ?? 0} courses
           </button>
         </div>

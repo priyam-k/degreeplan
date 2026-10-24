@@ -409,9 +409,11 @@ function Legend() {
 }
 
 function Overview({ audit, tips, onFocus }: { audit: AuditResult | null; tips: ReturnType<typeof suggestions>; onFocus: (c: string) => void }) {
+  const [allTips, setAllTips] = useState(false);
   if (!audit) return <div className="muted">Loading the requirement solver…</div>;
   if (audit.error) return <div className="error">Audit failed: {audit.error}</div>;
   const needs = unmetNeeds(audit);
+  const shown = allTips ? tips : tips.slice(0, 8);
   return (
     <div className="flow-overview">
       <h3>Where you stand</h3>
@@ -431,7 +433,15 @@ function Overview({ audit, tips, onFocus }: { audit: AuditResult | null; tips: R
                   {done}/{total}
                 </span>
               </div>
-              {left.length > 0 && <div className="as-left">{left.map((n) => n.label).join(" · ")}</div>}
+              {left.length > 0 && (
+                <div className="as-left">
+                  {left
+                    .slice(0, 3)
+                    .map((n) => n.label)
+                    .join(" · ")}
+                  {left.length > 3 && <span className="muted"> and {left.length - 3} more</span>}
+                </div>
+              )}
             </div>
           );
         })}
@@ -439,7 +449,7 @@ function Overview({ audit, tips, onFocus }: { audit: AuditResult | null; tips: R
       <h3>Suggestions</h3>
       {tips.length === 0 && <p className="muted">Nothing to flag. Prerequisites, offerings and requirements all line up.</p>}
       <ul className="tips">
-        {tips.map((t, i) => (
+        {shown.map((t, i) => (
           <li key={i} className={`tip-${t.level}`}>
             <span className="tip-icon">{t.level === "warn" ? <Icon.warn /> : t.level === "info" ? <Icon.info /> : <Icon.arrowRight />}</span>
             <span>
@@ -448,6 +458,11 @@ function Overview({ audit, tips, onFocus }: { audit: AuditResult | null; tips: R
           </li>
         ))}
       </ul>
+      {tips.length > shown.length && (
+        <button className="btn-link" onClick={() => setAllTips(true)}>
+          Show {tips.length - shown.length} more
+        </button>
+      )}
       <div className="flow-hint">
         Click a course for details and options. Drag planned courses or dashed options onto a term; the column shows whether it works before you drop. Everything can be undone.
       </div>

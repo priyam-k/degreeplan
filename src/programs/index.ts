@@ -11,6 +11,15 @@ export const ALL_PROGRAMS: Program[] = [...MAJORS, ...MINORS, ...ALWAYS];
 
 export const programById = (id: string) => ALL_PROGRAMS.find((p) => p.id === id);
 
+// Compact name for chips and buttons ("CS", "Math", "RAS minor").
+export function abbrev(p: Program): string {
+  if (p.family === "cs") return "CS";
+  if (p.family === "math") return "Math";
+  if (p.id === "ras-minor") return "RAS minor";
+  if (p.kind === "gened") return "GenEd";
+  return p.name.replace(/ Major| Minor/, "");
+}
+
 const majorIds = MAJORS.map((p) => p.id);
 
 export const SHARING_RULES: SharingRule[] = [

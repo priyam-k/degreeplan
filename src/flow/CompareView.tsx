@@ -65,10 +65,12 @@ export function CompareView({ scenarios, active, catalog, highs, onOpen, onDupli
             <th />
             {rows.map((r) => (
               <th key={r.s.id} className={r.s.id === active ? "active" : ""}>
-                {r.s.name}{" "}
-                <button className="link" onClick={() => onOpen(r.s.id)}>
-                  open
-                </button>
+                <div className="cmp-head">
+                  {r.s.name}
+                  <button className="btn sm" onClick={() => onOpen(r.s.id)}>
+                    Open in flowchart
+                  </button>
+                </div>
               </th>
             ))}
           </tr>

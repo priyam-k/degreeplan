@@ -14,6 +14,7 @@ import {
   checkPlacement,
   optionsFor,
   projector,
+  redundantConstraint,
   unmetNeeds,
   type Change,
   type Need,
@@ -69,7 +70,7 @@ export function programUnits(p: ProgramResult, courseById: Map<string, PlanCours
     const u = bucketUnits(b, courseById);
     (Object.keys(t) as Seg[]).forEach((k) => (t[k] += u[k]));
   }
-  for (const c of p.constraints) if (!c.satisfied) t.open += 1;
+  for (const c of p.constraints) if (!c.satisfied && !redundantConstraint(p, c.id)) t.open += 1;
   return t;
 }
 
@@ -614,9 +615,7 @@ function RuleView({ c, r, programId, onWaive, ...ctx }: Ctx & { c: ConstraintRes
     );
   }
   if (con?.kind === "maxFrom" && r.program.constraints?.some((x) => x.kind === "distinct")) return null; // shown with the area grid
-  // "at least N from bucket X" where X already requires N courses repeats the requirement card
-  if (con?.kind === "minFrom" && con.buckets.length === 1 && r.buckets.find((b) => b.bucket.id === con.buckets[0])?.bucket.courses === con.courses && c.satisfied === r.buckets.find((b) => b.bucket.id === con.buckets[0])?.satisfied)
-    return null;
+  if (redundantConstraint(r, c.id)) return null; // restates a requirement card
   return (
     <div className={`rule-row ${c.satisfied ? "ok" : "bad"}`}>
       <span className="rr-icon">{c.waived ? "↷" : c.satisfied ? <Icon.check /> : <Icon.x />}</span>

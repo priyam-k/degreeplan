@@ -3,7 +3,7 @@ import type { AuditResult, Plan } from "../types";
 import type { Workspace } from "../workspace";
 import type { History } from "../ui/useHistory";
 import type { SetPlan } from "../App";
-import { MAJORS, MINORS, programById } from "../programs";
+import { MAJORS, MINORS, abbrev, programById } from "../programs";
 import { shortName } from "../engine/solver";
 import { ConfirmButton, Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
@@ -117,9 +117,7 @@ export function TopBar(p: Props) {
 function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResult | null; setPlan: SetPlan }) {
   const chosen = plan.programIds.map(programById).filter((x) => !!x);
   const done = (id: string) => audit?.programs.find((r) => r.program.id === id)?.satisfied;
-  const label = chosen.length
-    ? chosen.map((x) => (x!.kind === "minor" ? `${shortName(x!).split(" ")[0]} minor` : `${shortName(x!) === "Computer Science" ? "CS" : shortName(x!)}`)).join(" · ")
-    : "Choose programs";
+  const label = chosen.length ? chosen.map((x) => abbrev(x!)).join(" · ") : "Choose programs";
   const familyValue = (family: string) => plan.programIds.find((x) => programById(x)?.family === family) ?? "";
   const setFamily = (family: string, id: string) =>
     setPlan((p) => ({ ...p, programIds: [...p.programIds.filter((x) => programById(x)?.family !== family), ...(id ? [id] : [])] }));

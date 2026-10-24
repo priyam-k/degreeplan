@@ -124,7 +124,7 @@ export function buildGraph(o: {
   };
   if (o.showOptions)
     for (const n of needs)
-      if (n.match && n.programId !== "gened" && n.programId !== "university")
+      if (n.match && !n.broad && n.programId !== "gened" && n.programId !== "university")
         for (const opt of optionsFor(n, needs, tl, catalog, project, 2)) addGhost(opt.code, `${n.program}: ${n.label}`);
   for (const c of o.explore) addGhost(c);
 
