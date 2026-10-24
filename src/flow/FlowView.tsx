@@ -235,9 +235,11 @@ export function FlowView({ plan, programs, catalog, audit, highs, onChange }: Pr
                     key={idx}
                     className={`flow-head ${past ? "past" : ""} ${s.virtual ? "virtual" : ""} ${target ? `target ${dragCheck?.level ?? ""}` : ""}`}
                     style={{ left: colX(idx) * zoom, width: (COLW - 8) * zoom }}
+                    title={`${s.term}${credits ? ` · ${credits} cr` : ""}`}
                   >
                     <span className="fh-term">{shortTerm(s.term)}</span>
-                    <span className={`fh-cr ${over ? "error" : ""}`}>{s.virtual ? "not planned" : credits ? `${credits} cr` : ""}</span>
+                    {/* zoomed out, the column is too narrow for both */}
+                    {zoom >= 0.8 && <span className={`fh-cr ${over ? "error" : ""}`}>{s.virtual ? "not planned" : credits ? `${credits} cr` : ""}</span>}
                   </div>
                 );
               })}
