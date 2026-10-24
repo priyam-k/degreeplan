@@ -6,7 +6,7 @@ import type { Catalog } from "../catalog";
 import { TRANSFER_TERM } from "../transcript";
 import { csGeneral } from "../programs/cs";
 import { rasMinor } from "../programs/ras";
-import { applyChange, auditPlan, buildTimeline, offeredIn, prereqAt, projector, suggestions, whatIf } from "./analysis";
+import { applyChange, auditPlan, buildTimeline, checkPlacement, offeredIn, prereqAt, projector, redundantConstraint, suggestions, unmetNeeds, whatIf } from "./analysis";
 import { nextScenarioName, newWorkspace, parseImport } from "../workspace";
 import { formatReq } from "../prereqs";
 
@@ -146,6 +146,50 @@ describe("changes and what-if", () => {
     expect(d.after).toBeGreaterThan(d.before);
     expect(d.broken.map((b) => b.label).join()).toMatch(/ENAE450/);
     expect(d.brokenPrereqs).toEqual(["ENEE467 (Fall 2027)"]);
+  });
+});
+
+describe("placement checks", () => {
+  const p = () =>
+    plan([
+      sem(TRANSFER_TERM, [course("MATH140", "transfer"), course("MATH141", "transfer")]),
+      sem("Fall 2026", [course("MATH410")]),
+      sem("Spring 2027", [course("MATH411")]),
+      sem("Fall 2027", []),
+    ]);
+
+  test("moving a prerequisite after its dependent is flagged", () => {
+    const q = p();
+    const r = checkPlacement(q, [], CATALOG, { kind: "move", id: q.semesters[1].courses[0].id, term: "Fall 2027" });
+    expect(r.level).toBe("bad");
+    expect(r.lines.join()).toMatch(/Breaks MATH411 \(Spring 2027\)/);
+  });
+
+  test("adding a fall-only course in spring is flagged; in fall it works", () => {
+    const spring = checkPlacement(p(), [], CATALOG, { kind: "add", code: "MATH412", term: "Spring 2027" });
+    expect(spring.level).toBe("bad");
+    const fall = checkPlacement(p(), [], CATALOG, { kind: "add", code: "MATH412", term: "Fall 2027" });
+    expect(fall.level).toBe("good");
+  });
+
+  test("credit overload is a warning", () => {
+    const q = p();
+    q.semesters[3].courses = Array.from({ length: 6 }, () => ({ ...course("OLD101"), credits: 3 }));
+    const r = checkPlacement(q, [], CATALOG, { kind: "add", code: "MATH140", term: "Fall 2027" });
+    expect(r.level).toBe("warn");
+    expect(r.lines.join()).toMatch(/21 credits/);
+  });
+});
+
+describe("redundant rules", () => {
+  test("'5 area courses' restating the area requirement isn't a separate open item", async () => {
+    const p = plan([sem("Fall 2026", [course("CMSC420"), course("CMSC421")])]);
+    const audit = auditPlan(highs, p, [csGeneral]);
+    const cs = audit.programs[0];
+    expect(redundantConstraint(cs, "area5")).toBe(true);
+    const keys = unmetNeeds(audit).map((n) => n.key);
+    expect(keys).toContain("cs-general/areas");
+    expect(keys).not.toContain("cs-general/area5");
   });
 });
 
