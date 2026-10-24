@@ -1,12 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="eggshell-red">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UMD Degree Planner</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      // Set the saved theme before first paint (src/ui/theme.ts keeps it in sync afterwards).
+      try {
+        var t = JSON.parse(localStorage.getItem("degreeplan.theme") || "{}");
+        var g = t.ground && t.ground !== "auto" ? t.ground : matchMedia("(prefers-color-scheme: dark)").matches ? "charcoal" : "eggshell";
+        document.documentElement.dataset.theme = g + "-" + (t.accent || "red");
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

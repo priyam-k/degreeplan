@@ -7,6 +7,7 @@ import { MAJORS, MINORS, abbrev, programById } from "../programs";
 import { shortName } from "../engine/solver";
 import { ConfirmButton, Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
+import { ACCENTS, GROUNDS, useTheme } from "../ui/theme";
 
 export type View = "degree" | "plan" | "flow" | "compare";
 const VIEWS: { id: View; label: string }[] = [
@@ -33,6 +34,7 @@ interface Props {
 
 export function TopBar(p: Props) {
   const file = useRef<HTMLInputElement>(null);
+  const [theme, setTheme] = useTheme();
   const active = p.ws.scenarios.find((s) => s.id === p.ws.active) ?? p.ws.scenarios[0];
   return (
     <header className="topbar">
@@ -63,6 +65,29 @@ export function TopBar(p: Props) {
         <Popover button={<Icon.more />} buttonClassName="icon-btn" buttonTitle="More" align="end" width={230}>
           {(close) => (
             <div className="menu">
+              <div className="menu-label">Appearance</div>
+              <div className="theme-pick">
+                <div className="theme-grounds">
+                  {GROUNDS.map((g) => (
+                    <button key={g.id} className={theme.ground === g.id ? "on" : ""} onClick={() => setTheme({ ...theme, ground: g.id })}>
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="theme-accents">
+                  {ACCENTS.map((a) => (
+                    <button
+                      key={a}
+                      className={`swatch swatch-${a} ${theme.accent === a ? "on" : ""}`}
+                      title={`${a[0].toUpperCase()}${a.slice(1)} accent`}
+                      aria-label={`${a} accent`}
+                      aria-pressed={theme.accent === a}
+                      onClick={() => setTheme({ ...theme, accent: a })}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="menu-sep" />
               <button
                 onClick={() => {
                   close();
