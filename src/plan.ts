@@ -8,6 +8,13 @@ const SEASONS = ["Winter", "Spring", "Summer", "Fall"] as const;
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
 
+// CMNS per-term credit limits (more needs approval).
+export function creditCap(term: string): number {
+  if (term.startsWith("Winter")) return 4;
+  if (term.startsWith("Summer")) return 16;
+  return 17;
+}
+
 // Sort key; Winter YYYY is the January term before Spring YYYY.
 export function termKey(term: string): number {
   if (term === TRANSFER_TERM) return -1;

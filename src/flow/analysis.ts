@@ -5,7 +5,7 @@ import type { AuditResult, Matcher, Plan, PlanCourse, Program, SolverCourse } fr
 import type { Catalog } from "../catalog";
 import { concurrentCodes, formatReq as formatMissing, isSatisfied, missingReq, parsePrereq, reqCodes, type Req } from "../prereqs";
 import { TRANSFER_TERM } from "../transcript";
-import { sortSemesters } from "../plan";
+import { creditCap, sortSemesters } from "../plan";
 import { solve, shortName, type Highs } from "../engine/solver";
 import { SHARING_RULES } from "../programs";
 
@@ -522,4 +522,41 @@ export function courseWarnings(plan: Plan, programs: Program[], catalog: Catalog
     if (w.length) out.set(p.course.id, w);
   }
   return out;
+}
+
+// Quick feasibility check for putting a course in a term (drag feedback, term menus): its own
+// prerequisites, whether it's offered then, later courses it would break, and credit load.
+export interface PlaceCheck {
+  level: "good" | "warn" | "bad";
+  lines: string[];
+}
+export function checkPlacement(plan: Plan, programs: Program[], catalog: Catalog, ch: Change): PlaceCheck {
+  if (ch.kind === "remove") return { level: "good", lines: [] };
+  const id = ch.kind === "add" || ch.kind === "replace" ? WHATIF_ID : ch.id;
+  const next = applyChange(plan, ch, catalog);
+  const tl = buildTimeline(next, programs, catalog, 0);
+  const me = tl.placed.find((p) => p.course.id === id);
+  if (!me) return { level: "bad", lines: ["Can't place it there"] };
+  const lines: string[] = [];
+  let level: PlaceCheck["level"] = "good";
+  const bad = (t: string) => {
+    lines.push(t);
+    level = "bad";
+  };
+  const warn = (t: string) => {
+    lines.push(t);
+    if (level === "good") level = "warn";
+  };
+  const st = prereqAt(me.course.code, me.idx, tl, catalog);
+  if (!st.ok && st.missing) bad(`Needs ${formatMissing(st.missing)} first`);
+  const lvl = offeredIn(me.course.code, me.term, catalog);
+  if (lvl === "no") bad(`Not offered in ${seasonOf(me.term)} (${offeringText(me.course.code, catalog)})`);
+  else if (lvl === "sometimes") warn(`Only sometimes offered in ${seasonOf(me.term)}`);
+  const before = new Set(prereqProblems(plan, programs, catalog).map((p) => p.course.id));
+  const broken = prereqProblems(next, programs, catalog).filter((p) => !before.has(p.course.id) && p.course.id !== id);
+  if (broken.length) bad(`Breaks ${broken.map((p) => `${p.course.code} (${p.term})`).join(", ")}`);
+  const load = next.semesters.find((s) => s.term === me.term)?.courses.reduce((n, c) => n + c.credits, 0) ?? 0;
+  if (load > creditCap(me.term)) warn(`${me.term} would have ${load} credits (cap ${creditCap(me.term)})`);
+  if (!lines.length) lines.push(lvl === "yes" ? `Prerequisites met · usually offered in ${seasonOf(me.term)}` : "Prerequisites met");
+  return { level, lines };
 }

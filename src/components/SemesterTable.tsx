@@ -3,7 +3,7 @@ import type { CourseStatus, PlanCourse, Semester } from "../types";
 import type { Catalog } from "../catalog";
 import { exclusiveWith } from "../catalog";
 import { formatGeneds, parseGenedString } from "../geneds";
-import { courseFromCatalog } from "../plan";
+import { courseFromCatalog, creditCap } from "../plan";
 import { normalizeCode } from "../engine/match";
 import { CourseSearch } from "../ui/CourseSearch";
 import { ConfirmButton, Popover } from "../ui/Popover";
@@ -18,11 +18,7 @@ export const STATUS_LABEL: Record<CourseStatus, string> = {
 };
 const STATUSES: CourseStatus[] = ["planned", "inprogress", "completed", "transfer"];
 
-export function creditCap(term: string): number {
-  if (term.startsWith("Winter")) return 4;
-  if (term.startsWith("Summer")) return 16;
-  return 17;
-}
+export { creditCap } from "../plan";
 
 export type ColKey = "class" | "cr" | "gened" | "notes";
 export type ColWidths = Record<ColKey, number>;
