@@ -28,7 +28,9 @@ The UI follows the Caustic design system: an eggshell (light) or charcoal (dark)
 - **Flowchart**: courses by term with prerequisite arrows.
   - **Drag** a planned course or a dashed option onto a term. The column turns green, amber or red, and a note by the cursor explains why (prerequisites, offering, courses it would break, credit load).
   - **Click** a course for Earlier/Later moves, a Move to menu, the effect of dropping it, swap options with a requirement diff, and what it leads to.
-  - **Explore any course** to see the prerequisite path to it.
+  - **Explore any course** to see the prerequisite path to it. Remove it from its details panel, or clear all explored courses from the toolbar.
+  - **Suggest courses** (off by default) draws dashed options for open major and minor requirements.
+  - Courses outside your majors and minors are left out, shown as a "+ ENGL393 · 3 cr" chip in their term so the credits add up; "All courses" draws them.
 - **Compare**: plans side by side. Use the plan menu to duplicate the current plan and try an alternative.
 
 Every change can be undone (⌘Z / ⌘⇧Z, or Undo in the notice that appears).

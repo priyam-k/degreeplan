@@ -57,7 +57,7 @@ export function FlowView({ plan, programs, catalog, audit, highs, onChange }: Pr
   const [selected, setSelected] = useState<string | null>(null);
   const [hover, setHover] = useState<string | null>(null);
   const [explore, setExplore] = useState<string[]>([]);
-  const [showOptions, setShowOptions] = useState(true);
+  const [showOptions, setShowOptions] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [searchErr, setSearchErr] = useState("");
   const [zoom, setZoomState] = useState(() => {
@@ -88,12 +88,20 @@ export function FlowView({ plan, programs, catalog, audit, highs, onChange }: Pr
     () => buildGraph({ tl, catalog, audit, needs, project, showOptions, showAll, explore }),
     [tl, catalog, audit, needs, project, showOptions, showAll, explore],
   );
+  // open major/minor requirements the chart can suggest courses for
+  const optionNeeds = needs.filter((n) => n.match && !n.broad && n.programId !== "gened" && n.programId !== "university").length;
   const tips = useMemo(
     () => (audit && !audit.error && catalog.size ? suggestions(plan, programs, catalog, audit, formatReq) : []),
     [plan, programs, catalog, audit],
   );
 
   const sel = graph.nodes.find((n) => n.key === selected) ?? null;
+  // the explored course a ghost belongs to (itself, or the course it's a prerequisite step for)
+  const exploredRoot = (n: FNode): string | undefined => {
+    for (let cur: FNode | undefined = n; cur; cur = graph.nodes.find((m) => m.kind === "ghost" && m.code === cur!.chainFor))
+      if (explore.includes(cur.code)) return cur.code;
+    return undefined;
+  };
   const focusKey = drag?.key ?? selected ?? hover;
   const related = useMemo(() => (focusKey ? relatives(focusKey, graph.edges) : null), [focusKey, graph.edges]);
 
@@ -192,15 +200,16 @@ export function FlowView({ plan, programs, catalog, audit, highs, onChange }: Pr
             <CourseSearch catalog={catalog} onPick={focus} placeholder="Explore any course…" />
             {searchErr && <span className="error small">{searchErr}</span>}
           </div>
-          <label className={`toggle-chip ${showOptions ? "on" : ""}`}>
-            <input type="checkbox" checked={showOptions} onChange={(e) => setShowOptions(e.target.checked)} /> Options for open requirements
+          <label className={`toggle-chip ${showOptions ? "on" : ""} ${!optionNeeds ? "off" : ""}`} title={optionNeeds ? "Show courses that would fill your open major and minor requirements" : "Every major and minor requirement is covered"}>
+            <input type="checkbox" checked={showOptions && !!optionNeeds} disabled={!optionNeeds} onChange={(e) => setShowOptions(e.target.checked)} />
+            {optionNeeds ? `Suggest courses for ${optionNeeds} open requirement${optionNeeds > 1 ? "s" : ""}` : "No open requirements"}
           </label>
           <label className={`toggle-chip ${showAll ? "on" : ""}`}>
-            <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> GenEd-only courses
+            <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> All courses
           </label>
           {explore.length > 0 && (
-            <button className="btn-link" onClick={() => setExplore([])}>
-              Clear explored ({explore.length})
+            <button className="btn sm" onClick={() => setExplore([])}>
+              <Icon.x /> Clear explored ({explore.length})
             </button>
           )}
           <div className="flow-tools">
@@ -257,6 +266,22 @@ export function FlowView({ plan, programs, catalog, audit, highs, onChange }: Pr
                   </div>
                 );
               })}
+              {[...graph.hidden].map(([idx, list]) =>
+                graph.cols.includes(idx) ? (
+                  <button
+                    key={`hidden:${idx}`}
+                    className="flow-more"
+                    style={{ left: graph.cols.indexOf(idx) * COLW + 16, top: 12 + (graph.rowsIn(idx) - 1) * (NODEH + GAP), width: NODEW }}
+                    title={`Not part of a major or minor: ${list.map((c) => c.code).join(", ")}. Click to show all courses.`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAll(true);
+                    }}
+                  >
+                    +{list.length === 1 ? ` ${list[0].code}` : ` ${list.length} more`} · {list.reduce((n, c) => n + c.credits, 0)} cr
+                  </button>
+                ) : null,
+              )}
               <svg className="flow-edges" width={width} height={height}>
                 <defs>
                   {["n", "hi", "bad"].map((k) => (
@@ -361,6 +386,11 @@ export function FlowView({ plan, programs, catalog, audit, highs, onChange }: Pr
             highs={highs}
             onFocus={focus}
             onClose={() => setSelected(null)}
+            explored={exploredRoot(sel)}
+            onDismiss={(code) => {
+              setExplore((e) => e.filter((x) => x !== code));
+              setSelected(null);
+            }}
             onChange={(chs, toast) => {
               chs.forEach((c, i) => onChange(c, i === chs.length - 1 ? toast : undefined));
               const last = chs[chs.length - 1];
@@ -501,9 +531,11 @@ function Details(props: {
   highs: Highs | null;
   onFocus: (c: string) => void;
   onClose: () => void;
+  explored?: string; // the explored course this option belongs to, if any
+  onDismiss: (code: string) => void; // take an explored course (and its prerequisite steps) off the chart
   onChange: (ch: Change[], toast?: string) => void;
 }) {
-  const { node, tl, plan, programs, catalog, audit, highs, onFocus, onClose, onChange } = props;
+  const { node, tl, plan, programs, catalog, audit, highs, explored, onFocus, onClose, onDismiss, onChange } = props;
   const [swap, setSwap] = useState<string | null>(null);
   const cat = catalogEntry(node.code, catalog);
   const req = prereqOf(node.code, catalog);
@@ -630,6 +662,11 @@ function Details(props: {
               }}
             >
               Add with prerequisites: {[...node.chain, node.code].join(" → ")}
+            </button>
+          )}
+          {explored && (
+            <button className="btn fd-wide" onClick={() => onDismiss(explored)}>
+              <Icon.x /> Remove {explored === node.code ? "" : `${explored} and its prerequisites `}from the chart
             </button>
           )}
         </div>

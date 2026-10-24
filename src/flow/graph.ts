@@ -180,8 +180,13 @@ export function buildGraph(o: {
   }
   const pos = new Map<string, { x: number; y: number }>();
   for (const n of nodes) pos.set(n.key, { x: cols.indexOf(n.idx) * COLW + 16, y: 12 + row.get(n.key)! * (NODEH + GAP) });
-  const maxRows = Math.max(1, ...[...colNodes.values()].map((l) => l.length));
-  return { nodes, edges, cols, pos, maxRows };
+
+  // Planned courses left out of the chart, per term, so a column's credits still add up on screen.
+  const hidden = new Map<number, PlanCourse[]>();
+  for (const p of tl.placed) if (p.idx > 0 && !include.has(p.course.id)) hidden.set(p.idx, [...(hidden.get(p.idx) ?? []), p.course]);
+  const rowsIn = (c: number) => (colNodes.get(c)?.length ?? 0) + (hidden.has(c) ? 1 : 0);
+  const maxRows = Math.max(1, ...cols.map(rowsIn));
+  return { nodes, edges, cols, pos, maxRows, hidden, rowsIn };
 }
 
 // All prerequisites (transitively) and everything that builds on the node.
