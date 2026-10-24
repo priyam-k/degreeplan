@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { CourseStatus, PlanCourse, Semester } from "../types";
 import type { Catalog } from "../catalog";
 import { exclusiveWith } from "../catalog";
 import { formatGeneds, parseGenedString } from "../geneds";
-import { courseFromCatalog, uid } from "../plan";
+import { courseFromCatalog } from "../plan";
 import { normalizeCode } from "../engine/match";
+import { CourseSearch } from "../ui/CourseSearch";
+import { ConfirmButton, Popover } from "../ui/Popover";
+import { Icon } from "../ui/icons";
+import { CourseInfo } from "./CourseInfo";
 
-const STATUS_ORDER: CourseStatus[] = ["planned", "inprogress", "completed", "transfer"];
-const STATUS_LABEL: Record<CourseStatus, string> = {
+export const STATUS_LABEL: Record<CourseStatus, string> = {
   planned: "Planned",
   inprogress: "In progress",
   completed: "Completed",
   transfer: "Transfer / AP",
 };
+const STATUSES: CourseStatus[] = ["planned", "inprogress", "completed", "transfer"];
 
 export function creditCap(term: string): number {
   if (term.startsWith("Winter")) return 4;
@@ -20,52 +24,88 @@ export function creditCap(term: string): number {
   return 17;
 }
 
+export type ColKey = "class" | "cr" | "gened" | "notes";
+export type ColWidths = Record<ColKey, number>;
+export const DEFAULT_COLS: ColWidths = { class: 160, cr: 44, gened: 96, notes: 150 };
+
 interface Props {
   semester: Semester;
   catalog: Catalog;
   usage: Record<string, string[]>;
+  warnings: Map<string, string[]>;
   allCodes: Map<string, string>; // code -> term, for cross-plan warnings
-  onChange: (s: Semester) => void;
+  cols: ColWidths;
+  onResize: (k: ColKey, w: number) => void;
+  terms: string[]; // for "Move to…"
+  onChange: (s: Semester, opts?: { coalesce?: string; toast?: string }) => void;
+  onMove: (courseId: string, toTerm: string, beforeId: string | null) => void;
   onRemove?: () => void;
+  drag: { id: string; term?: string; before?: string | null } | null;
+  onDragStart: (e: React.PointerEvent, c: PlanCourse) => void;
+  highlight: Set<string>;
 }
 
-export function SemesterTable({ semester, catalog, usage, allCodes, onChange, onRemove }: Props) {
+export function SemesterTable(props: Props) {
+  const { semester, catalog, cols, onChange, drag } = props;
   const total = semester.courses.reduce((n, c) => n + c.credits, 0);
   const isTransfer = semester.term.startsWith("Transfer");
   const cap = creditCap(semester.term);
+  const dropBefore = drag && drag.term === semester.term ? drag.before ?? null : undefined; // undefined = not a target
 
-  const update = (id: string, patch: Partial<PlanCourse>) =>
-    onChange({ ...semester, courses: semester.courses.map((c) => (c.id === id ? { ...c, ...patch } : c)) });
-  const remove = (id: string) => onChange({ ...semester, courses: semester.courses.filter((c) => c.id !== id) });
-  const add = () =>
-    onChange({
-      ...semester,
-      courses: [
-        ...semester.courses,
-        { id: uid(), code: "", credits: 3, geneds: [], notes: "", status: isTransfer ? "transfer" : "planned" },
-      ],
-    });
+  const update = (id: string, patch: Partial<PlanCourse>, coalesce?: string) =>
+    onChange({ ...semester, courses: semester.courses.map((c) => (c.id === id ? { ...c, ...patch } : c)) }, coalesce ? { coalesce } : undefined);
+  const remove = (c: PlanCourse) =>
+    onChange({ ...semester, courses: semester.courses.filter((x) => x.id !== c.id) }, { toast: `Removed ${c.code || "course"} from ${semester.term}` });
+  const add = (code: string) => {
+    const fresh = courseFromCatalog(code, catalog, { status: isTransfer ? "transfer" : "planned" });
+    onChange({ ...semester, courses: [...semester.courses, fresh] });
+  };
 
   return (
-    <div className="semester">
+    <div className={`semester ${dropBefore !== undefined ? "drop-target" : ""}`} data-term={semester.term}>
       <div className="semester-head">
-        <span>{semester.term}</span>
-        {onRemove && !semester.courses.length && (
-          <button className="link" onClick={onRemove} title="Remove this term">
-            remove
-          </button>
+        <span className="term-name">{semester.term}</span>
+        {!isTransfer && <CreditMeter total={total} cap={cap} quiet={semester.courses.every((c) => c.status === "completed")} />}
+        {isTransfer && <span className="muted">{total} cr</span>}
+        {props.onRemove && (
+          <ConfirmButton
+            className="icon-btn sm ghost"
+            title="Remove this term"
+            message={semester.courses.length ? <>Remove {semester.term} and its {semester.courses.length} courses?</> : <>Remove {semester.term}?</>}
+            confirmLabel="Remove term"
+            onConfirm={props.onRemove}
+          >
+            <Icon.x />
+          </ConfirmButton>
         )}
       </div>
       <table>
+        <colgroup>
+          <col style={{ width: 30 }} />
+          <col style={{ width: cols.class }} />
+          <col style={{ width: cols.cr }} />
+          <col style={{ width: cols.gened }} />
+          <col />
+          <col style={{ width: cols.notes }} />
+          <col style={{ width: 30 }} />
+        </colgroup>
         <thead>
           <tr>
-            <th className="col-status" />
-            <th className="col-class">Class</th>
-            <th className="col-cr">Cr</th>
-            <th className="col-gened">GenEds</th>
-            <th className="col-counts">Counts toward</th>
-            <th className="col-notes">Notes</th>
-            <th className="col-x" />
+            <th />
+            <ResizableTh k="class" {...props}>
+              Class
+            </ResizableTh>
+            <ResizableTh k="cr" {...props}>
+              Cr
+            </ResizableTh>
+            <ResizableTh k="gened" {...props}>
+              GenEds
+            </ResizableTh>
+            <th>Counts toward</th>
+            <ResizableTh k="notes" {...props}>
+              Notes
+            </ResizableTh>
+            <th />
           </tr>
         </thead>
         <tbody>
@@ -73,141 +113,282 @@ export function SemesterTable({ semester, catalog, usage, allCodes, onChange, on
             <CourseRow
               key={c.id}
               course={c}
-              catalog={catalog}
-              usage={usage[c.id] ?? []}
-              allCodes={allCodes}
-              onPatch={(p) => update(c.id, p)}
-              onRemove={() => remove(c.id)}
+              term={semester.term}
+              {...props}
+              dropHere={dropBefore === c.id}
+              onPatch={(p, coalesce) => update(c.id, p, coalesce)}
+              onRemoveCourse={() => remove(c)}
             />
           ))}
+          {dropBefore === null && (
+            <tr className="drop-line">
+              <td colSpan={7} />
+            </tr>
+          )}
           <tr className="add-row">
-            <td colSpan={7}>
-              <button className="link" onClick={add}>
-                + add class
-              </button>
+            <td />
+            <td colSpan={6}>
+              <CourseSearch catalog={catalog} onPick={add} allowUnknown placeholder="+ Add a class (code or title)" />
             </td>
           </tr>
         </tbody>
-        <tfoot>
-          <tr>
-            <td />
-            <td>Total:</td>
-            <td className={`num ${!isTransfer && total > cap ? "over" : ""}`} title={!isTransfer && total > cap ? `Over the ${cap}-credit CMNS cap` : ""}>
-              {total}
-            </td>
-            <td colSpan={4} />
-          </tr>
-        </tfoot>
       </table>
     </div>
   );
 }
 
+export function CreditMeter({ total, cap, quiet }: { total: number; cap: number; quiet?: boolean }) {
+  const over = total > cap && !quiet;
+  return (
+    <span className={`credit-meter ${over ? "over" : ""}`}>
+      <span className="cm-bar">
+        <span style={{ width: `${Math.min(100, (total / cap) * 100)}%` }} />
+      </span>
+      <span className="cm-text">
+        {total} / {cap} cr{over ? " (over the cap)" : ""}
+      </span>
+    </span>
+  );
+}
+
+function ResizableTh({ k, cols, onResize, children }: { k: ColKey; cols: ColWidths; onResize: (k: ColKey, w: number) => void; children: React.ReactNode }) {
+  const start = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const x0 = e.clientX;
+    const w0 = cols[k];
+    const move = (ev: MouseEvent) => onResize(k, Math.max(36, Math.min(600, w0 + ev.clientX - x0)));
+    const up = () => {
+      document.removeEventListener("mousemove", move);
+      document.removeEventListener("mouseup", up);
+      document.body.classList.remove("col-resizing");
+    };
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", up);
+    document.body.classList.add("col-resizing");
+  };
+  return (
+    <th className="resizable">
+      {children}
+      <span className="col-resizer" onMouseDown={start} onDoubleClick={() => onResize(k, DEFAULT_COLS[k])} title="Drag to resize · double-click to reset" />
+    </th>
+  );
+}
+
 function CourseRow({
   course: c,
+  term,
   catalog,
   usage,
+  warnings,
   allCodes,
+  terms,
+  dropHere,
+  drag,
+  onDragStart,
+  highlight,
+  onMove,
   onPatch,
-  onRemove,
-}: {
+  onRemoveCourse,
+}: Props & {
   course: PlanCourse;
-  catalog: Catalog;
-  usage: string[];
-  allCodes: Map<string, string>;
-  onPatch: (p: Partial<PlanCourse>) => void;
-  onRemove: () => void;
+  term: string;
+  dropHere: boolean;
+  onPatch: (p: Partial<PlanCourse>, coalesce?: string) => void;
+  onRemoveCourse: () => void;
 }) {
-  const [code, setCode] = useState(c.code);
-  const [gen, setGen] = useState(formatGeneds(c.geneds));
-  const [prevGeneds, setPrevGeneds] = useState(c.geneds);
-  if (prevGeneds !== c.geneds) {
-    setPrevGeneds(c.geneds);
-    setGen(formatGeneds(c.geneds));
-  }
-
+  const [editingCode, setEditingCode] = useState(!c.code && !c.geneds.length);
+  const [editingGen, setEditingGen] = useState(false);
+  const uses = (usage[c.id] ?? []).filter((u) => !u.startsWith("Duplicate"));
   const cat = c.code ? catalog.get(c.code) : undefined;
-  const commitCode = () => {
+
+  const warns = [...(warnings.get(c.id) ?? [])];
+  if (c.code && catalog.size && !cat) warns.push("Not in the course catalog. Check the code; credits and GenEds must be entered by hand.");
+  for (const x of exclusiveWith(cat)) if (allCodes.has(x)) warns.push(`Credit is only granted for one of ${c.code} / ${x} (${x} is in ${allCodes.get(x)}).`);
+  if ((usage[c.id] ?? []).some((u) => u.startsWith("Duplicate"))) warns.push("Duplicate of another entry, so it's only counted once.");
+
+  const setCode = (code: string) => {
+    setEditingCode(false);
     const norm = normalizeCode(code);
-    setCode(norm);
-    if (norm === c.code) return;
+    if (!norm || norm === c.code) return;
     if (catalog.has(norm)) {
       const fresh = courseFromCatalog(norm, catalog);
       onPatch({ code: norm, credits: fresh.credits, geneds: fresh.geneds, title: fresh.title });
     } else onPatch({ code: norm, title: undefined });
   };
 
-  const warnings: string[] = [];
-  if (c.code && catalog.size && !cat) warnings.push("Not in the course catalog (check the code; credits/GenEds must be entered by hand)");
-  for (const x of exclusiveWith(cat)) if (allCodes.has(x)) warnings.push(`Credit only granted for one of ${c.code} / ${x} (${x} in ${allCodes.get(x)})`);
-  if (usage.some((u) => u.startsWith("Duplicate"))) warnings.push("Duplicate of another entry — counted once");
-
-  const tip = [cat ? `${cat.c}: ${cat.n}` : c.title, cat?.p ? `Prereq: ${cat.p}` : "", cat?.x ? `Credit only granted for: ${cat.x}` : "", c.grade ? `Grade: ${c.grade}` : ""]
-    .filter(Boolean)
-    .join("\n");
-
-  const next = STATUS_ORDER[(STATUS_ORDER.indexOf(c.status) + 1) % STATUS_ORDER.length];
   return (
-    <tr className={`st-${c.status}`}>
+    <tr
+      data-id={c.id}
+      className={`st-${c.status} ${drag?.id === c.id ? "dragging" : ""} ${dropHere ? "drop-before" : ""} ${highlight.has(c.id) ? "hl" : ""}`}
+    >
       <td className="col-status">
-        <button className={`status-dot st-${c.status}`} title={`${STATUS_LABEL[c.status]} — click for ${STATUS_LABEL[next]}`} onClick={() => onPatch({ status: next })} />
+        <div className="status-cell">
+        <span className="grip" title="Drag to another term" onPointerDown={(e) => onDragStart(e, c)}>
+          <Icon.grip />
+        </span>
+        <Popover button={<span className={`status-dot st-${c.status}`} />} buttonClassName="status-btn" buttonTitle={STATUS_LABEL[c.status]} width={170}>
+          {(close) => (
+            <div className="menu">
+              {STATUSES.map((s) => (
+                <button
+                  key={s}
+                  className={s === c.status ? "on" : ""}
+                  onClick={() => {
+                    onPatch({ status: s });
+                    close();
+                  }}
+                >
+                  <span className={`status-dot st-${s}`} /> {STATUS_LABEL[s]}
+                </button>
+              ))}
+            </div>
+          )}
+        </Popover>
+        </div>
       </td>
-      <td className="col-class" title={tip}>
-        <input
-          className="code"
-          list="course-codes"
-          value={code}
-          placeholder={c.code === "" && c.geneds.length ? "(GenEd credit)" : "CMSC4xx"}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          onBlur={commitCode}
-          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-        />
-        {warnings.length > 0 && (
-          <span className="warn" title={warnings.join("\n")}>
-            ⚠
-          </span>
+      <td className="col-class">
+        {editingCode ? (
+          <CourseSearch catalog={catalog} initial={c.code} autoFocus allowUnknown onPick={setCode} onCancel={() => setEditingCode(false)} placeholder="Code or title" />
+        ) : (
+          <div className="class-cell">
+            <Popover
+              button={
+                <>
+                  <span className="cc-code">{c.code || <i className="muted">GenEd credit</i>}</span>
+                  <span className="cc-title">{c.title || cat?.n || ""}</span>
+                </>
+              }
+              buttonClassName="class-btn"
+              width={340}
+            >
+              {(close) => (
+                <CourseInfo code={c.code} catalog={catalog} title={c.title} credits={c.credits} grade={c.grade} usage={uses} warnings={warns}>
+                  <div className="ci-actions">
+                    <button
+                      className="btn sm"
+                      onClick={() => {
+                        close();
+                        setEditingCode(true);
+                      }}
+                    >
+                      Change course
+                    </button>
+                  </div>
+                </CourseInfo>
+              )}
+            </Popover>
+            {warns.length > 0 && (
+              <Popover button={<Icon.warn />} buttonClassName="warn-btn" buttonTitle="Warnings" width={300}>
+                <ul className="warn-list">
+                  {warns.map((w) => (
+                    <li key={w}>{w}</li>
+                  ))}
+                </ul>
+              </Popover>
+            )}
+          </div>
         )}
       </td>
       <td className="col-cr">
-        <input
-          className="num"
-          type="number"
-          min={0}
-          max={20}
-          value={c.credits}
-          onChange={(e) => onPatch({ credits: Math.max(0, Number(e.target.value) || 0) })}
-        />
+        <input className="num" type="number" min={0} max={20} value={c.credits} onChange={(e) => onPatch({ credits: Math.max(0, Number(e.target.value) || 0) }, `cr-${c.id}`)} />
       </td>
       <td className="col-gened">
-        <input
-          value={gen}
-          title='GenEds: commas = all apply, "or" = pick one. e.g. "DSHS or DSHU, DVUP"'
-          onChange={(e) => setGen(e.target.value)}
-          onBlur={() => onPatch({ geneds: parseGenedString(gen) ?? [] })}
-        />
+        {editingGen ? (
+          <GenedEditor value={c.geneds} onDone={(g) => {
+            setEditingGen(false);
+            if (g) onPatch({ geneds: g });
+          }} />
+        ) : (
+          <button className="gened-btn" onClick={() => setEditingGen(true)} title="Edit GenEds">
+            {c.geneds.length ? formatGeneds(c.geneds) : <span className="muted">—</span>}
+          </button>
+        )}
       </td>
       <td className="col-counts">
-        {usage
-          .filter((u) => !u.startsWith("Duplicate") && chipKind(u) !== "univ")
-          .map((u) => (
-            <span key={u} className={`chip chip-${chipKind(u)}`} title={u}>
-              {shortUsage(u)}
-            </span>
-          ))}
+        <div className="chips">
+          {uses
+            .filter((u) => chipKind(u) !== "univ")
+            .map((u) => (
+              <span key={u} className={`chip chip-${chipKind(u)}`}>
+                {shortUsage(u, c.geneds.flat())}
+              </span>
+            ))}
+        </div>
       </td>
       <td className="col-notes">
-        <input value={c.notes} onChange={(e) => onPatch({ notes: e.target.value })} />
+        <AutoTextarea value={c.notes} onChange={(v) => onPatch({ notes: v }, `notes-${c.id}`)} />
       </td>
       <td className="col-x">
-        <button className="link x" onClick={onRemove} title="Remove">
-          ×
-        </button>
+        <Popover button={<Icon.more />} buttonClassName="icon-btn sm ghost row-menu" buttonTitle="More" align="end" width={200}>
+          {(close) => (
+            <div className="menu">
+              <div className="menu-label">Move to</div>
+              <div className="menu-scroll">
+                {terms
+                  .filter((t) => t !== term)
+                  .map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => {
+                        close();
+                        onMove(c.id, t, null);
+                      }}
+                    >
+                      {t}
+                    </button>
+                  ))}
+              </div>
+              <div className="menu-sep" />
+              <button
+                className="menu-danger"
+                onClick={() => {
+                  close();
+                  onRemoveCourse();
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          )}
+        </Popover>
       </td>
     </tr>
   );
 }
 
-function chipKind(u: string): string {
+function GenedEditor({ value, onDone }: { value: string[][]; onDone: (g: string[][] | null) => void }) {
+  const [text, setText] = useState(formatGeneds(value));
+  const parsed = parseGenedString(text);
+  return (
+    <div className="gened-edit">
+      <input
+        autoFocus
+        value={text}
+        className={text && !parsed ? "invalid" : ""}
+        onChange={(e) => setText(e.target.value.toUpperCase())}
+        onBlur={() => onDone(text.trim() ? parsed : [])}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+          if (e.key === "Escape") onDone(null);
+        }}
+      />
+      <div className="gened-help">Comma = all apply, “or” = pick one. e.g. DSHS or DSHU, DVUP</div>
+    </div>
+  );
+}
+
+export function AutoTextarea({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
+  return <textarea ref={ref} rows={1} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />;
+}
+
+export function chipKind(u: string): string {
   if (u.startsWith("Computer Science")) return "cs";
   if (u.startsWith("Mathematics")) return "math";
   if (u.startsWith("GenEd")) return "gened";
@@ -215,9 +396,17 @@ function chipKind(u: string): string {
   return "minor";
 }
 
-function shortUsage(u: string): string {
-  const [prog, label] = u.split(": ");
+const GENED_RE = /\b(FS[A-Z]{2}|DS[A-Z]{2}|SCIS|DVUP|DVCC)\b/g;
+
+// "Mathematics: One of MATH246/436/462 (or 341)" -> "Math · One of MATH246/436/462".
+// GenEd labels become the code the course actually uses ("Second diversity (DVUP or DVCC)" -> "DVCC").
+export function shortUsage(u: string, courseGeneds: string[] = []): string {
+  const [prog, ...rest] = u.split(": ");
+  const label = rest.join(": ");
   const p = prog.startsWith("Computer Science") ? "CS" : prog.startsWith("Mathematics") ? "Math" : prog.startsWith("Robotics") ? "RAS" : prog;
-  if (p === "GenEd") return label.split(" ")[0];
-  return `${p}: ${label.length > 22 ? label.slice(0, 21) + "…" : label}`;
+  if (p === "GenEd") {
+    const codes = label.match(GENED_RE) ?? [];
+    return codes.find((c) => courseGeneds.includes(c)) ?? codes[0] ?? label.split(" ")[0];
+  }
+  return `${p} · ${label.replace(/\s*\(.*?\)\s*/g, " ").trim()}`;
 }

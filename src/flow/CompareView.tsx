@@ -14,11 +14,12 @@ interface Props {
   catalog: Catalog;
   highs: Highs | null;
   onOpen: (id: string) => void;
+  onDuplicate: () => void;
 }
 
 export const programsOf = (plan: Plan) => [...plan.programIds.map(programById).filter((p): p is NonNullable<typeof p> => !!p), ...ALWAYS];
 
-export function CompareView({ scenarios, active, catalog, highs, onOpen }: Props) {
+export function CompareView({ scenarios, active, catalog, highs, onOpen, onDuplicate }: Props) {
   const rows = useMemo(() => {
     if (!highs) return null;
     const codeSets = scenarios.map((s) => new Set(s.plan.semesters.flatMap((x) => x.courses.map((c) => c.code)).filter(Boolean)));
@@ -42,7 +43,17 @@ export function CompareView({ scenarios, active, catalog, highs, onOpen }: Props
   }, [scenarios, catalog, highs]);
 
   if (scenarios.length < 2)
-    return <main className="compare-main"><p className="muted">Make a second plan with <b>+ new plan</b> (it starts as a copy of this one), change it, then compare here.</p></main>;
+    return (
+      <main className="compare-main">
+        <div className="compare-empty card">
+          <h3>Compare alternative plans</h3>
+          <p>Duplicate your plan, try a different set of courses or a different order in the copy, then compare requirements, credits and prerequisite problems side by side.</p>
+          <button className="btn primary" onClick={onDuplicate}>
+            Duplicate current plan
+          </button>
+        </div>
+      </main>
+    );
   if (!rows) return <main className="compare-main">Loading solver…</main>;
   const programNames = [...new Set(rows.flatMap((r) => r.remaining.map((p) => p.name)))];
 

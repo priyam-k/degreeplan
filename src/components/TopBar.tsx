@@ -1,0 +1,252 @@
+import { useRef, useState } from "react";
+import type { AuditResult, Plan } from "../types";
+import type { Workspace } from "../workspace";
+import type { History } from "../ui/useHistory";
+import type { SetPlan } from "../App";
+import { MAJORS, MINORS, programById } from "../programs";
+import { shortName } from "../engine/solver";
+import { ConfirmButton, Popover } from "../ui/Popover";
+import { Icon } from "../ui/icons";
+
+export type View = "degree" | "plan" | "flow" | "compare";
+const VIEWS: { id: View; label: string }[] = [
+  { id: "degree", label: "Degree" },
+  { id: "plan", label: "Semesters" },
+  { id: "flow", label: "Flowchart" },
+  { id: "compare", label: "Compare" },
+];
+
+interface Props {
+  view: View;
+  onView: (v: View) => void;
+  ws: Workspace;
+  plan: Plan;
+  audit: AuditResult | null;
+  history: History<Workspace>;
+  scenarioOps: { switchTo: (id: string) => void; duplicate: () => void; rename: (id: string, name: string) => void; remove: (id: string) => void };
+  setPlan: SetPlan;
+  onImport: () => void;
+  onExport: () => void;
+  onLoad: (f: File) => void;
+  onReset: () => void;
+}
+
+export function TopBar(p: Props) {
+  const file = useRef<HTMLInputElement>(null);
+  const active = p.ws.scenarios.find((s) => s.id === p.ws.active) ?? p.ws.scenarios[0];
+  return (
+    <header className="topbar">
+      <div className="brand">
+        <span className="brand-mark">UMD</span> Degree Planner
+      </div>
+      <nav className="segmented" aria-label="View">
+        {VIEWS.map((v) => (
+          <button key={v.id} className={p.view === v.id ? "on" : ""} onClick={() => p.onView(v.id)}>
+            {v.label}
+          </button>
+        ))}
+      </nav>
+      <div className="topbar-right">
+        <div className="undo-group">
+          <button className="icon-btn" onClick={p.history.undo} disabled={!p.history.canUndo} title="Undo (⌘Z)" aria-label="Undo">
+            <Icon.undo />
+          </button>
+          <button className="icon-btn" onClick={p.history.redo} disabled={!p.history.canRedo} title="Redo (⌘⇧Z)" aria-label="Redo">
+            <Icon.redo />
+          </button>
+        </div>
+        <ProgramPicker plan={p.plan} audit={p.audit} setPlan={p.setPlan} />
+        <PlanSwitcher ws={p.ws} activeName={active.name} ops={p.scenarioOps} />
+        <button className="btn primary" onClick={p.onImport}>
+          Import transcript
+        </button>
+        <Popover button={<Icon.more />} buttonClassName="icon-btn" buttonTitle="More" align="end" width={230}>
+          {(close) => (
+            <div className="menu">
+              <button
+                onClick={() => {
+                  close();
+                  p.onExport();
+                }}
+              >
+                Export all plans (.json)
+              </button>
+              <button
+                onClick={() => {
+                  close();
+                  file.current?.click();
+                }}
+              >
+                Load plans from file…
+              </button>
+              <div className="menu-sep" />
+              <ConfirmButton
+                className="menu-danger"
+                message={
+                  <>
+                    Clear every course from <b>{active.name}</b>? You can undo this.
+                  </>
+                }
+                confirmLabel="Clear plan"
+                onConfirm={() => {
+                  close();
+                  p.onReset();
+                }}
+              >
+                Clear this plan…
+              </ConfirmButton>
+            </div>
+          )}
+        </Popover>
+        <input
+          ref={file}
+          type="file"
+          accept=".json"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            e.target.value = "";
+            if (f) p.onLoad(f);
+          }}
+        />
+      </div>
+    </header>
+  );
+}
+
+function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResult | null; setPlan: SetPlan }) {
+  const chosen = plan.programIds.map(programById).filter((x) => !!x);
+  const done = (id: string) => audit?.programs.find((r) => r.program.id === id)?.satisfied;
+  const label = chosen.length
+    ? chosen.map((x) => (x!.kind === "minor" ? `${shortName(x!).split(" ")[0]} minor` : `${shortName(x!) === "Computer Science" ? "CS" : shortName(x!)}`)).join(" · ")
+    : "Choose programs";
+  const familyValue = (family: string) => plan.programIds.find((x) => programById(x)?.family === family) ?? "";
+  const setFamily = (family: string, id: string) =>
+    setPlan((p) => ({ ...p, programIds: [...p.programIds.filter((x) => programById(x)?.family !== family), ...(id ? [id] : [])] }));
+  const toggleMinor = (id: string) =>
+    setPlan((p) => ({ ...p, programIds: p.programIds.includes(id) ? p.programIds.filter((x) => x !== id) : [...p.programIds, id] }));
+  const families = [...new Set(MAJORS.map((m) => m.family!))];
+  return (
+    <Popover
+      button={
+        <>
+          {label} <Icon.chevron />
+        </>
+      }
+      buttonClassName="btn"
+      align="end"
+      width={320}
+    >
+      <div className="program-picker">
+        <div className="pp-title">Majors</div>
+        {families.map((f) => {
+          const opts = MAJORS.filter((m) => m.family === f);
+          const v = familyValue(f);
+          return (
+            <label key={f} className="pp-row">
+              <span className="pp-name">{shortName(opts[0])}</span>
+              <select value={v} onChange={(e) => setFamily(f, e.target.value)}>
+                <option value="">Not in this plan</option>
+                {opts.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name.match(/\((.*)\)/)?.[1] ?? m.name}
+                  </option>
+                ))}
+              </select>
+              {v && <StatusDot ok={done(v)} />}
+            </label>
+          );
+        })}
+        <div className="pp-title">Minors</div>
+        {MINORS.map((m) => (
+          <label key={m.id} className="pp-row">
+            <input type="checkbox" checked={plan.programIds.includes(m.id)} onChange={() => toggleMinor(m.id)} />
+            <span className="pp-name grow">{m.name}</span>
+            {plan.programIds.includes(m.id) && <StatusDot ok={done(m.id)} />}
+          </label>
+        ))}
+        <p className="pp-note">GenEd and university requirements are always checked.</p>
+      </div>
+    </Popover>
+  );
+}
+
+const StatusDot = ({ ok }: { ok?: boolean }) => <span className={`status-pip ${ok ? "ok" : "todo"}`} title={ok ? "Complete" : "In progress"} />;
+
+function PlanSwitcher({ ws, activeName, ops }: { ws: Workspace; activeName: string; ops: Props["scenarioOps"] }) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState("");
+  const commit = () => {
+    if (editing && draft.trim()) ops.rename(editing, draft.trim());
+    setEditing(null);
+  };
+  return (
+    <Popover
+      button={
+        <>
+          <span className="muted">Plan</span> {activeName} <Icon.chevron />
+        </>
+      }
+      buttonClassName="btn"
+      align="end"
+      width={280}
+      onOpenChange={(o) => !o && setEditing(null)}
+    >
+      {(close) => (
+        <div className="plan-switcher">
+          {ws.scenarios.map((s) => (
+            <div key={s.id} className={`ps-row ${s.id === ws.active ? "on" : ""}`}>
+              {editing === s.id ? (
+                <input
+                  autoFocus
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onBlur={commit}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") commit();
+                    if (e.key === "Escape") setEditing(null);
+                  }}
+                />
+              ) : (
+                <button
+                  className="ps-name"
+                  onClick={() => {
+                    ops.switchTo(s.id);
+                    close();
+                  }}
+                >
+                  <span className="ps-check">{s.id === ws.active && <Icon.check />}</span>
+                  {s.name}
+                </button>
+              )}
+              <button
+                className="icon-btn sm"
+                title="Rename"
+                onClick={() => {
+                  setDraft(s.name);
+                  setEditing(s.id);
+                }}
+              >
+                <Icon.pencil />
+              </button>
+              {ws.scenarios.length > 1 && (
+                <ConfirmButton className="icon-btn sm" title="Delete" message={<>Delete <b>{s.name}</b>? You can undo this.</>} confirmLabel="Delete" onConfirm={() => ops.remove(s.id)}>
+                  <Icon.trash />
+                </ConfirmButton>
+              )}
+            </div>
+          ))}
+          <button
+            className="ps-new"
+            onClick={() => {
+              ops.duplicate();
+              close();
+            }}
+          >
+            <Icon.copy /> Duplicate “{activeName}” to try an alternative
+          </button>
+        </div>
+      )}
+    </Popover>
+  );
+}

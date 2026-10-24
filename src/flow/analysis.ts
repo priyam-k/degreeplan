@@ -3,7 +3,7 @@
 // could be taken, options for unmet requirements, and solver-backed "what if" comparisons.
 import type { AuditResult, Matcher, Plan, PlanCourse, Program, SolverCourse } from "../types";
 import type { Catalog } from "../catalog";
-import { concurrentCodes, isSatisfied, missingReq, parsePrereq, reqCodes, type Req } from "../prereqs";
+import { concurrentCodes, formatReq as formatMissing, isSatisfied, missingReq, parsePrereq, reqCodes, type Req } from "../prereqs";
 import { TRANSFER_TERM } from "../transcript";
 import { sortSemesters } from "../plan";
 import { solve, shortName, type Highs } from "../engine/solver";
@@ -504,4 +504,22 @@ export function remainingByProgram(audit: AuditResult): { id: string; name: stri
     satisfied: p.satisfied,
     left: needs.filter((n) => n.programId === p.program.id).map((n) => n.label),
   }));
+}
+
+// Per-course warnings for the semester tables: prerequisites not met by that term, off-season.
+export function courseWarnings(plan: Plan, programs: Program[], catalog: Catalog): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  if (!catalog.size) return out;
+  const tl = buildTimeline(plan, programs, catalog, 0);
+  for (const p of tl.placed) {
+    if (p.course.status !== "planned") continue;
+    const w: string[] = [];
+    const st = prereqAt(p.course.code, p.idx, tl, catalog);
+    if (!st.ok && st.missing) w.push(`Prerequisites not met before ${p.term}: needs ${formatMissing(st.missing)}`);
+    const lvl = offeredIn(p.course.code, p.term, catalog);
+    if (lvl === "no") w.push(`Not offered in a ${seasonOf(p.term)} recently (${offeringText(p.course.code, catalog)})`);
+    else if (lvl === "sometimes") w.push(`Only sometimes offered in ${seasonOf(p.term)} (${offeringText(p.course.code, catalog)})`);
+    if (w.length) out.set(p.course.id, w);
+  }
+  return out;
 }
