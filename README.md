@@ -11,25 +11,23 @@ npm run fetch-courses  # rebuild public/courses.json (Jupiterp + umd.io history;
 
 ## Views
 
-- **Table**: the per-semester spreadsheet with the requirement audit beside it.
-- **Flowchart**: shows every course by term, with arrows from prerequisites to the courses that need them.
-  - **Colors and borders:**
-    - green: done
-    - yellow: in progress
-    - white: planned
-    - dashed purple: an *option*, a course the planner found for a requirement you haven't planned yet, placed at the earliest term you could take it
-  - **Faded arrows** come from AP credit or span many terms; they light up when you select a course.
-  - **Click a course** to see:
-    - what it needs and what it leads to;
-    - how often it is offered;
-    - what happens to your requirements if you add, move, swap or drop it. The solver re-runs, so double-counting limits are included.
-  - **"Explore a course…"** draws the prerequisite path to any catalog course. **Add with prerequisites** places the whole chain at its earliest terms.
-  - **The side panel** lists what is left per program, plus suggestions:
-    - prerequisite problems;
-    - courses planned in a season they aren't offered;
-    - courses that can't slip because a later course depends on them;
-    - the soonest options for each unmet requirement.
-- **Compare plans**: puts plans side by side. Use **+ new plan** to copy the current plan and try an alternative. Double-click a plan tab to rename it.
+- **Degree**: one page per program (major, minor, GenEd, university rules).
+  - Requirements show as tiles colored by status: done, in progress, planned or open.
+  - **Open slots** list the soonest courses that fill them and what else each would count toward. Add one to any term; the term picker says whether that term works.
+  - **GenEd slots** suggest courses that cover several open GenEds at once.
+  - **Rules across requirements:** the CS area distribution, sequences and depth pairs, and sharing limits.
+- **Semesters**: the per-term table.
+  - **Course search:** type a code or a title.
+  - **Course details:** click a course for prerequisites, offering history and where it counts.
+  - **Rows:** drag a row by its handle to another term; status menu; row menu with Move to / Remove.
+  - **Layout:** resizable columns. The requirements sidebar highlights a requirement's courses when you click it, and can be hidden.
+- **Flowchart**: courses by term with prerequisite arrows.
+  - **Drag** a planned course or a dashed option onto a term. The column turns green, amber or red, and a note by the cursor explains why (prerequisites, offering, courses it would break, credit load).
+  - **Click** a course for Earlier/Later moves, a Move to menu, the effect of dropping it, swap options with a requirement diff, and what it leads to.
+  - **Explore any course** to see the prerequisite path to it.
+- **Compare**: plans side by side. Use the plan menu to duplicate the current plan and try an alternative.
+
+Every change can be undone (⌘Z / ⌘⇧Z, or Undo in the notice that appears).
 
 ## Where data lives
 

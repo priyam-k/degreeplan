@@ -5,10 +5,10 @@
 1. **Back up the current plan first.** A backup taken 2026-10-23 is at `misc/degree-plan.json` (gitignored). Plans now live in localStorage `degreeplan.v2`; `v1` is kept untouched. Take a fresh Export before touching storage code.
 2. **Smooth out bugs.** Candidates spotted so far:
    - ~~The Load file input doesn't reset~~; ~~Export never revokes its object URL~~ (both fixed with the flowchart work).
-   - Reset and plan rename/delete still use `confirm`/`prompt`; replace them with inline UI.
+   - ~~Reset and plan rename/delete use `confirm`/`prompt`~~ (inline popovers now).
    - The HiGHS "wedged" retry in `App.tsx` can loop if the solve keeps failing.
    - The solver re-runs on every keystroke; debounce it.
-   - The datalist of about 11k options may be slow, so check typing lag.
+   - ~~The datalist of about 11k options may be slow~~ (replaced by a course search).
    - Old saved plans: the `degreeplan.v1` → `v2` migration is done (see `src/workspace.ts`); keep it working.
    - Re-importing the transcript should keep waivers, notes and planned courses.
 3. **End-to-end tests** (browser, against the dev server), each run from a clean localStorage:
