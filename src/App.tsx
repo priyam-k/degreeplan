@@ -4,8 +4,12 @@ import wasmUrl from "highs/runtime?url";
 import type { Plan, PlanCourse, Semester, SolverCourse } from "./types";
 import { loadCatalog, type Catalog } from "./catalog";
 import { solve, type Highs } from "./engine/solver";
-import { ALWAYS, MAJORS, MINORS, SHARING_RULES, programById } from "./programs";
-import { academicYear, addTerm, emptyPlan, loadPlan, planFromTranscript, savePlan, termKey } from "./plan";
+import { MAJORS, MINORS, SHARING_RULES, programById } from "./programs";
+import { academicYear, addTerm, emptyPlan, planFromTranscript, termKey, uid } from "./plan";
+import { loadWorkspace, nextScenarioName, parseImport, saveWorkspace, type Workspace } from "./workspace";
+import { applyChange, type Change } from "./flow/analysis";
+import { FlowView } from "./flow/FlowView";
+import { CompareView, programsOf } from "./flow/CompareView";
 import { TRANSFER_TERM } from "./transcript";
 import { SemesterTable } from "./components/SemesterTable";
 import { AuditPanel } from "./components/AuditPanel";
@@ -13,23 +17,42 @@ import { ImportDialog } from "./components/ImportDialog";
 
 const loadHighs = () => highsLoader({ locateFile: () => wasmUrl }) as unknown as Promise<Highs>;
 
+type View = "table" | "flow" | "compare";
+
 export default function App() {
-  const [plan, setPlan] = useState<Plan>(() => loadPlan() ?? emptyPlan(new Date().getFullYear()));
+  const [ws, setWs] = useState<Workspace>(loadWorkspace);
+  const [view, setViewState] = useState<View>(() => {
+    try {
+      return (localStorage.getItem("degreeplan.view") as View) || "table";
+    } catch {
+      return "table";
+    }
+  });
+  const setView = (v: View) => {
+    setViewState(v);
+    try {
+      localStorage.setItem("degreeplan.view", v);
+    } catch {
+      /* ignore */
+    }
+  };
+  const [loadErr, setLoadErr] = useState("");
+  const scenario = ws.scenarios.find((s) => s.id === ws.active) ?? ws.scenarios[0];
+  const plan = scenario.plan;
+  const setPlan = (f: (p: Plan) => Plan) =>
+    setWs((w) => ({ ...w, scenarios: w.scenarios.map((s) => (s.id === w.active ? { ...s, plan: f(s.plan) } : s)) }));
   const [catalog, setCatalog] = useState<Catalog>(new Map());
   const [catalogErr, setCatalogErr] = useState("");
   const [highs, setHighs] = useState<Highs | null>(null);
   const [importing, setImporting] = useState(false);
 
-  useEffect(() => savePlan(plan), [plan]);
+  useEffect(() => saveWorkspace(ws), [ws]);
   useEffect(() => {
     loadCatalog().then(setCatalog, (e) => setCatalogErr(String(e)));
     loadHighs().then(setHighs);
   }, []);
 
-  const programs = useMemo(
-    () => [...plan.programIds.map(programById).filter((p): p is NonNullable<typeof p> => !!p), ...ALWAYS],
-    [plan.programIds],
-  );
+  const programs = useMemo(() => programsOf(plan), [plan.programIds]);
   const solverCourses: SolverCourse[] = useMemo(
     () => plan.semesters.flatMap((s) => s.courses.filter((c) => c.code || c.geneds.length).map((c) => ({ ...c, term: s.term }))),
     [plan.semesters],
@@ -69,22 +92,45 @@ export default function App() {
   const lastYear = yearList[yearList.length - 1] ?? new Date().getFullYear() - 1;
 
   const exportPlan = () => {
-    const blob = new Blob([JSON.stringify(plan, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(ws, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "degree-plan.json";
     a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
-  const importPlan = async (f?: File) => {
+  // A workspace export replaces all plans; a single-plan file (older export) replaces the current plan.
+  const importPlan = async (input: HTMLInputElement) => {
+    const f = input.files?.[0];
+    input.value = "";
     if (!f) return;
     try {
-      const p = JSON.parse(await f.text()) as Plan;
-      if (!Array.isArray(p.semesters)) throw new Error("not a plan file");
-      setPlan({ ...p, genedExemptions: p.genedExemptions ?? [], waived: p.waived ?? [] });
+      const r = parseImport(await f.text());
+      if (r.workspace) setWs(r.workspace);
+      else if (r.plan) setPlan(() => r.plan!);
+      setLoadErr("");
     } catch (e) {
-      alert(`Couldn't load plan: ${e}`);
+      setLoadErr(`Couldn't load ${f.name}: ${e instanceof Error ? e.message : e}`);
     }
   };
+
+  const newScenario = () =>
+    setWs((w) => {
+      const id = uid();
+      return { active: id, scenarios: [...w.scenarios, { id, name: nextScenarioName(w), plan: structuredClone(plan) }] };
+    });
+  const renameScenario = (id: string) => {
+    const name = prompt("Rename plan", ws.scenarios.find((s) => s.id === id)?.name)?.trim();
+    if (name) setWs((w) => ({ ...w, scenarios: w.scenarios.map((s) => (s.id === id ? { ...s, name } : s)) }));
+  };
+  const deleteScenario = (id: string) => {
+    if (ws.scenarios.length < 2 || !confirm(`Delete "${ws.scenarios.find((s) => s.id === id)?.name}"?`)) return;
+    setWs((w) => {
+      const scenarios = w.scenarios.filter((s) => s.id !== id);
+      return { active: w.active === id ? scenarios[0].id : w.active, scenarios };
+    });
+  };
+  const applyFlowChange = (ch: Change) => setPlan((p) => applyChange(p, ch, catalog, uid()));
 
   const familyValue = (family: string) => plan.programIds.find((x) => programById(x)?.family === family) ?? "";
 
@@ -129,19 +175,67 @@ export default function App() {
           <button onClick={exportPlan}>Export</button>
           <label className="button">
             Load
-            <input type="file" accept=".json" hidden onChange={(e) => importPlan(e.target.files?.[0])} />
+            <input type="file" accept=".json" hidden onChange={(e) => importPlan(e.target)} />
           </label>
           <button
             onClick={() => {
-              if (confirm("Clear the whole plan?")) setPlan(emptyPlan(new Date().getFullYear()));
+              if (confirm(`Clear "${scenario.name}"?`)) setPlan(() => emptyPlan(new Date().getFullYear()));
             }}
           >
             Reset
           </button>
         </div>
       </header>
+      <nav className="tabs">
+        <div className="view-switch">
+          {(["table", "flow", "compare"] as View[]).map((v) => (
+            <button key={v} className={view === v ? "on" : ""} onClick={() => setView(v)}>
+              {v === "table" ? "Table" : v === "flow" ? "Flowchart" : "Compare plans"}
+            </button>
+          ))}
+        </div>
+        <div className="scenarios">
+          {ws.scenarios.map((s) => (
+            <span key={s.id} className={`scenario ${s.id === ws.active ? "on" : ""}`}>
+              <button onClick={() => setWs((w) => ({ ...w, active: s.id }))} onDoubleClick={() => renameScenario(s.id)} title="Double-click to rename">
+                {s.name}
+              </button>
+              {ws.scenarios.length > 1 && s.id === ws.active && (
+                <button className="link x" onClick={() => deleteScenario(s.id)} title="Delete this plan">
+                  ×
+                </button>
+              )}
+            </span>
+          ))}
+          <button className="link" onClick={newScenario} title="Copy the current plan into a new one to try alternatives">
+            + new plan
+          </button>
+        </div>
+      </nav>
       {catalogErr && <div className="banner error">Course catalog failed to load ({catalogErr}). Run `npm run fetch-courses`.</div>}
+      {loadErr && (
+        <div className="banner error">
+          {loadErr}{" "}
+          <button className="link" onClick={() => setLoadErr("")}>
+            dismiss
+          </button>
+        </div>
+      )}
 
+      {view === "flow" && <FlowView plan={plan} programs={programs} catalog={catalog} audit={audit} highs={highs} onChange={applyFlowChange} />}
+      {view === "compare" && (
+        <CompareView
+          scenarios={ws.scenarios}
+          active={ws.active}
+          catalog={catalog}
+          highs={highs}
+          onOpen={(id) => {
+            setWs((w) => ({ ...w, active: id }));
+            setView("flow");
+          }}
+        />
+      )}
+      {view === "table" && (
       <main>
         <section className="plan">
           <div className="credit-bar">
@@ -211,6 +305,7 @@ export default function App() {
           onExemptions={(e) => setPlan((p) => ({ ...p, genedExemptions: e }))}
         />
       </main>
+      )}
 
       <datalist id="course-codes">
         {[...catalog.values()].map((c) => (

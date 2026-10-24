@@ -3,7 +3,7 @@ import type { Catalog } from "./catalog";
 import { TRANSFER_TERM, type TranscriptResult } from "./transcript";
 import { normalizeCode } from "./engine/match";
 
-const STORAGE_KEY = "degreeplan.v1";
+const STORAGE_KEY = "degreeplan.v1"; // pre-scenario storage; read once to migrate (see workspace.ts)
 const SEASONS = ["Winter", "Spring", "Summer", "Fall"] as const;
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
@@ -47,14 +47,6 @@ export function loadPlan(): Plan | null {
     return { ...p, genedExemptions: p.genedExemptions ?? [], waived: p.waived ?? [] };
   } catch {
     return null;
-  }
-}
-
-export function savePlan(plan: Plan) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
-  } catch {
-    /* storage unavailable */
   }
 }
 

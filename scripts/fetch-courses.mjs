@@ -17,7 +17,8 @@ async function getJson(url, tries = 8) {
   }
 }
 
-const courses = new Map(); // code -> {c,n,cr,mx,g,p}
+const courses = new Map(); // code -> {c,n,cr,mx,g,p,x,t}
+const offered = new Map(); // code -> semesters it appeared in the schedule of classes, as YYMM numbers
 
 // umd.io first (oldest -> newest so newer semesters overwrite)
 const toEntry = (c) => {
@@ -60,6 +61,7 @@ for (const sem of UMDIO_SEMESTERS) {
   for (const page of [...pages.keys()].sort((a, b) => a - b))
     for (const c of pages.get(page)) {
       courses.set(c.course_id, toEntry(c));
+      offered.set(c.course_id, [...(offered.get(c.course_id) ?? []), Number(sem.slice(2))]);
       n++;
     }
   console.log("umd.io", sem, n);
@@ -88,6 +90,8 @@ for (;;) {
   if (d.length < 500) break;
 }
 
-const out = [...courses.values()].sort((a, b) => a.c.localeCompare(b.c));
+const out = [...courses.values()]
+  .map((c) => (offered.has(c.c) ? { ...c, t: [...new Set(offered.get(c.c))] } : c))
+  .sort((a, b) => a.c.localeCompare(b.c));
 writeFileSync(new URL("../public/courses.json", import.meta.url), JSON.stringify(out));
 console.log("total", out.length);

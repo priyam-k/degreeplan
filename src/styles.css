@@ -144,3 +144,97 @@ tr.st-transfer td.col-class, tr.st-transfer td.col-status { background: var(--tr
 .preview-terms ul { margin: 2px 0; padding-left: 16px; font-size: 12px; }
 .warn-text { color: var(--todo); font-size: 12px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+/* view + scenario tabs */
+nav.tabs { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; padding: 8px 20px 0; }
+.view-switch { display: flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; background: #fff; }
+.view-switch button { border: none; border-radius: 0; border-right: 1px solid var(--line); }
+.view-switch button:last-child { border-right: none; }
+.view-switch button.on { background: var(--ink); color: #fff; }
+.scenarios { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.scenario { display: inline-flex; align-items: center; }
+.scenario > button:first-child { border-radius: 14px; padding: 3px 12px; }
+.scenario.on > button:first-child { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+/* flowchart */
+.flow-main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; padding: 12px 20px; align-items: start; }
+@media (max-width: 1100px) { .flow-main { grid-template-columns: 1fr; } }
+.flow { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.flow-toolbar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.flow-toolbar form { display: flex; gap: 4px; }
+.flow-toolbar input[type="text"], .flow-toolbar input:not([type]) { border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; width: 220px; }
+.flow-toolbar label { display: flex; gap: 4px; align-items: center; }
+.flow-legend { margin-left: auto; display: flex; gap: 5px; align-items: center; color: var(--muted); font-size: 12px; }
+.fn-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 3px; border: 1px solid #9aa1ad; background: #fff; }
+.fn-swatch.st-completed { background: var(--completed); border-color: #6aa84f; }
+.fn-swatch.st-inprogress { background: var(--inprogress); border-color: #e0b020; }
+.fn-swatch.st-planned { background: #fff; border-color: #475569; }
+.fn-swatch.ghost { border-style: dashed; border-color: #7c3aed; }
+.edge-key { display: inline-block; width: 18px; border-top: 2px solid #94a3b8; }
+.edge-key.dashed { border-top-style: dashed; }
+.flow-scroll { overflow: auto; max-height: calc(100vh - 170px); }
+.flow-canvas { position: relative; }
+.flow-col { position: absolute; top: 4px; border-radius: 6px; background: #fafbfc; }
+.flow-col.past { background: #f1f5f0; }
+.flow-col.virtual { background: repeating-linear-gradient(135deg, #fafafa, #fafafa 8px, #f3f0fb 8px, #f3f0fb 16px); }
+.flow-col-head { font-weight: 700; font-size: 12px; padding: 6px 8px; white-space: nowrap; }
+.flow-edges { position: absolute; left: 0; top: 0; pointer-events: none; }
+.edge { fill: none; stroke: #94a3b8; stroke-width: 1.4; }
+.edge.alt { stroke-dasharray: 5 4; }
+.edge.hi { stroke: #2563eb; stroke-width: 2.2; }
+.edge.bad { stroke: var(--bad); stroke-width: 2; }
+.edge.dim { opacity: 0.15; }
+.arrow-n { fill: #94a3b8; }
+.arrow-hi { fill: #2563eb; }
+.arrow-bad { fill: var(--bad); }
+.fnode {
+  position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1px;
+  padding: 3px 8px; border: 1.5px solid #475569; border-radius: 7px; background: #fff; text-align: left; overflow: hidden;
+  transition: opacity 0.15s, box-shadow 0.15s;
+}
+.fnode:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.fnode .fn-code { font-weight: 700; font-size: 13px; }
+.fnode .fn-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.fnode.st-completed { background: var(--completed); border-color: #6aa84f; }
+.fnode.st-transfer { background: var(--transfer); border-color: #6d9eeb; }
+.fnode.st-inprogress { background: var(--inprogress); border-color: #e0b020; }
+.fnode.exempt { background: #f3f4f6; border-style: dotted; border-color: #9aa1ad; }
+.fnode.ghost { border-style: dashed; border-color: #7c3aed; background: #faf7ff; }
+.fnode.ghost .fn-sub { color: #6d28d9; }
+.fnode.problem { border-color: var(--bad); }
+.fn-warn { color: var(--bad); }
+.fnode.sel { box-shadow: 0 0 0 3px #93c5fd; }
+.fnode.dim { opacity: 0.25; }
+.flow-side h3 { margin: 4px 0 8px; font-size: 15px; }
+.flow-side h4 { margin: 12px 0 4px; font-size: 13px; }
+.flow-details .facts > div { margin: 3px 0; }
+.small { font-size: 12px; }
+.remaining { list-style: none; padding: 0; margin: 0 0 8px; }
+.remaining li { padding: 3px 0; }
+.tips { list-style: none; padding: 0; margin: 0; }
+.tips li { display: flex; gap: 6px; padding: 5px 0; border-bottom: 1px dotted #eceef2; font-size: 13px; }
+.tip-icon { flex: none; width: 14px; }
+.tip-warn .tip-icon { color: var(--bad); }
+.tip-info .tip-icon { color: #2563eb; }
+.tip-tip .tip-icon { color: var(--ok); }
+button.link.code-link { font-size: inherit; padding: 0; font-weight: 600; }
+.whatif { margin-top: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fafbfc; }
+.whatif h4 { margin-top: 0; }
+.whatif select { margin-left: 4px; }
+.whatif .primary, .whatif .drop button { margin-top: 6px; }
+.drop { margin-top: 10px; border-top: 1px dotted var(--line); }
+.delta { margin: 6px 0; }
+.unlocks ul { list-style: none; padding: 0; margin: 0; }
+.unlocks li { padding: 2px 0; font-size: 13px; }
+
+/* compare */
+.compare-main { padding: 12px 20px; overflow-x: auto; }
+table.compare { background: var(--panel); border: 1px solid var(--line); table-layout: auto; }
+table.compare th, table.compare td { padding: 6px 10px; vertical-align: top; font-size: 13px; }
+table.compare thead th { background: #fafbfc; font-size: 14px; }
+table.compare thead th.active { color: var(--accent); }
+table.compare tbody th { text-align: left; white-space: nowrap; background: #fafbfc; }
+.swaps ul { list-style: none; padding: 0; margin: 0; max-height: 260px; overflow: auto; }
+.swaps li { padding: 3px 0; border-bottom: 1px dotted #eceef2; font-size: 13px; }
+.whatif .chain-add { margin-top: 6px; display: block; font-size: 12px; }
+.edge.far { opacity: 0.3; }

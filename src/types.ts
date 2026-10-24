@@ -7,6 +7,7 @@ export interface CatalogCourse {
   g: string[][]; // GenEd alternatives: [["DSHS"],["DSHU","DVUP"]] = DSHS OR (DSHU + DVUP)
   p: string | null; // prerequisite text
   x: string | null; // "credit only granted for" text
+  t?: number[]; // terms it appeared in the schedule of classes, YYMM (2408 = Fall 2024); absent = no history
 }
 
 export type CourseStatus = "completed" | "inprogress" | "planned" | "transfer";

@@ -9,6 +9,36 @@ npm test               # engine tests
 npm run fetch-courses  # rebuild public/courses.json (Jupiterp + umd.io history; umd.io is slow)
 ```
 
+## Views
+
+- **Table**: the per-semester spreadsheet with the requirement audit beside it.
+- **Flowchart**: shows every course by term, with arrows from prerequisites to the courses that need them.
+  - **Colors and borders:**
+    - green: done
+    - yellow: in progress
+    - white: planned
+    - dashed purple: an *option*, a course the planner found for a requirement you haven't planned yet, placed at the earliest term you could take it
+  - **Faded arrows** come from AP credit or span many terms; they light up when you select a course.
+  - **Click a course** to see:
+    - what it needs and what it leads to;
+    - how often it is offered;
+    - what happens to your requirements if you add, move, swap or drop it. The solver re-runs, so double-counting limits are included.
+  - **"Explore a course…"** draws the prerequisite path to any catalog course. **Add with prerequisites** places the whole chain at its earliest terms.
+  - **The side panel** lists what is left per program, plus suggestions:
+    - prerequisite problems;
+    - courses planned in a season they aren't offered;
+    - courses that can't slip because a later course depends on them;
+    - the soonest options for each unmet requirement.
+- **Compare plans**: puts plans side by side. Use **+ new plan** to copy the current plan and try an alternative. Double-click a plan tab to rename it.
+
+## Where data lives
+
+- **Plans** are saved in this browser's localStorage under `degreeplan.v2`. That key holds all plans; the older `degreeplan.v1` is only read once, for migration. Nothing is uploaded. Storage is per browser and per address (port).
+- **Export / Load** writes and reads every plan as one JSON file. Loading an older single-plan export replaces only the current plan.
+- **Course catalog:** `public/courses.json`, built by `npm run fetch-courses`.
+  - `p` is the prerequisite text. `src/prereqs.ts` parses it into and/or trees; course-free alternatives such as permission or placement are dropped.
+  - `t` lists the semesters the course appeared on the schedule (umd.io, 2023 on). It drives the offering warnings. Without it, offerings show as unknown.
+
 ## Programs encoded
 
 | Program | Tracks | Spec |
@@ -61,7 +91,8 @@ Every result is then re-checked directly from the chosen assignment.
 Any requirement can be marked **waive** in the audit panel (hover the row) for exemption exams, advisor substitutions or electives not on the list. Examples: CMSC132 or CMSC250 by exemption exam, or MATH310 by department exemption.
 
 ## Known gaps / assumptions
-- Grade minimums (C-) and GPA rules are listed in notes but not checked, and prerequisites are shown only as a tooltip.
+- Grade minimums (C-) and GPA rules are listed in notes but not checked.
+- Prerequisites are checked in the flowchart, but alternatives without a course (department permission, placement exams) are ignored. A few odd catalog phrasings parse loosely; see the comments in `src/prereqs.ts`.
 - DSNL "if taken with X" lab pairing is not enforced; edit the GenEd cell if needed.
 - Things the research could not confirm (see each research doc's "uncertainties" section):
   - whether the minor overlap limit applies per major or in total;
