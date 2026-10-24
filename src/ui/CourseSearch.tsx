@@ -17,6 +17,7 @@ interface Props {
   className?: string;
   allowUnknown?: boolean; // accept a code that isn't in the catalog
   hint?: (c: CatalogCourse) => string | undefined; // extra right-hand text per result
+  filter?: (c: CatalogCourse) => boolean; // restrict results (e.g. to one GenEd)
 }
 
 const indexCache = new WeakMap<Catalog, { c: CatalogCourse; title: string }[]>();
@@ -26,13 +27,14 @@ function index(catalog: Catalog) {
   return ix;
 }
 
-export function searchCatalog(catalog: Catalog, q: string, limit = 40): CatalogCourse[] {
+export function searchCatalog(catalog: Catalog, q: string, limit = 40, filter?: (c: CatalogCourse) => boolean): CatalogCourse[] {
   const raw = q.trim();
   if (!raw) return [];
   const code = normalizeCode(raw);
   const words = raw.toLowerCase().split(/\s+/).filter(Boolean);
   const scored: { c: CatalogCourse; s: number }[] = [];
   for (const { c, title } of index(catalog)) {
+    if (filter && !filter(c)) continue;
     let s = -1;
     if (c.c === code) s = 0;
     else if (code.length >= 2 && c.c.startsWith(code)) s = 1 + (c.c.length - code.length) / 10;
@@ -48,14 +50,14 @@ export function searchCatalog(catalog: Catalog, q: string, limit = 40): CatalogC
     .map((x) => x.c);
 }
 
-export function CourseSearch({ catalog, onPick, onCancel, initial = "", placeholder = "Add a class: code or title", autoFocus, className, allowUnknown, hint }: Props) {
+export function CourseSearch({ catalog, onPick, onCancel, initial = "", placeholder = "Add a class: code or title", autoFocus, className, allowUnknown, hint, filter }: Props) {
   const [q, setQ] = useState(initial);
   const [hi, setHi] = useState(0);
   const [open, setOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const list = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
-  const results = useMemo(() => (open ? searchCatalog(catalog, q) : []), [catalog, q, open]);
+  const results = useMemo(() => (open ? searchCatalog(catalog, q, 40, filter) : []), [catalog, q, open, filter]);
 
   useEffect(() => {
     if (autoFocus) {
