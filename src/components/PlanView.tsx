@@ -198,16 +198,14 @@ export function PlanView({ plan, catalog, audit, programs, setPlan, onImport }: 
                   </span>
                 </h2>
                 <span className="year-actions">
-                  {!sems.some((s) => s.term.startsWith("Winter")) && (
-                    <button className="btn-link" onClick={() => setPlan((p) => addTerm(p, `Winter ${y + 1}`))}>
-                      <Icon.plus /> Winter
-                    </button>
-                  )}
-                  {!sems.some((s) => s.term.startsWith("Summer")) && (
-                    <button className="btn-link" onClick={() => setPlan((p) => addTerm(p, `Summer ${y + 1}`))}>
-                      <Icon.plus /> Summer
-                    </button>
-                  )}
+                  {/* any term of the academic year that isn't there, including a removed fall or spring */}
+                  {[`Fall ${y}`, `Winter ${y + 1}`, `Spring ${y + 1}`, `Summer ${y + 1}`]
+                    .filter((t) => !sems.some((s) => s.term === t))
+                    .map((t) => (
+                      <button key={t} className="btn-link" onClick={() => setPlan((p) => addTerm(p, t))}>
+                        <Icon.plus /> {t.split(" ")[0]}
+                      </button>
+                    ))}
                 </span>
               </div>
               <div className="terms">
