@@ -22,7 +22,7 @@ export { creditCap } from "../plan";
 
 export type ColKey = "class" | "cr" | "gened" | "notes";
 export type ColWidths = Record<ColKey, number>;
-export const DEFAULT_COLS: ColWidths = { class: 160, cr: 44, gened: 96, notes: 150 };
+export const DEFAULT_COLS: ColWidths = { class: 132, cr: 36, gened: 78, notes: 100 };
 
 interface Props {
   semester: Semester;
@@ -77,13 +77,13 @@ export function SemesterTable(props: Props) {
       </div>
       <table>
         <colgroup>
-          <col style={{ width: 30 }} />
+          <col style={{ width: 26 }} />
           <col style={{ width: cols.class }} />
           <col style={{ width: cols.cr }} />
           <col style={{ width: cols.gened }} />
           <col />
           <col style={{ width: cols.notes }} />
-          <col style={{ width: 30 }} />
+          <col style={{ width: 26 }} />
         </colgroup>
         <thead>
           <tr>
