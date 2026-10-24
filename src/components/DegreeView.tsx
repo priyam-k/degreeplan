@@ -1,7 +1,7 @@
 // Program-centric view: pick a major, minor, GenEd or university requirements and see each
 // requirement as slots filled by your courses (colored by status), what's still open, the
 // soonest courses that would fill it, and the rules that span requirements.
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { AuditResult, BucketResult, Plan, PlanCourse, Program, ProgramResult, ConstraintResult } from "../types";
 import type { Catalog } from "../catalog";
 import type { SetPlan } from "../App";
@@ -132,7 +132,7 @@ export function DegreeView({ plan, programs, catalog, audit, setPlan, onFlow }: 
   );
 }
 
-function Ring({ u, size = 44 }: { u: Record<Seg, number>; size?: number }) {
+function Ring({ u, size = 50 }: { u: Record<Seg, number>; size?: number }) {
   const total = u.done + u.inprogress + u.planned + u.open || 1;
   const r = size / 2 - 4;
   const C = 2 * Math.PI * r;
@@ -144,10 +144,16 @@ function Ring({ u, size = 44 }: { u: Record<Seg, number>; size?: number }) {
     return el;
   });
   const pct = Math.round(((u.done + u.inprogress + u.planned) / total) * 100);
+  const mask = `ticks${useId().replace(/:/g, "")}`;
   return (
     <svg className="ring" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <circle className="ring-bg" r={r} cx={size / 2} cy={size / 2} />
-      <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>{segs}</g>
+      <mask id={mask}>
+        <circle className="ring-ticks" r={r} cx={size / 2} cy={size / 2} strokeDasharray={`1.6 ${C / 28 - 1.6}`} />
+      </mask>
+      <g mask={`url(#${mask})`}>
+        <circle className="ring-bg" r={r} cx={size / 2} cy={size / 2} />
+        <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>{segs}</g>
+      </g>
       <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle">
         {pct}%
       </text>

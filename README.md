@@ -9,6 +9,10 @@ npm test               # engine tests
 npm run fetch-courses  # refresh public/courses.json (Jupiterp + umd.io history; FULL=1 rebuilds every semester)
 ```
 
+## Design
+
+The UI follows the Caustic design system: an eggshell (light) or charcoal (dark) ground, Mona Sans and Geist Mono (self-hosted in `src/fonts/`, SIL Open Font License), tick meters for progress, and one accent colour. Light, dark or auto, and the accent (red, blue, forest, royal) are under the ⋯ menu → Appearance; the choice is saved in `degreeplan.theme`.
+
 ## Views
 
 - **Degree**: one page per program (major, minor, GenEd, university rules).
