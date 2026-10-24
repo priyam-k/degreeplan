@@ -181,6 +181,17 @@ describe("placement checks", () => {
   });
 });
 
+describe("double-counting limits", () => {
+  test("waiving the limit uses the sharing result id", () => {
+    const programs = [csGeneral, rasMinor];
+    const p = plan([sem("Fall 2026", [course("CMSC421"), course("CMSC422"), course("CMSC426")])]);
+    const audit = auditPlan(highs, p, programs);
+    const id = audit.sharing.find((s) => s.id.endsWith("major-overlap"))!.id;
+    const waived = auditPlan(highs, { ...p, waived: [id] }, programs);
+    expect(waived.sharing.find((s) => s.id === id)!.waived).toBe(true);
+  });
+});
+
 describe("redundant rules", () => {
   test("'5 area courses' restating the area requirement isn't a separate open item", async () => {
     const p = plan([sem("Fall 2026", [course("CMSC420"), course("CMSC421")])]);

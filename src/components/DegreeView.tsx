@@ -185,7 +185,7 @@ function ProgramDetail({ r, audit, setPlan, onFlow, ...ctx }: Ctx & { r: Program
 
   const core = r.buckets.filter((b) => b.bucket.courses === 1 && !b.bucket.credits && !b.bucket.gened);
   const big = r.buckets.filter((b) => !core.includes(b));
-  const sharing = audit.sharing.filter((s) => s.id.startsWith(`${p.id}-`));
+  const sharing = audit.sharing.filter((s) => s.id.startsWith(`sharing/${p.id}-`));
 
   return (
     <section className="program-detail">

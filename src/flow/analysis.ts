@@ -271,7 +271,7 @@ export function unmetNeeds(audit: AuditResult): Need[] {
     }
   }
   for (const s of audit.sharing)
-    if (!s.satisfied) out.push({ key: `sharing/${s.id}`, programId: "sharing", program: "Double counting", label: s.label, detail: s.detail });
+    if (!s.satisfied) out.push({ key: s.id, programId: "sharing", program: "Double counting", label: s.label, detail: s.detail });
   return out;
 }
 
@@ -419,7 +419,12 @@ export function whatIf(highs: Highs, plan: Plan, programs: Program[], catalog: C
     const atLimit = after.sharing.filter((s) => /^(\d+) \/ max \1\b/.test(s.detail));
     for (const n of unmetNeeds(after)) {
       if (!n.match?.(ch.code, ctx)) continue;
-      const lim = atLimit.find((s) => s.id.startsWith(`${n.programId}-`));
+      // only requirements where the new course ended up unused (not ones it counts toward but are still short)
+      const [pid, bid] = n.key.split("/");
+      const prog = after.programs.find((r) => r.program.id === pid);
+      if (!prog?.buckets.some((b) => b.bucket.id === bid)) continue;
+      if (prog.buckets.some((b) => b.assigned.includes(id!))) continue; // already counts in this program
+      const lim = atLimit.find((s) => s.id.startsWith(`sharing/${n.programId}-`)); // ids are "sharing/<rule id>"
       blocked.push(`${n.program}: ${n.label}${lim ? ` (blocked by "${lim.label}", already ${lim.detail.split(" (")[0]})` : ""}`);
     }
   }

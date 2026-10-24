@@ -65,7 +65,7 @@ export function AuditPanel({ audit, courses, waived, exemptions, highlight, onHi
           <h3>Double-counting limits</h3>
           <ul className="buckets">
             {audit.sharing.map((s) => (
-              <Rule key={s.id} r={s} waiveKey={`sharing/${s.id}`} waived={waived} onToggleWaive={onToggleWaive} />
+              <Rule key={s.id} r={s} waiveKey={s.id} waived={waived} onToggleWaive={onToggleWaive} />
             ))}
           </ul>
         </section>
