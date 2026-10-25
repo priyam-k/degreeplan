@@ -1,0 +1,191 @@
+# UMD Computer Science B.S. — 2025-26 catalog (2026-27 identical). See docs/research/cs-major.md.
+# Format: README.md in this folder.
+
+kind: major
+short: CS
+notes: $COMMON_NOTES
+sources: $SOURCES
+
+defs:
+  SOURCES:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/computer-science/computer-science-major/
+    - https://undergrad.cs.umd.edu/general-track-degree-requirements
+    - https://undergrad.cs.umd.edu/upper-level-concentration
+  COMMON_NOTES:
+    - C- or better required in every major course.
+    - CMSC498x topics count toward an area only in the terms the department lists; other topics count as general electives.
+    - Overflow area courses (beyond the 5) count as electives.
+
+  # Distributive areas (department list; CMSC498x topics count only in the listed terms).
+  AREA1:
+    - [CMSC411, CMSC412, CMSC414, CMSC416, CMSC417]
+    - { topic: CMSC498B, terms: [Fall 2024, Fall 2025] }
+    - { topic: CMSC498C, terms: [Spring 2024, Spring 2025, Spring 2026, Fall 2026] }
+    - { topic: CMSC498I, terms: [Fall 2022] }
+    - { topic: CMSC498N, terms: [Spring 2027] }
+    - { topic: CMSC498X, terms: [Fall 2020] }
+  AREA2:
+    - [CMSC420, CMSC421, CMSC422, CMSC423, CMSC424, CMSC426, CMSC427, CMSC470, CMSC471, CMSC472]
+    - { topic: CMSC498D, terms: [Spring 2025, Spring 2026] }
+    - { topic: CMSC498E, terms: [Fall 2023, Spring 2026, Spring 2027] }
+    - { topic: CMSC498F, terms: [Spring 2022, Spring 2023, Spring 2024, Spring 2026] }
+    - { topic: CMSC498K, terms: [Fall 2025] }
+    - { topic: CMSC498P, terms: [Spring 2027] }
+    - { topic: CMSC498Y, terms: [Spring 2024, Spring 2025, Spring 2026, Spring 2027] }
+    - { topic: CMSC498Z, terms: [Fall 2023, Fall 2025, Fall 2026] }
+  AREA3:
+    - [CMSC430, CMSC431, CMSC433, CMSC434, CMSC435, CMSC436, CMSC471]
+    - { topic: CMSC498G, terms: [Spring 2025, Spring 2026] }
+    - { topic: CMSC498J, terms: [Fall 2025] }
+  AREA4:
+    - [CMSC451, CMSC452, CMSC454, CMSC456, CMSC457, CMSC474]
+    - { topic: CMSC498W, terms: [Spring 2027] }
+  AREA5: [CMSC460, CMSC466]
+  AREAS:
+    - { id: A1, label: Area 1 Systems, match: $AREA1 }
+    - { id: A2, label: Area 2 Info Processing, match: $AREA2 }
+    - { id: A3, label: Area 3 SE/PL, match: $AREA3 }
+    - { id: A4, label: Area 4 Theory, match: $AREA4 }
+    - { id: A5, label: Area 5 Numerical, match: $AREA5 }
+  AREA_ANY: [$AREA1, $AREA2, $AREA3, $AREA4, $AREA5]
+
+  UPPER_CMSC_ELECTIVE: { any: [CMSC300-499], except: [CMSC330, CMSC351] }
+  STIC: [CMSC388-389, CMSC398-398]
+
+  # STAT4xx with prereq >= MATH141, not cross-listed with CMSC (STAT426 ~ CMSC320 and STAT464 excluded).
+  STAT4XX: [STAT400, DATA400, STAT401, STAT410, STAT420, STAT422, STAT430, STAT440, STAT470, STAT498]
+  MATHSTAT:
+    - [MATH240, MATH241, MATH243, MATH246, MATH310, MATH340, MATH341]
+    - [MATH401, MATH402, MATH403, MATH404, MATH405, MATH406, MATH410, MATH411, MATH416, MATH420, MATH423, MATH424, MATH430]
+    - [MATH431, MATH432, MATH436, MATH437, MATH440, MATH445, MATH446, MATH452, MATH461, MATH462, MATH463, MATH464, MATH470, MATH484]
+    - [AMSC420, AMSC452]
+    - $STAT4XX
+  LINEAR_ALGEBRA: [MATH240, MATH461, MATH341]
+
+  # Upper Level Concentration: 12 credits at 300-400 level in one non-CMSC discipline (MATH+STAT may mix).
+  ULC_INELIGIBLE:
+    - [AMSC460, AMSC466, AOSC445, AOSC447, AREC380, BIOE442, BSCI411, DATA320, DATA400]
+    - [BMGT300, BMGT301, BMGT301F, BMGT302, BMGT302F, BMGT347, BMGT400, BMGT401, BMGT402, BMGT403, BMGT404]
+    - [BMGT408E, BMGT408C, BMGT431, BMGT408V, ECON414, ECON432, ECON433, ENGL381]
+    - [ENEE350, ENEE426, ENEE436, ENEE446, ENEE447, ENEE456, ENEE457, ENEE459L, ENEE464]
+    - [GEOG371, GEOG376, GEOG377, GEOG461, GEOG470, GEOG476, GEOG498I, GEOL377]
+    - [IMDM327, IMDM390, IMDM498I, IMDM498K, MATH440, MATH456, MATH461, MATH475]
+    - [PHIL308F, PHIL408F, PHPE408J, PHYS457, PHYS474, PHYS476, PHYS486, PSYC417, STAT426, STAT464]
+    - [ENAE450, ENEE467, ENEE408I, ENME440] # Robotics minor courses
+  ULC:
+    id: ulc
+    label: Upper Level Concentration (12 cr, one non-CS discipline)
+    match: { any: ["*300-499"], except: $ULC_INELIGIBLE }
+    credits: 12
+    discipline:
+      exclude: [CMSC, HONR, HNUH, INST, DATA, CP*]
+      merge: { MATH/STAT: [MATH, STAT], LGBT/WGSS: [LGBT, WGSS] }
+    noShare: true # ULC doesn't count toward the major/minor overlap cap
+    note: 300-400 level, one discipline (MATH+STAT may mix), not used for any other CS requirement. Each course ≥ 3 credits.
+
+  LOWER:
+    - { id: math140, label: MATH140 Calculus I, match: MATH140, courses: 1 }
+    - { id: math141, label: MATH141 Calculus II, match: MATH141, courses: 1 }
+    - { id: cmsc131, label: CMSC131 (or 133/141), match: [CMSC131, CMSC133, CMSC141], courses: 1, note: "Exemption exam: waive" }
+    - { id: cmsc132, label: CMSC132 (or 142), match: [CMSC132, CMSC142], courses: 1, note: "Exemption exam: waive" }
+    - CMSC216
+    - CMSC250
+    - CMSC330
+    - CMSC351
+    - { id: stat, label: STAT4xx (prereq ≥ MATH141), match: $STAT4XX, courses: 1 }
+    - { id: mathstat, label: MATH/AMSC/STAT (prereq ≥ MATH141), match: $MATHSTAT, courses: 1 }
+  LINEAR_ALGEBRA_SLOT: { label: Linear algebra (MATH240/461/341), match: $LINEAR_ALGEBRA }
+
+programs:
+  - id: cs-general
+    name: Computer Science Major (General Track)
+    buckets:
+      - ...$LOWER
+      - { id: areas, label: 5 CMSC 400-level area courses, match: $AREA_ANY, choose: 5 }
+      - { id: electives, label: Upper-level CMSC electives (6 cr), match: $UPPER_CMSC_ELECTIVE, credits: 6 }
+      - $ULC
+    constraints:
+      - { kind: minFrom, id: area5, label: 5 distributive-area courses, buckets: [areas], match: $AREA_ANY, courses: 5 }
+      - { kind: distinct, id: areas3, label: Areas covered (≥ 3), buckets: [areas], groups: $AREAS, min: 3 }
+      - { kind: maxEach, id: "max-{id}", label: "≤ 3 from {label}", buckets: [areas], groups: $AREAS, courses: 3 }
+      - { kind: maxFrom, id: stic, label: ≤ 3 credits of 1-credit STICs (388/389/398), buckets: [electives], match: $STIC, credits: 3 }
+
+  - id: cs-cyber
+    name: Computer Science Major (Cybersecurity)
+    buckets:
+      - ...$LOWER
+      - CMSC414
+      - CMSC456
+      - id: cyber4
+        label: 4 of CMSC411/412/417/430/431/433/451
+        match: [CMSC411, CMSC412, CMSC417, CMSC430, CMSC431, CMSC433, CMSC451]
+        choose: 4
+      - { id: electives, label: Upper-level CMSC electives (3 cr), match: $UPPER_CMSC_ELECTIVE, credits: 3 }
+      - $ULC
+    constraints:
+      - { kind: minFrom, id: area5, label: 5 distributive-area courses, buckets: [cmsc414, cmsc456, cyber4, electives], match: $AREA_ANY, courses: 5 }
+      - { kind: distinct, id: areas3, label: Areas covered (≥ 3), buckets: [cmsc414, cmsc456, cyber4, electives], groups: $AREAS, min: 3 }
+      - { kind: maxFrom, id: stic, label: ≤ 3 credits of STICs, buckets: [electives], match: $STIC, credits: 3 }
+    notes: ["...$COMMON_NOTES", Whether the ≤3-per-area cap applies in this track is unconfirmed.]
+    sources: ["...$SOURCES", https://undergrad.cs.umd.edu/cybersecurity-degree-requirements]
+
+  - id: cs-ds
+    name: Computer Science Major (Data Science)
+    buckets:
+      - ...$LOWER
+      - CMSC320
+      - CMSC422
+      - CMSC424
+      - { id: ds-a, label: 1 of CMSC420/421/423/425/426/427/470, match: [CMSC420, CMSC421, CMSC423, CMSC425, CMSC426, CMSC427, CMSC470], choose: 1 }
+      - { id: ds-b, label: 1 of CMSC451/454/460, match: [CMSC451, CMSC454, CMSC460], choose: 1 }
+      - id: ds-c
+        label: 2 of CMSC411/412/414/417/430/431/433/434/435/471
+        match: [CMSC411, CMSC412, CMSC414, CMSC417, CMSC430, CMSC431, CMSC433, CMSC434, CMSC435, CMSC471]
+        choose: 2
+      - $ULC
+    patch:
+      stat: { match: [STAT400, DATA400] }
+      mathstat: $LINEAR_ALGEBRA_SLOT
+    constraints:
+      - { kind: minFrom, id: area5, label: 5 distributive-area courses, buckets: [cmsc422, cmsc424, ds-a, ds-b, ds-c], match: $AREA_ANY, courses: 5 }
+      - { kind: distinct, id: areas3, label: Areas covered (≥ 3), buckets: [cmsc422, cmsc424, ds-a, ds-b, ds-c], groups: $AREAS, min: 3 }
+    sources: ["...$SOURCES", https://undergrad.cs.umd.edu/data-science-degree-requirements]
+
+  - id: cs-ml
+    name: Computer Science Major (Machine Learning)
+    buckets:
+      - ...$LOWER
+      - CMSC320
+      - CMSC421
+      - CMSC422
+      - id: ml2
+        label: 2 of CMSC426, 460/466/MATH401, 470, 472, 473, 474, 476
+        match: [CMSC426, CMSC460, CMSC466, AMSC460, AMSC466, MATH401, CMSC470, CMSC472, CMSC473, CMSC474, CMSC476]
+        choose: 2
+      - { id: electives, label: Upper-level CMSC electives (6 cr), match: $UPPER_CMSC_ELECTIVE, credits: 6 }
+      - $ULC
+    patch:
+      mathstat: $LINEAR_ALGEBRA_SLOT
+    constraints:
+      - { kind: minFrom, id: area5, label: 5 distributive-area courses, buckets: [cmsc421, cmsc422, ml2, electives], match: $AREA_ANY, courses: 5 }
+      - { kind: distinct, id: areas3, label: Areas covered (≥ 3), buckets: [cmsc421, cmsc422, ml2, electives], groups: $AREAS, min: 3 }
+      - { kind: maxFrom, id: stic, label: ≤ 3 credits of STICs, buckets: [electives], match: $STIC, credits: 3 }
+    sources: ["...$SOURCES", https://undergrad.cs.umd.edu/machine-learning-degree-requirements]
+
+  - id: cs-qi
+    name: Computer Science Major (Quantum Information)
+    buckets:
+      - ...$LOWER
+      - CMSC457
+      - PHYS467
+      - { id: qi4, label: 4 area courses, match: $AREA_ANY, choose: 4 }
+      - { id: electives, label: Upper-level CMSC electives (3 cr), match: $UPPER_CMSC_ELECTIVE, credits: 3 }
+      - $ULC
+    patch:
+      mathstat: $LINEAR_ALGEBRA_SLOT
+    constraints:
+      - { kind: minFrom, id: area5, label: 5 distributive-area courses, buckets: [cmsc457, qi4], match: $AREA_ANY, courses: 5 }
+      - { kind: distinct, id: areas3, label: Areas covered (≥ 3), buckets: [cmsc457, qi4], groups: $AREAS, min: 3 }
+      - { kind: maxEach, id: "max-{id}", label: "≤ 3 from {label}", buckets: [cmsc457, qi4], groups: $AREAS, courses: 3 }
+      - { kind: distinct, id: qi-non4, label: The 4 cover ≥ 2 areas other than Theory, buckets: [qi4], groups: $AREAS, omit: [A4], min: 2 }
+    sources: ["...$SOURCES", https://undergrad.cs.umd.edu/quantum-information-degree-requirements]

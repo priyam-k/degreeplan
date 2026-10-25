@@ -1,0 +1,38 @@
+# Robotics and Autonomous Systems minor — 2025-26 catalog (identical 2024-27). See docs/research/ras-minor.md.
+# Format: README.md in this folder.
+
+id: ras-minor
+name: Robotics and Autonomous Systems Minor
+short: RAS minor
+kind: minor
+buckets:
+  - { id: enme480, label: ENME480 Intro to Robotics, match: ENME480, courses: 1 }
+  - { id: enae450, label: ENAE450 Robotics Programming, match: ENAE450, courses: 1 }
+  - { id: enee467, label: ENEE467 Robotics Project Lab, match: ENEE467, courses: 1 }
+  - { id: cmsc477, label: CMSC477 Robotics Perception & Planning, match: CMSC477, courses: 1 }
+  - id: math
+    label: Supporting math (MATH240/341/461)
+    match: [MATH240, MATH341, MATH461]
+    courses: 1
+    # "Students may waive this requirement if they complete the course for another minor or major."
+    # A course satisfying it therefore never uses one of the 2 overlap slots.
+    noShare: true
+    note: Must be done before CMSC477. ENEE290/MATH243 are engineering-only; MATH340 only together with 341.
+  - id: electives
+    label: 2 electives (6 cr)
+    match:
+      - [ENME400, ENME410, ENME413, ENME435, ENME441, ENME461, ENME467, ENES467, ENME444, ENME476]
+      - [ENEE440, ENEE460, ENEE461, ENEE425, ENEE426, ENEE408I]
+      - [ENAE380, ENAE403, ENAE432, ENAE441, ENAE488O]
+      - [CMSC421, CMSC422, CMSC426, CMSC427, CMSC451, CMSC498E]
+    courses: 2
+    credits: 6
+    note: Most ENEE/ENAE/ENME electives are restricted to those majors; other electives possible with advisor approval (waive).
+notes:
+  - "Prerequisites before entry: MATH246 (or ENES221) and CMSC131 (or ENME202/ENAE202/ENEE150), C- or better."
+  - Core runs ENME480 → ENAE450 → ENEE467 → CMSC477 over four consecutive semesters (Fall start).
+  - C- or better in all minor and prerequisite courses; 2.0 minor GPA.
+  - At most 2 courses may count toward both a major and this minor (applied across both majors combined — conservative).
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/robotics-autonomous-systems-minor/
+  - https://robotics.umd.edu/minor

@@ -1,24 +1,25 @@
+// Every YAML file in this folder defines one or more programs; adding a degree is adding a file.
+// See README.md for the format and load.ts for how a file becomes a Program.
 import type { Program, SharingRule } from "../types";
-import { CS_PROGRAMS } from "./cs";
-import { MATH_PROGRAMS } from "./math";
-import { rasMinor } from "./ras";
-import { gened, university } from "./gened";
+import { loadProgramFile } from "./load";
 
-export const MAJORS: Program[] = [...CS_PROGRAMS, ...MATH_PROGRAMS];
-export const MINORS: Program[] = [rasMinor];
-export const ALWAYS: Program[] = [gened, university];
+const files = import.meta.glob<unknown>("./*.yaml", { eager: true, import: "default" });
+const loaded = Object.keys(files)
+  .sort()
+  .flatMap((f) => loadProgramFile(f.slice(2), files[f]));
+for (const [i, p] of loaded.entries())
+  if (loaded.findIndex((q) => q.id === p.id) !== i) throw new Error(`Two program files define the id "${p.id}"`);
+
+const ofKind = (...kinds: Program["kind"][]) => loaded.filter((p) => kinds.includes(p.kind));
+export const MAJORS: Program[] = ofKind("major");
+export const MINORS: Program[] = ofKind("minor");
+export const ALWAYS: Program[] = ofKind("gened", "university");
 export const ALL_PROGRAMS: Program[] = [...MAJORS, ...MINORS, ...ALWAYS];
 
 export const programById = (id: string) => ALL_PROGRAMS.find((p) => p.id === id);
 
 // Compact name for chips and buttons ("CS", "Math", "RAS minor").
-export function abbrev(p: Program): string {
-  if (p.family === "cs") return "CS";
-  if (p.family === "math") return "Math";
-  if (p.id === "ras-minor") return "RAS minor";
-  if (p.kind === "gened") return "GenEd";
-  return p.name.replace(/ Major| Minor/, "");
-}
+export const abbrev = (p: Program): string => p.short ?? p.name.replace(/ Major| Minor/, "");
 
 const majorIds = MAJORS.map((p) => p.id);
 

@@ -1,0 +1,34 @@
+# UMD General Education (2025-26). See docs/research/gened-and-university.md.
+# Format: README.md in this folder.
+
+id: gened
+name: General Education
+short: GenEd
+kind: gened
+buckets:
+  # Fundamental Studies. Each has its own use-group: a course coded "FSAR, FSMA" satisfies both.
+  - { id: fsaw, label: FSAW Academic Writing, gened: [FSAW], courses: 1, useGroup: fs-FSAW }
+  - { id: fspw, label: FSPW Professional Writing, gened: [FSPW], courses: 1, useGroup: fs-FSPW }
+  - { id: fsoc, label: FSOC Oral Communication, gened: [FSOC], courses: 1, useGroup: fs-FSOC }
+  - { id: fsma, label: FSMA Math, gened: [FSMA], courses: 1, useGroup: fs-FSMA }
+  - { id: fsar, label: FSAR Analytic Reasoning, gened: [FSAR], courses: 1, useGroup: fs-FSAR }
+  # Distributive Studies share one use-group: one DS slot per course.
+  - { id: ns-lab, label: DSNL Natural Science Lab, gened: [DSNL], choose: 1, useGroup: ds }
+  - { id: ns, label: DSNS/DSNL second Natural Science, gened: [DSNS, DSNL], choose: 1, useGroup: ds }
+  - { id: dshs, label: DSHS History & Social Sciences (×2), gened: [DSHS], choose: 2, useGroup: ds }
+  - { id: dshu, label: DSHU Humanities (×2), gened: [DSHU], choose: 2, useGroup: ds }
+  - { id: dssp, label: DSSP Scholarship in Practice (×2), gened: [DSSP], choose: 2, useGroup: ds }
+  - { id: scis, label: "SCIS Big Question (×2, at UMD, on a DS course)", match: "@umd", gened: [SCIS], choose: 2, useGroup: scis }
+  - { id: dvup, label: DVUP Understanding Plural Societies, gened: [DVUP], choose: 1, useGroup: dv }
+  - { id: dv2, label: "Second diversity: DVUP or DVCC", gened: [DVUP, DVCC], choose: 1, useGroup: dv }
+constraints:
+  - { kind: within, id: scis-ds, label: Big Question courses also fill a DS slot, bucket: scis, of: [ns-lab, ns, dshs, dshu, dssp] }
+  - { kind: maxFrom, id: ap6, label: ≤ 6 of 8 DS slots from AP/IB, buckets: [ns-lab, ns, dshs, dshu, dssp], match: "@ap", courses: 6 }
+  - { kind: outsideMajors, id: dssp-outside, label: ≥ 1 DSSP outside all major requirements, buckets: [dssp], min: 1 }
+notes:
+  - A course with several DS codes fills only one DS slot; SCIS and DVUP/DVCC overlay on DS courses.
+  - "Lab pairs: a lecture's DSNL may require its lab in the same term (e.g. PHYS161+PHYS275) — check the GenEd column."
+  - FSAW and FSMA must be attempted by 30 credits and completed by 60. FSAW needs C-; GenEd courses can't be P/F.
+sources:
+  - https://gened.umd.edu/students/four-categories-gen-ed
+  - https://academiccatalog.umd.edu/undergraduate/general-education/

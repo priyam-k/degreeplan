@@ -26,6 +26,14 @@ export function range(dept: string, lo: number, hi: number): Matcher {
   };
 }
 
+// Any course numbered lo..hi in any department.
+export function level(lo: number, hi: number): Matcher {
+  return (code) => {
+    const p = parseCode(code);
+    return !!p && p.num >= lo && p.num <= hi;
+  };
+}
+
 // A topics course that only counts when taken in one of `terms` ("Fall 2025", ...).
 export function topic(code: string, terms: string[]): Matcher {
   const set = new Set(terms);
@@ -33,6 +41,7 @@ export function topic(code: string, terms: string[]): Matcher {
 }
 
 export const atUMD: Matcher = (_c, ctx) => !ctx.transfer;
+export const apCredit: Matcher = (_c, ctx) => ctx.ap;
 
 export function anyOf(...ms: Matcher[]): Matcher {
   return (code, ctx) => ms.some((m) => m(code, ctx));

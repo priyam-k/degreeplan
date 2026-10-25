@@ -4,11 +4,13 @@ import type { Highs } from "../engine/solver";
 import type { CatalogCourse, Plan, PlanCourse, Semester } from "../types";
 import type { Catalog } from "../catalog";
 import { TRANSFER_TERM } from "../transcript";
-import { csGeneral } from "../programs/cs";
-import { rasMinor } from "../programs/ras";
 import { applyChange, auditPlan, buildTimeline, checkPlacement, offeredIn, prereqAt, projector, redundantConstraint, suggestions, unmetNeeds, whatIf } from "./analysis";
 import { nextScenarioName, newWorkspace, parseImport } from "../workspace";
 import { formatReq } from "../prereqs";
+import { programById } from "../programs";
+
+const csGeneral = programById("cs-general")!;
+const rasMinor = programById("ras-minor")!;
 
 let highs: Highs;
 beforeAll(async () => {

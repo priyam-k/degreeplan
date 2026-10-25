@@ -107,6 +107,7 @@ export type ProgramConstraint =
 export interface Program {
   id: string;
   name: string;
+  short?: string; // compact name for chips and buttons ("CS", "RAS minor")
   kind: "major" | "minor" | "gened" | "university";
   family?: string; // programs in the same family are mutually exclusive tracks (e.g. CS tracks)
   buckets: Bucket[];

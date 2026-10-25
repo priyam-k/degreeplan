@@ -66,7 +66,7 @@ All encodings follow the 2025-26 catalog. The research found no requirement chan
 
 ## How the audit works
 
-The requirement definitions live in `src/programs/*.ts`. Each requirement is written as one of the following:
+The requirements live in data files, one per program: `src/programs/*.yaml`. To add a major, minor or track, add a file there. [src/programs/README.md](src/programs/README.md) describes the format. Each requirement is written as one of the following:
 - a **bucket**: courses matching a filter, with a minimum course and/or credit count;
 - a **constraint** over buckets, of one of these kinds:
   - `minFrom` / `maxFrom`;

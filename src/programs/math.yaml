@@ -1,0 +1,144 @@
+# UMD Mathematics B.S. — 2025-26 catalog (upper-level rules identical in 2026-27). See docs/research/math-major.md.
+# Format: README.md in this folder.
+
+kind: major
+short: Math
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/mathematics/mathematics-major/
+  - https://www-math.umd.edu/course-requirements.html
+
+defs:
+  NOTES:
+    - C- or better in every major course; 2.0 major GPA.
+    - MATH461, 478, 480-484, 487 and STAT464 never count as upper-level courses.
+    - Whether CMSC131/132 may count for both programming and Sequence 4 is unconfirmed — this planner allows it.
+    - AMSC/CMSC460/466 are cross-listed; credit is granted for only one of the four.
+
+  # 400+ MATH/AMSC/STAT (grad courses count), minus courses that never count toward the major.
+  # CMSC456/460/466/475 are the same courses as MATH456/AMSC460/AMSC466/MATH475 (cross-listed).
+  UPPER:
+    - any: [MATH400-899, AMSC400-899, STAT400-899]
+      except: [MATH461, MATH470, MATH478, MATH480, MATH481, MATH482, MATH483, MATH484, MATH487, STAT464]
+    - [CMSC456, CMSC460, CMSC466, CMSC475]
+  NUMERICAL: [AMSC460, AMSC466, CMSC460, CMSC466]
+
+  LOWER:
+    - { id: math140, label: MATH140 Calculus I, match: MATH140, courses: 1 }
+    - { id: math141, label: MATH141 Calculus II, match: MATH141, courses: 1 }
+    - { id: math240, label: MATH240 Linear Algebra (or 341/461), match: [MATH240, MATH341, MATH461], courses: 1 }
+    - { id: math241, label: MATH241 Calculus III (or 340), match: [MATH241, MATH340], courses: 1 }
+    - id: math310
+      label: MATH310 Intro to Proof
+      match: MATH310
+      courses: 1
+      note: "Dept exemption (A in 240 & 241, B in 340 & 341, or B in CMSC250): waive"
+    # own use-group: MATH341 also covers 240; MATH462 may also count upper-level
+    - { id: math246, label: One of MATH246/436/462 (or 341), match: [MATH246, MATH436, MATH462, MATH341], courses: 1, useGroup: l6 }
+    - id: programming
+      label: Programming (CMSC106/131/132, ENAE202, ENEE150, PHYS265)
+      match: [CMSC106, CMSC131, CMSC132, ENAE202, ENEE150, PHYS265]
+      courses: 1
+
+  # Supporting three-course sequences (2025-26 and 2026-27 variants both accepted).
+  # Traditional and Statistics accept 1-8; Applied accepts all of them.
+  SEQUENCES_1_8:
+    - { label: "1: PHYS161, 260/261, 270/271", slots: [PHYS161, PHYS260, PHYS261, PHYS270, PHYS271] }
+    - { label: "2: PHYS171, 272, 273", slots: [PHYS171, PHYS272, PHYS273] }
+    - { label: "3: ENES102, PHYS161, ENES220", slots: [ENES102, PHYS161, ENES220] }
+    - { label: "4: CMSC131, 132, 216", slots: [CMSC131, CMSC132, CMSC216] }
+    - { label: "5: CHEM146/177, 237, 247", slots: [CHEM146, CHEM177, CHEM237, CHEM247] }
+    - { label: "6: CHEM131/132, 231/232, 241/242", slots: [CHEM131, CHEM132, CHEM231, CHEM232, CHEM241, CHEM242] }
+    - { label: "7: ECON200, 201, 305/306/325/326", slots: [ECON200, ECON201, [ECON305, ECON306, ECON325, ECON326]] }
+    - { label: "8: BMGT220, 221, 340", slots: [BMGT220, BMGT221, BMGT340] }
+  SEQUENCES:
+    - ...$SEQUENCES_1_8
+    - { label: "9: BSCI170, 160, 180 + CHEM131/132", slots: [BSCI170, BSCI160, [BSCI180, BSCI171], CHEM131, CHEM132] }
+    - { label: "9: BSCI170, 160, 180 + CHEM146/177", slots: [BSCI170, BSCI160, [BSCI180, BSCI171], CHEM146, CHEM177] }
+    - { label: "10: ASTR130, 131, 232", slots: [ASTR130, ASTR131, ASTR232] }
+    - { label: "10 (2025-26): ASTR120, 121, PHYS161/171", slots: [ASTR120, ASTR121, [PHYS161, PHYS171]] }
+    - label: "11: GEOL100 (+110), two of 322/340/341/375"
+      slots: [GEOL100, { match: [GEOL322, GEOL340, GEOL341, GEOL375], count: 2 }]
+    - label: "12: AOSC200/201 + two 400-level AOSC"
+      slots: [AOSC200, AOSC201, { label: two 400-level AOSC, match: AOSC400-499, count: 2 }]
+
+  # May reuse the programming course (unconfirmed; see notes), hence its own use-group.
+  SUPPORT: { id: support, label: Supporting sequence, match: { slotOf: $SEQUENCES }, useGroup: support }
+  SUPPORT_1_8: { id: support, label: Supporting sequence, match: { slotOf: $SEQUENCES_1_8 }, useGroup: support }
+
+programs:
+  - id: math-applied
+    name: Mathematics Major (Applied Track)
+    buckets:
+      - ...$LOWER
+      - { id: a1, label: MATH410 Advanced Calculus I, match: MATH410, choose: 1 }
+      - { id: a2, label: STAT410, match: [STAT410, SURV410], choose: 1 }
+      - { id: a3, label: Another STAT ≥ 400 (not 400/410/464), match: { any: [STAT400-899], except: [STAT400, STAT410, STAT464] }, choose: 1 }
+      - { id: a4, label: One of MATH401/405/423, match: [MATH401, MATH405, MATH423], choose: 1 }
+      - { id: a5, label: AMSC460 or AMSC466 (CMSC cross-list ok), match: $NUMERICAL, choose: 1 }
+      - id: a6
+        label: One of MATH416/420/424/431/452/456/462/463/464/475
+        match: [MATH416, MATH420, MATH424, MATH431, MATH452, MATH456, MATH462, MATH463, MATH464, MATH475, AMSC420, AMSC452, CMSC456, CMSC475]
+        choose: 1
+      - { id: electives, label: Upper-level electives (to reach 8 courses), match: $UPPER, courses: 2 }
+      - $SUPPORT
+    constraints:
+      - kind: anySet
+        id: depth
+        label: "Depth: a one-year sequence"
+        buckets: [a1, a2, a3, a4, a5, a6, electives]
+        options:
+          - slots: [MATH410, MATH411]
+          - slots: [MATH410, MATH463]
+          - slots: [MATH416, MATH464]
+          - slots: [MATH462, MATH463]
+          - slots: [STAT410, STAT420]
+      - { kind: minFrom, id: umd4, label: ≥ 4 upper-level courses taken at UMD, buckets: [a1, a2, a3, a4, a5, a6, electives], match: "@umd", courses: 4 }
+      - { kind: anySet, id: support-seq, label: Complete one supporting sequence, buckets: [support], options: $SEQUENCES }
+    notes: ["...$NOTES", MATH462 may fill both the 246-slot and an upper-level slot (dept rule).]
+
+  - id: math-traditional
+    name: Mathematics Major (Traditional Track)
+    buckets:
+      - ...$LOWER
+      - { id: t1, label: MATH410, match: MATH410, choose: 1 }
+      - { id: t2, label: One of MATH401/403/405/423, match: [MATH401, MATH403, MATH405, MATH423], choose: 1 }
+      - { id: t3, label: AMSC460 or AMSC466, match: $NUMERICAL, choose: 1 }
+      - { id: t4, label: STAT ≥ 400 (not 464), match: { any: [STAT400-899], except: STAT464 }, choose: 1 }
+      - { id: electives, label: Upper-level electives (to reach 8 courses), match: $UPPER, courses: 4 }
+      - $SUPPORT_1_8
+    constraints:
+      - kind: anySet
+        id: depth
+        label: "Depth: a one-year sequence"
+        buckets: [t1, t2, t3, t4, electives]
+        options:
+          - slots: [MATH410, MATH411]
+          - slots: [MATH410, MATH463]
+          - slots: [MATH403, MATH404]
+          - slots: [MATH403, MATH405]
+          - slots: [STAT410, STAT420]
+      - { kind: minFrom, id: umd4, label: ≥ 4 upper-level courses taken at UMD, buckets: [t1, t2, t3, t4, electives], match: "@umd", courses: 4 }
+      - { kind: anySet, id: support-seq, label: Complete one supporting sequence, buckets: [support], options: $SEQUENCES_1_8 }
+    notes: ["...$NOTES", Two approved outside 400-level courses may replace one elective (Undergraduate Office approval).]
+
+  - id: math-stats
+    name: Mathematics Major (Statistics Track)
+    buckets:
+      - ...$LOWER
+      - { id: s1, label: MATH410, match: MATH410, choose: 1 }
+      - { id: s2, label: STAT410, match: [STAT410, SURV410], choose: 1 }
+      - { id: s3, label: STAT430, match: STAT430, choose: 1 }
+      - { id: s4, label: AMSC460 or AMSC466, match: $NUMERICAL, choose: 1 }
+      - { id: s5, label: MATH401/405/423, match: [MATH401, MATH405, MATH423], choose: 1 }
+      - { id: s6, label: STAT401 or STAT420, match: [STAT401, STAT420], choose: 1 }
+      - id: s78
+        label: "Two of: STAT ≥ 400 (not 464), MATH411/420/424/464, BIOM402"
+        match:
+          - { any: [STAT400-899], except: STAT464 }
+          - [MATH411, MATH420, MATH424, MATH464, BIOM402]
+        choose: 2
+      - $SUPPORT_1_8
+    constraints:
+      - { kind: minFrom, id: umd4, label: ≥ 4 upper-level courses taken at UMD, buckets: [s1, s2, s3, s4, s5, s6, s78], match: "@umd", courses: 4 }
+      - { kind: anySet, id: support-seq, label: Complete one supporting sequence, buckets: [support], options: $SEQUENCES_1_8 }
+    notes: $NOTES

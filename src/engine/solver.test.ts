@@ -1,13 +1,15 @@
 import { beforeAll, describe, expect, test } from "vitest";
 import highsLoader from "highs";
 import { solve, type Highs } from "./solver";
-import { csGeneral } from "../programs/cs";
-import { mathApplied } from "../programs/math";
-import { rasMinor } from "../programs/ras";
-import { gened, university } from "../programs/gened";
-import { SHARING_RULES } from "../programs";
+import { SHARING_RULES, programById } from "../programs";
 import type { AuditResult, Program, SolverCourse } from "../types";
 import { TRANSFER_TERM } from "../transcript";
+
+const csGeneral = programById("cs-general")!;
+const mathApplied = programById("math-applied")!;
+const rasMinor = programById("ras-minor")!;
+const gened = programById("gened")!;
+const university = programById("university")!;
 
 let highs: Highs;
 beforeAll(async () => {

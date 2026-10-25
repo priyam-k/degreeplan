@@ -1,0 +1,18 @@
+# UMD university-wide degree rules (2025-26). See docs/research/gened-and-university.md.
+# Format: README.md in this folder.
+
+id: university
+name: University Requirements
+kind: university
+buckets:
+  - { id: total, label: 120 credits total, match: "*", credits: 120, useGroup: total, noShare: true }
+  - { id: residency, label: 30 credits at UMD, match: "@umd", credits: 30, useGroup: res, noShare: true }
+  - { id: upper, label: 15 upper-level (300+) credits at UMD, match: { all: ["@umd", "*300-999"] }, credits: 15, useGroup: upper, noShare: true }
+constraints:
+  - { kind: maxFrom, id: plc60, label: ≤ 60 AP/IB credits count toward the degree, buckets: [total], match: "@ap", credits: 60 }
+notes:
+  - Normally the final 30 credits must be taken at UMD; 12 of the 15 upper-level credits must be in the major.
+  - GPA ≥ 2.0 overall and in each major and minor.
+  - CMNS caps semester load at 17 credits (fall/spring) without approval.
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/registration-academic-requirements-regulations/degree-information/
