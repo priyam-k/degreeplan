@@ -59,10 +59,10 @@ export function TopBar(p: Props) {
         </div>
         <ProgramPicker plan={p.plan} audit={p.audit} setPlan={p.setPlan} />
         <PlanSwitcher ws={p.ws} activeName={active.name} ops={p.scenarioOps} />
-        <button className="btn primary" onClick={p.onImport}>
-          Import transcript
+        <button className="btn primary tb-import" onClick={p.onImport}>
+          Import<span className="hide-sm"> transcript</span>
         </button>
-        <Popover button={<Icon.more />} buttonClassName="icon-btn" buttonTitle="More" align="end" width={230}>
+        <Popover button={<Icon.more />} buttonClassName="icon-btn tb-more" buttonTitle="More" align="end" width={230}>
           {(close) => (
             <div className="menu">
               <div className="menu-label">Appearance</div>
@@ -153,10 +153,10 @@ function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResul
     <Popover
       button={
         <>
-          {label} <Icon.chevron />
+          <span className="tb-label">{label}</span> <Icon.chevron />
         </>
       }
-      buttonClassName="btn"
+      buttonClassName="btn tb-programs"
       align="end"
       width={320}
     >
@@ -207,10 +207,10 @@ function PlanSwitcher({ ws, activeName, ops }: { ws: Workspace; activeName: stri
     <Popover
       button={
         <>
-          <span className="muted">Plan</span> {activeName} <Icon.chevron />
+          <span className="muted hide-sm">Plan</span> <span className="tb-label">{activeName}</span> <Icon.chevron />
         </>
       }
-      buttonClassName="btn"
+      buttonClassName="btn tb-plan"
       align="end"
       width={280}
       onOpenChange={(o) => !o && setEditing(null)}

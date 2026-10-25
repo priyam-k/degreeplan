@@ -223,6 +223,7 @@ select {
 
 /* ------------------------------------------------------------------ popover / menus / toast */
 .popover {
+  max-width: calc(100vw - 16px);
   position: fixed; z-index: 50; border-radius: var(--radius-md); padding: 6px; overflow: auto;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
@@ -358,7 +359,7 @@ select {
 .year-actions { margin-left: auto; display: flex; gap: 4px; }
 .caret { display: inline-flex; color: var(--ink-muted); transition: transform var(--fast) var(--ease); }
 .caret.open { transform: rotate(90deg); }
-.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); }
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr)); }
 .terms > .semester { border-bottom: 1px solid var(--line); margin-bottom: -1px; }
 .terms.one { grid-template-columns: 1fr; }
 .add-year {
@@ -780,12 +781,12 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; user-select:
 .req-card { padding: 16px 18px; }
 .req-card h3 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
 .req-card.core h3 { margin-bottom: 10px; }
-.core-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 6px 20px; }
+.core-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 6px 20px; }
 .core-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); min-height: 40px; }
 .cr-label { font-size: 13px; color: var(--ink-muted); }
 .core-row.todo .cr-label { color: var(--ink); font-weight: 500; }
 .cr-slot { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
-.req-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.req-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 14px; }
 .bucket { display: flex; flex-direction: column; gap: 8px; }
 .bucket.todo { box-shadow: var(--shadow-card), inset 0 0 0 1px var(--prog-line); }
 .rc-head { display: flex; align-items: flex-start; gap: 8px; }
@@ -857,4 +858,44 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; user-select:
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ------------------------------------------------------------------ phones */
+.tb-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 720px) {
+  /* top bar: brand, undo and the menu on one row; the view switcher; then programs, plan and import */
+  /* three rows is too tall to keep pinned on a phone */
+  .topbar { position: relative; flex-wrap: wrap; gap: 8px; padding: 8px 12px 10px; }
+  .topbar-right { display: contents; }
+  .brand { order: 0; flex: 1; }
+  .undo-group { order: 1; margin: 0; }
+  .tb-more { order: 2; }
+  .segmented { order: 3; width: 100%; }
+  .segmented button { flex: 1; padding: 0 6px; }
+  .tb-programs { order: 4; flex: 1; min-width: 0; }
+  .tb-plan { order: 5; min-width: 0; max-width: 34%; }
+  .tb-import { order: 6; }
+  .hide-sm { display: none; }
+
+  .plan-main, .degree-main, .flow-main { padding: 12px 12px 72px; gap: 12px; }
+  .compare-main { padding: 12px 12px 72px; }
+  .summary { padding: 14px 16px; gap: 10px; }
+  .year-head { flex-wrap: wrap; padding: 10px 14px; }
+  .year-actions { margin-left: 0; }
+  /* a semester's table scrolls inside its card rather than widening the page */
+  .semester { overflow-x: auto; border-right: none; }
+  .semester table { min-width: 580px; }
+  .program-list { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  .program-card { flex: none; width: 240px; }
+  .pl-hint { display: none; }
+  .pd-head { padding: 16px; }
+  .pd-title h2 { font-size: 22px; }
+  .pd-finish { margin-left: 0; }
+  .flow-toolbar { padding: 10px; }
+  .flow-search { width: 100%; }
+  .flow-search .course-search { flex: 1; width: auto; }
+  .flow-tools { margin-left: 0; }
+  .flow-scroll { max-height: 70vh; }
+  .flow-side, .audit { position: static; max-height: none; }
+  .modal { padding: 18px; border-radius: 20px; }
 }

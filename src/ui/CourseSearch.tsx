@@ -93,6 +93,7 @@ export function CourseSearch({ catalog, onPick, onCancel, initial = "", placehol
   };
 
   const below = rect ? window.innerHeight - rect.bottom : 0;
+  const w = Math.min(420, window.innerWidth - 16);
   const up = rect && below < 260 && rect.top > below;
   return (
     <>
@@ -140,8 +141,8 @@ export function CourseSearch({ catalog, onPick, onCancel, initial = "", placehol
             ref={list}
             className="search-results popover"
             style={{
-              left: Math.min(rect.left, window.innerWidth - 428),
-              width: 420,
+              left: Math.max(8, Math.min(rect.left, window.innerWidth - w - 8)),
+              width: w,
               ...(up ? { bottom: window.innerHeight - rect.top + 4 } : { top: rect.bottom + 4 }),
             }}
             onMouseDown={(e) => e.preventDefault()}
