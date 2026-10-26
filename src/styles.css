@@ -479,7 +479,8 @@ tr:hover .grip { opacity: 1; }
 .gened-help { font-size: 11px; color: var(--ink-muted); padding: 0 8px 6px; }
 .chips { display: flex; flex-wrap: wrap; gap: 3px; padding: 6px 4px; }
 .chip {
-  display: inline-flex; align-items: center; gap: 2px; font-size: 11px; line-height: 1.3; padding: 2px 7px; border-radius: 999px;
+  /* radius = half a one-line chip's height: a pill on one line, a rounded box when the label wraps */
+  display: inline-flex; align-items: center; gap: 2px; font-size: 11px; line-height: 1.3; padding: 3px 8px; border-radius: 10px;
   font-weight: 500; max-width: 100%; overflow-wrap: anywhere;
 }
 .chip-major1 { background: var(--major1-bg); color: var(--major1); }
