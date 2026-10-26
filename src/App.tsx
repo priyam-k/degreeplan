@@ -188,6 +188,14 @@ export default function App() {
           }}
         />
       )}
+      <footer className="site-foot">
+        <span>© 2026 Priyam Kabra</span>
+        <a href="https://github.com/priyam-k/degreeplan" target="_blank" rel="noreferrer">
+          Source on GitHub
+        </a>
+        <span>MIT License</span>
+        <span>Not affiliated with the University of Maryland</span>
+      </footer>
       <Toast toast={toast} onUndo={undo} onClose={closeToast} />
     </div>
   );

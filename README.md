@@ -126,3 +126,7 @@ Any requirement can be marked **waive** in the audit panel (hover the row) for e
   - whether the minor overlap limit applies per major or in total;
   - whether CMSC131/132 can count for both Math programming and Sequence 4;
   - whether CMSC-numbered cross-lists (e.g. CMSC460) fill the Math numerical slot.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The bundled fonts (Mona Sans, Geist Mono) are under the SIL Open Font License; their licenses are in `src/fonts/`. Course data comes from [umd.io](https://umd.io) and [Jupiterp](https://jupiterp.com). This project isn't affiliated with the University of Maryland.
