@@ -6,7 +6,7 @@ import type { SetPlan } from "../App";
 import { ENTRIES, abbrev, displayName, familyKey, normalizeName, programById, trackName, type ProgramEntry } from "../programs";
 import { ConfirmButton, Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
-import { ACCENTS, GROUNDS, useTheme } from "../ui/theme";
+import { ACCENTS, GROUNDS, useTheme, type Theme } from "../ui/theme";
 import { useSpringIndicator } from "../ui/useSpringIndicator";
 
 export type View = "degree" | "plan" | "flow" | "compare";
@@ -69,27 +69,7 @@ export function TopBar(p: Props) {
           {(close) => (
             <div className="menu">
               <div className="menu-label">Appearance</div>
-              <div className="theme-pick">
-                <div className="theme-grounds">
-                  {GROUNDS.map((g) => (
-                    <button key={g.id} className={theme.ground === g.id ? "on" : ""} onClick={() => setTheme({ ...theme, ground: g.id })}>
-                      {g.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="theme-accents">
-                  {ACCENTS.map((a) => (
-                    <button
-                      key={a}
-                      className={`swatch swatch-${a} ${theme.accent === a ? "on" : ""}`}
-                      title={`${a[0].toUpperCase()}${a.slice(1)} accent`}
-                      aria-label={`${a} accent`}
-                      aria-pressed={theme.accent === a}
-                      onClick={() => setTheme({ ...theme, accent: a })}
-                    />
-                  ))}
-                </div>
-              </div>
+              <AppearancePicker theme={theme} setTheme={setTheme} />
               <div className="menu-sep" />
               <button
                 onClick={() => {
@@ -236,6 +216,43 @@ function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResul
         <p className="pp-note">GenEd and university requirements are always checked.</p>
       </div>
     </Popover>
+  );
+}
+
+// Light/dark/auto and the accent, each with a springy selection like the view switcher.
+function AppearancePicker({ theme, setTheme }: { theme: Theme; setTheme: (t: Theme) => void }) {
+  const grounds = useRef<HTMLDivElement>(null);
+  const accents = useRef<HTMLDivElement>(null);
+  const groundThumb = useSpringIndicator(grounds, theme.ground);
+  const ring = useSpringIndicator(accents, theme.accent, {
+    press: 0.5,
+    onTarget: (item, ind) => ind.style.setProperty("--sw", getComputedStyle(item).getPropertyValue("--sw")),
+  });
+  return (
+    <div className="theme-pick">
+      <div className="theme-grounds" ref={grounds}>
+        <span className="theme-thumb" ref={groundThumb} aria-hidden />
+        {GROUNDS.map((g) => (
+          <button key={g.id} data-key={g.id} className={theme.ground === g.id ? "on" : ""} aria-pressed={theme.ground === g.id} onClick={() => setTheme({ ...theme, ground: g.id })}>
+            {g.label}
+          </button>
+        ))}
+      </div>
+      <div className="theme-accents" ref={accents}>
+        <span className="swatch-ring" ref={ring} aria-hidden />
+        {ACCENTS.map((a) => (
+          <button
+            key={a}
+            data-key={a}
+            className={`swatch swatch-${a} ${theme.accent === a ? "on" : ""}`}
+            title={`${a[0].toUpperCase()}${a.slice(1)} accent`}
+            aria-label={`${a} accent`}
+            aria-pressed={theme.accent === a}
+            onClick={() => setTheme({ ...theme, accent: a })}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 

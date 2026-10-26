@@ -1,7 +1,7 @@
 // Program-centric view: pick a major, minor, GenEd or university requirements and see each
 // requirement as slots filled by your courses (colored by status), what's still open, the
 // soonest courses that would fill it, and the rules that span requirements.
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import type { AuditResult, BucketResult, Plan, PlanCourse, Program, ProgramResult, ConstraintResult } from "../types";
 import type { Catalog } from "../catalog";
 import type { SetPlan } from "../App";
@@ -25,6 +25,7 @@ import { shortTerm } from "../flow/FlowView";
 import { CourseSearch } from "../ui/CourseSearch";
 import { Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
+import { useSpringIndicator } from "../ui/useSpringIndicator";
 import { CourseInfo } from "./CourseInfo";
 import { STATUS_LABEL } from "./SemesterTable";
 
@@ -41,6 +42,34 @@ const SEL_KEY = "degreeplan.degreeProgram";
 type Seg = "done" | "inprogress" | "planned" | "open";
 const segOf = (c?: PlanCourse): Seg =>
   !c ? "open" : c.status === "completed" || c.status === "transfer" ? "done" : c.status === "inprogress" ? "inprogress" : "planned";
+
+// The programs down the side; the selection ring glides between cards.
+function ProgramList({ results, selected, onSelect, courseById }: { results: ProgramResult[]; selected: string; onSelect: (id: string) => void; courseById: Map<string, PlanCourse> }) {
+  const list = useRef<HTMLElement>(null);
+  const ring = useSpringIndicator(list, selected, { press: 0.4 });
+  return (
+    <nav className="program-list" ref={list}>
+      <span className="program-ring" ref={ring} aria-hidden />
+      {results.map((r) => {
+        const u = programUnits(r, courseById);
+        const total = u.done + u.inprogress + u.planned + u.open;
+        return (
+          <button key={r.program.id} data-key={r.program.id} className={`program-card ${r.program.id === selected ? "on" : ""}`} aria-current={r.program.id === selected ? "true" : undefined} onClick={() => onSelect(r.program.id)}>
+            <Ring u={u} />
+            <span className="pc-text">
+              <span className="pc-name">{shortName(r.program)}</span>
+              <span className="pc-sub">{r.program.name.match(/\((.*)\)/)?.[1] ?? ({ major: "Major", minor: "Minor", gened: "General Education", university: "Graduation rules" } as const)[r.program.kind]}</span>
+              <span className={`pc-status ${r.satisfied ? "ok" : "todo"}`}>
+                {u.open === 0 ? (r.satisfied ? (u.planned + u.inprogress ? "Complete with your plan" : "Complete") : "Check the rules") : `${Math.round(u.open)} of ${Math.round(total)} still open`}
+              </span>
+            </span>
+          </button>
+        );
+      })}
+      <p className="pl-hint">Change programs from the menu at the top right.</p>
+    </nav>
+  );
+}
 
 // Progress of one requirement in "units" (courses, or 3-credit chunks for credit requirements).
 function bucketUnits(b: BucketResult, courseById: Map<string, PlanCourse>): Record<Seg, number> {
@@ -108,25 +137,7 @@ export function DegreeView({ plan, programs, catalog, audit, setPlan, onFlow }: 
 
   return (
     <main className="degree-main">
-      <nav className="program-list">
-        {results.map((r) => {
-          const u = programUnits(r, courseById);
-          const total = u.done + u.inprogress + u.planned + u.open;
-          return (
-            <button key={r.program.id} className={`program-card ${r.program.id === sel.program.id ? "on" : ""}`} onClick={() => select(r.program.id)}>
-              <Ring u={u} />
-              <span className="pc-text">
-                <span className="pc-name">{shortName(r.program)}</span>
-                <span className="pc-sub">{r.program.name.match(/\((.*)\)/)?.[1] ?? ({ major: "Major", minor: "Minor", gened: "General Education", university: "Graduation rules" } as const)[r.program.kind]}</span>
-                <span className={`pc-status ${r.satisfied ? "ok" : "todo"}`}>
-                  {u.open === 0 ? (r.satisfied ? (u.planned + u.inprogress ? "Complete with your plan" : "Complete") : "Check the rules") : `${Math.round(u.open)} of ${Math.round(total)} still open`}
-                </span>
-              </span>
-            </button>
-          );
-        })}
-        <p className="pl-hint">Change programs from the menu at the top right.</p>
-      </nav>
+      <ProgramList results={results} selected={sel.program.id} onSelect={select} courseById={courseById} />
       <ProgramDetail key={sel.program.id} r={sel} audit={audit} setPlan={setPlan} onFlow={onFlow} {...ctx} />
     </main>
   );
