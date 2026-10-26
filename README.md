@@ -129,4 +129,4 @@ Any requirement can be marked **waive** in the audit panel (hover the row) for e
 
 ## License
 
-MIT, see [LICENSE](LICENSE). The bundled fonts (Mona Sans, Geist Mono) are under the SIL Open Font License; their licenses are in `src/fonts/`. Course data comes from [umd.io](https://umd.io) and [Jupiterp](https://jupiterp.com). This project isn't affiliated with the University of Maryland.
+Copyright © 2026 Priyam Kabra. Licensed under the GNU General Public License v3.0 or later, see [LICENSE](LICENSE). You may use, change and share this code, but anything you distribute that's built on it must also be released under the GPL with its source, and must keep this copyright notice. The bundled fonts (Mona Sans, Geist Mono) are under the SIL Open Font License; their licenses are in `src/fonts/`. Course data comes from [umd.io](https://umd.io) and [Jupiterp](https://jupiterp.com). This project isn't affiliated with the University of Maryland.

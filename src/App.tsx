@@ -193,7 +193,7 @@ export default function App() {
         <a href="https://github.com/priyam-k/degreeplan" target="_blank" rel="noreferrer">
           Source on GitHub
         </a>
-        <span>MIT License</span>
+        <span>GPL-3.0 License</span>
         <span>Not affiliated with the University of Maryland</span>
       </footer>
       <Toast toast={toast} onUndo={undo} onClose={closeToast} />
