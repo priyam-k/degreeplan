@@ -77,9 +77,10 @@ export function buildGraph(o: {
   const majorUse = new Set<string>();
   for (const pr of audit?.programs ?? [])
     if (pr.program.kind === "major" || pr.program.kind === "minor") pr.buckets.forEach((b) => b.assigned.forEach((id) => majorUse.add(id)));
-  const DEPTS = /^(CMSC|MATH|STAT|AMSC|ENME|ENAE|ENEE|ENES|DATA)/;
+  // Other courses in those departments too (extra electives, courses the solver left unassigned).
+  const depts = new Set(tl.placed.filter((p) => majorUse.has(p.course.id) && p.course.code).map((p) => p.course.code.slice(0, 4)));
   const include = new Set(
-    tl.placed.filter((p) => o.showAll || majorUse.has(p.course.id) || (DEPTS.test(p.course.code) && p.idx > 0)).map((p) => p.course.id),
+    tl.placed.filter((p) => o.showAll || majorUse.has(p.course.id) || (depts.has(p.course.code.slice(0, 4)) && p.idx > 0)).map((p) => p.course.id),
   );
   for (let changed = true; changed; ) {
     changed = false;

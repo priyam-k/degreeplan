@@ -150,7 +150,7 @@ export default function App() {
         onImport={() => setImporting(true)}
         onExport={exportPlan}
         onLoad={importPlan}
-        onReset={() => setPlan(() => emptyPlan(new Date().getFullYear()), { toast: `Cleared ${scenario.name}` })}
+        onReset={() => setPlan((p) => ({ ...emptyPlan(new Date().getFullYear()), programIds: p.programIds }), { toast: `Cleared ${scenario.name}` })}
       />
       {catalogErr && <div className="banner error">Course catalog failed to load ({catalogErr}). Run `npm run fetch-courses`.</div>}
       {banner && (

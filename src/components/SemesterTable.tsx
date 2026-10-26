@@ -9,6 +9,8 @@ import { CourseSearch } from "../ui/CourseSearch";
 import { ConfirmButton, Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
 import { CourseInfo } from "./CourseInfo";
+import { ALL_PROGRAMS, abbrev } from "../programs";
+import { shortName } from "../engine/solver";
 
 export const STATUS_LABEL: Record<CourseStatus, string> = {
   planned: "Planned",
@@ -39,6 +41,7 @@ interface Props {
   drag: { id: string; term?: string; before?: string | null } | null;
   onDragStart: (e: React.PointerEvent, c: PlanCourse) => void;
   highlight: Set<string>;
+  majorNames: string[]; // the plan's majors in order, for chip colours
 }
 
 export function SemesterTable(props: Props) {
@@ -182,6 +185,7 @@ function CourseRow({
   drag,
   onDragStart,
   highlight,
+  majorNames,
   onMove,
   onPatch,
   onRemoveCourse,
@@ -305,7 +309,7 @@ function CourseRow({
           {uses
             .filter((u) => chipKind(u) !== "univ")
             .map((u) => (
-              <span key={u} className={`chip chip-${chipKind(u)}`}>
+              <span key={u} className={`chip chip-${chipKind(u, majorNames)}`}>
                 {shortUsage(u, c.geneds.flat())}
               </span>
             ))}
@@ -384,12 +388,13 @@ export function AutoTextarea({ value, onChange, placeholder }: { value: string; 
   return <textarea ref={ref} rows={1} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />;
 }
 
-export function chipKind(u: string): string {
-  if (u.startsWith("Computer Science")) return "cs";
-  if (u.startsWith("Mathematics")) return "math";
+// Chip colour for a usage label ("Computer Science: CMSC330"): each major gets its own colour, in
+// the order the plan lists them; minors share one.
+export function chipKind(u: string, majors: string[] = []): string {
   if (u.startsWith("GenEd")) return "gened";
   if (u.startsWith("University")) return "univ";
-  return "minor";
+  const i = majors.findIndex((m) => u.startsWith(`${m}: `));
+  return i >= 0 ? `major${(i % 3) + 1}` : "minor";
 }
 
 const GENED_RE = /\b(FS[A-Z]{2}|DS[A-Z]{2}|SCIS|DVUP|DVCC)\b/g;
@@ -399,7 +404,8 @@ const GENED_RE = /\b(FS[A-Z]{2}|DS[A-Z]{2}|SCIS|DVUP|DVCC)\b/g;
 export function shortUsage(u: string, courseGeneds: string[] = []): string {
   const [prog, ...rest] = u.split(": ");
   const label = rest.join(": ");
-  const p = prog.startsWith("Computer Science") ? "CS" : prog.startsWith("Mathematics") ? "Math" : prog.startsWith("Robotics") ? "RAS" : prog;
+  const program = ALL_PROGRAMS.find((q) => shortName(q) === prog);
+  const p = program ? abbrev(program).replace(/ minor$/i, "") : prog;
   if (p === "GenEd") {
     const codes = label.match(GENED_RE) ?? [];
     return codes.find((c) => courseGeneds.includes(c)) ?? codes[0] ?? label.split(" ")[0];

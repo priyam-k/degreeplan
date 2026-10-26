@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
-import type { AuditResult, Plan } from "../types";
+import type { AuditResult, Plan, Program } from "../types";
 import type { Workspace } from "../workspace";
 import type { History } from "../ui/useHistory";
 import type { SetPlan } from "../App";
-import { MAJORS, MINORS, abbrev, programById } from "../programs";
-import { shortName } from "../engine/solver";
+import { ENTRIES, abbrev, displayName, familyKey, normalizeName, programById, trackName, type ProgramEntry } from "../programs";
 import { ConfirmButton, Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
 import { ACCENTS, GROUNDS, useTheme } from "../ui/theme";
@@ -140,15 +139,24 @@ export function TopBar(p: Props) {
 }
 
 function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResult | null; setPlan: SetPlan }) {
-  const chosen = plan.programIds.map(programById).filter((x) => !!x);
+  const [query, setQuery] = useState("");
+  const chosen = plan.programIds.map(programById).filter((p): p is Program => !!p);
   const done = (id: string) => audit?.programs.find((r) => r.program.id === id)?.satisfied;
-  const label = chosen.length ? chosen.map((x) => abbrev(x!)).join(" · ") : "Choose programs";
-  const familyValue = (family: string) => plan.programIds.find((x) => programById(x)?.family === family) ?? "";
-  const setFamily = (family: string, id: string) =>
-    setPlan((p) => ({ ...p, programIds: [...p.programIds.filter((x) => programById(x)?.family !== family), ...(id ? [id] : [])] }));
-  const toggleMinor = (id: string) =>
-    setPlan((p) => ({ ...p, programIds: p.programIds.includes(id) ? p.programIds.filter((x) => x !== id) : [...p.programIds, id] }));
-  const families = [...new Set(MAJORS.map((m) => m.family!))];
+  const label = chosen.length ? chosen.map(abbrev).join(" · ") : "Choose programs";
+  const inPlan = new Set(chosen.map(familyKey));
+  const words = normalizeName(query).split(" ").filter(Boolean);
+  const results = ENTRIES.filter((e) => !inPlan.has(e.key) && words.every((w) => e.search.includes(w)));
+
+  const add = (e: ProgramEntry) => {
+    setPlan((p) => ({ ...p, programIds: [...p.programIds, e.programs[0].id] }), { toast: `Added ${e.name}` });
+    setQuery("");
+  };
+  const remove = (prog: Program) =>
+    setPlan((p) => ({ ...p, programIds: p.programIds.filter((x) => x !== prog.id) }), { toast: `Removed ${displayName(prog)}` });
+  const setTrack = (prog: Program, id: string) => setPlan((p) => ({ ...p, programIds: p.programIds.map((x) => (x === prog.id ? id : x)) }));
+
+  // Majors first, then minors; each in the order the plan lists them.
+  const ordered = [...chosen.filter((p) => p.kind === "major"), ...chosen.filter((p) => p.kind !== "major")];
   return (
     <Popover
       button={
@@ -158,36 +166,68 @@ function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResul
       }
       buttonClassName="btn tb-programs"
       align="end"
-      width={320}
+      width={360}
     >
       <div className="program-picker">
-        <div className="pp-title">Majors</div>
-        {families.map((f) => {
-          const opts = MAJORS.filter((m) => m.family === f);
-          const v = familyValue(f);
+        <div className="pp-title">In this plan</div>
+        {ordered.length === 0 && <p className="pp-empty">No majors or minors yet. Add one below.</p>}
+        {ordered.map((p) => {
+          const tracks = ENTRIES.find((e) => e.key === familyKey(p))?.programs ?? [p];
           return (
-            <label key={f} className="pp-row">
-              <span className="pp-name">{shortName(opts[0])}</span>
-              <select value={v} onChange={(e) => setFamily(f, e.target.value)}>
-                <option value="">Not in this plan</option>
-                {opts.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name.match(/\((.*)\)/)?.[1] ?? m.name}
-                  </option>
-                ))}
-              </select>
-              {v && <StatusDot ok={done(v)} />}
-            </label>
+            <div key={p.id} className="pp-row">
+              <StatusDot ok={done(p.id)} />
+              <div className="pp-main">
+                <span className="pp-name">{displayName(p)}</span>
+                {tracks.length > 1 ? (
+                  <select value={p.id} onChange={(e) => setTrack(p, e.target.value)} aria-label={`${displayName(p)} track`}>
+                    {tracks.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {trackName(t)}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="pp-sub">{p.kind === "minor" ? "Minor" : "Major"}</span>
+                )}
+              </div>
+              <button className="icon-btn sm" onClick={() => remove(p)} aria-label={`Remove ${displayName(p)}`} title="Remove from this plan">
+                <Icon.x />
+              </button>
+            </div>
           );
         })}
-        <div className="pp-title">Minors</div>
-        {MINORS.map((m) => (
-          <label key={m.id} className="pp-row">
-            <input type="checkbox" checked={plan.programIds.includes(m.id)} onChange={() => toggleMinor(m.id)} />
-            <span className="pp-name grow">{m.name}</span>
-            {plan.programIds.includes(m.id) && <StatusDot ok={done(m.id)} />}
-          </label>
-        ))}
+        <input
+          className="pp-search"
+          type="search"
+          placeholder="Add a major or minor…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && results.length) add(results[0]);
+          }}
+          aria-label="Search majors and minors"
+        />
+        <div className="pp-results">
+          {(["major", "minor"] as const).map((kind) => {
+            const list = results.filter((e) => e.kind === kind);
+            if (!list.length) return null;
+            return (
+              <div key={kind}>
+                <div className="pp-title">{kind === "major" ? "Majors" : "Minors"}</div>
+                {list.map((e) => (
+                  <button key={e.key} className="pp-result" onClick={() => add(e)}>
+                    <span className="pp-result-name">{e.name}</span>
+                    <span className="pp-result-sub">
+                      {e.college}
+                      {e.programs.length > 1 && ` · ${e.programs.length} tracks`}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            );
+          })}
+          {!results.length && <p className="pp-empty">{words.length ? `Nothing matches "${query}".` : "Every program is already in this plan."}</p>}
+        </div>
         <p className="pp-note">GenEd and university requirements are always checked.</p>
       </div>
     </Popover>

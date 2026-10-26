@@ -5,6 +5,7 @@ import type { SetPlan } from "../App";
 import { academicYear, addTerm, sortSemesters, termKey } from "../plan";
 import { TRANSFER_TERM } from "../transcript";
 import { courseWarnings } from "../flow/analysis";
+import { shortName } from "../engine/solver";
 import { SemesterTable, DEFAULT_COLS, type ColKey, type ColWidths } from "./SemesterTable";
 import { AuditPanel } from "./AuditPanel";
 import { Icon } from "../ui/icons";
@@ -123,7 +124,8 @@ export function PlanView({ plan, catalog, audit, programs, setPlan, onImport }: 
       onEnd: () => setDrag(null),
     });
   };
-  const tableProps = { catalog, usage: audit?.usage ?? {}, warnings, allCodes, cols, onResize: resize, terms, onMove: move, drag, onDragStart, highlight: hl };
+  const majorNames = useMemo(() => programs.filter((p) => p.kind === "major").map(shortName), [programs]);
+  const tableProps = { catalog, usage: audit?.usage ?? {}, warnings, allCodes, cols, onResize: resize, terms, onMove: move, drag, onDragStart, highlight: hl, majorNames };
 
   return (
     <main className={`plan-main ${auditOpen ? "" : "wide"}`}>

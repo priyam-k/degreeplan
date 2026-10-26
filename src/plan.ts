@@ -2,6 +2,7 @@ import type { Plan, PlanCourse, Semester } from "./types";
 import type { Catalog } from "./catalog";
 import { TRANSFER_TERM, type TranscriptResult } from "./transcript";
 import { normalizeCode } from "./engine/match";
+import { familyKey, matchTranscriptName, programById } from "./programs";
 
 const STORAGE_KEY = "degreeplan.v1"; // pre-scenario storage; read once to migrate (see workspace.ts)
 const SEASONS = ["Winter", "Spring", "Summer", "Fall"] as const;
@@ -40,7 +41,7 @@ export function emptyPlan(startFall = new Date().getFullYear()): Plan {
   }
   return {
     semesters,
-    programIds: ["cs-general", "math-applied", "ras-minor"],
+    programIds: [],
     genedExemptions: [],
     waived: [],
   };
@@ -110,11 +111,16 @@ export function planFromTranscript(t: TranscriptResult, catalog: Catalog, base: 
     })),
   );
 
-  const programIds = new Set(base.programIds);
-  if (t.majors.some((m) => /computer science/i.test(m)) && !base.programIds.some((p) => p.startsWith("cs-"))) programIds.add("cs-general");
-  if (t.majors.some((m) => /mathematic/i.test(m)) && !base.programIds.some((p) => p.startsWith("math-"))) programIds.add("math-applied");
-  if (t.minors.some((m) => /robotics/i.test(m))) programIds.add("ras-minor");
-  plan.programIds = [...programIds];
+  // Add the transcript's majors and minors, keeping any track the plan already chose.
+  const programIds = [...base.programIds];
+  const found = [...t.majors.map((m) => matchTranscriptName(m, "major")), ...t.minors.map((m) => matchTranscriptName(m, "minor"))];
+  const families = new Set(programIds.flatMap((id) => programById(id) ?? []).map(familyKey));
+  for (const p of found) {
+    if (!p || families.has(familyKey(p))) continue;
+    programIds.push(p.id);
+    families.add(familyKey(p));
+  }
+  plan.programIds = programIds;
   plan.genedExemptions = [...new Set(t.exemptions)];
   plan.waived = base.waived;
   return plan;

@@ -21,6 +21,57 @@ export const programById = (id: string) => ALL_PROGRAMS.find((p) => p.id === id)
 // Compact name for chips and buttons ("CS", "Math", "RAS minor").
 export const abbrev = (p: Program): string => p.short ?? p.name.replace(/ Major| Minor/, "");
 
+// "Computer Science Major (Data Science)" -> "Computer Science"; "Data Science" is the track.
+export const displayName = (p: Program) => p.name.replace(/\s*\(.*\)$/, "").replace(/ (Major|Minor)$/, "");
+export const trackName = (p: Program) => p.name.match(/\((.*)\)$/)?.[1] ?? p.name;
+// Programs sharing a key are tracks of one major (or minor); a plan holds at most one of them.
+export const familyKey = (p: Program) => p.family ?? p.id;
+
+// One picker entry per major or minor; a major's tracks share its entry.
+export interface ProgramEntry {
+  key: string;
+  name: string;
+  kind: "major" | "minor";
+  college: string;
+  programs: Program[];
+  search: string; // normalized name, short name, college and aliases
+}
+
+const norm = (s: string) =>
+  s
+    .toUpperCase()
+    .replace(/&/g, " AND ")
+    .replace(/[^A-Z0-9]+/g, " ")
+    .trim();
+export const normalizeName = norm;
+
+export const ENTRIES: ProgramEntry[] = [...MAJORS, ...MINORS].reduce<ProgramEntry[]>((out, p) => {
+  const key = familyKey(p);
+  const e = out.find((x) => x.key === key);
+  if (e) e.programs.push(p);
+  else out.push({ key, name: displayName(p), kind: p.kind as "major" | "minor", college: p.college ?? "", programs: [p], search: "" });
+  return out;
+}, []);
+for (const e of ENTRIES)
+  e.search = norm([e.name, e.college, ...e.programs.flatMap((p) => [p.name, p.short ?? "", ...(p.aliases ?? [])])].join(" "));
+ENTRIES.sort((a, b) => a.name.localeCompare(b.name));
+
+// The program a transcript's "Major: ..." or "Minor: ..." line refers to, if we have it. Testudo
+// upper-cases and truncates these ("Minor: ROBOTICS AND AUTONOMOUS"), so names match by prefix either
+// way, and the longest matching name wins. A track named in the line is picked; otherwise the first.
+export function matchTranscriptName(raw: string, kind: "major" | "minor"): Program | undefined {
+  const t = norm(raw);
+  if (t.length < 4) return undefined;
+  let best: { e: ProgramEntry; len: number } | undefined;
+  for (const e of ENTRIES) {
+    if (e.kind !== kind) continue;
+    const names = [e.name, ...e.programs.flatMap((p) => [p.name, p.short ?? "", ...(p.aliases ?? [])])].map(norm).filter((n) => n.length >= 4);
+    for (const n of names) if ((n.startsWith(t) || t.startsWith(n)) && n.length > (best?.len ?? 0)) best = { e, len: n.length };
+  }
+  if (!best) return undefined;
+  return best.e.programs.find((p) => best.e.programs.length > 1 && t.includes(norm(trackName(p)))) ?? best.e.programs[0];
+}
+
 const majorIds = MAJORS.map((p) => p.id);
 
 export const SHARING_RULES: SharingRule[] = [
