@@ -91,8 +91,8 @@ export interface Group {
 }
 
 export type ProgramConstraint =
-  // At least `courses` of the courses assigned to `buckets` must match.
-  | { kind: "minFrom"; id: string; label: string; buckets: string[]; match: Matcher; courses: number }
+  // At least `courses` (and/or `credits`) of the courses assigned to `buckets` must match.
+  | { kind: "minFrom"; id: string; label: string; buckets: string[]; match: Matcher; courses?: number; credits?: number }
   // At most `courses` (or `credits`) of the courses assigned to `buckets` may match.
   | { kind: "maxFrom"; id: string; label: string; buckets: string[]; match: Matcher; courses?: number; credits?: number }
   // Assigned courses must cover at least `min` distinct groups (each course counts toward one group).
@@ -110,6 +110,8 @@ export interface Program {
   short?: string; // compact name for chips and buttons ("CS", "RAS minor")
   kind: "major" | "minor" | "gened" | "university";
   family?: string; // programs in the same family are mutually exclusive tracks (e.g. CS tracks)
+  college?: string; // groups programs in the picker, e.g. "Engineering"
+  aliases?: string[]; // other names a transcript may use for this program (matched case-insensitively)
   buckets: Bucket[];
   constraints?: ProgramConstraint[];
   notes?: string[]; // rules shown to the user but not machine-checked

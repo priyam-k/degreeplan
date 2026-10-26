@@ -215,9 +215,17 @@ export function solve(
       const pool = bids.flatMap((bid) => x.get(`${p.id}/${bid}`) ?? []);
       const hit = (t: { i: number }, m: (code: string, ctx: MatchCtx) => boolean) => m(courses[t.i].code, ctxOf(courses[t.i]));
       if (con.kind === "minFrom") {
-        const s = lp.newVar("s", 0, null, false);
-        lp.cost(s, W);
-        lp.row([...pool.filter((t) => hit(t, con.match)).map((t) => ({ v: t.v, c: 1 })), { v: s, c: 1 }], ">=", con.courses);
+        const hits = pool.filter((t) => hit(t, con.match));
+        if (con.courses !== undefined) {
+          const s = lp.newVar("s", 0, null, false);
+          lp.cost(s, W);
+          lp.row([...hits.map((t) => ({ v: t.v, c: 1 })), { v: s, c: 1 }], ">=", con.courses);
+        }
+        if (con.credits !== undefined) {
+          const s = lp.newVar("s", 0, null, false);
+          lp.cost(s, W / 3);
+          lp.row([...hits.map((t) => ({ v: t.v, c: courses[t.i].credits })), { v: s, c: 1 }], ">=", con.credits);
+        }
       } else if (con.kind === "maxFrom") {
         const hits = pool.filter((t) => hit(t, con.match));
         if (con.courses !== undefined) lp.row(hits.map((t) => ({ v: t.v, c: 1 })), "<=", con.courses);
@@ -366,8 +374,11 @@ export function solve(
       const pool = assignedIn(con.kind === "within" ? [con.bucket] : con.buckets);
       const m = (c: SolverCourse, f: (code: string, ctx: MatchCtx) => boolean) => f(c.code, ctxOf(c));
       if (con.kind === "minFrom") {
-        const n = pool.filter((c) => m(c, con.match)).length;
-        return { ...base, satisfied: n >= con.courses, detail: `${n} / ${con.courses}` };
+        const hits = pool.filter((c) => m(c, con.match));
+        const cr = hits.reduce((n, c) => n + c.credits, 0);
+        const ok = hits.length >= (con.courses ?? 0) && cr >= (con.credits ?? 0);
+        const detail = [con.courses !== undefined && `${hits.length} / ${con.courses}`, con.credits !== undefined && `${cr} / ${con.credits} cr`].filter(Boolean).join(", ");
+        return { ...base, satisfied: ok, detail };
       }
       if (con.kind === "maxFrom") {
         const hits = pool.filter((c) => m(c, con.match));

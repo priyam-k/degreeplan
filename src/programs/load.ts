@@ -12,10 +12,10 @@ const RANGE = /^([A-Z]{4}|\*)(\d{3})-(\d{3})$/;
 const ID = /^[A-Za-z0-9_-]+$/;
 const DEPT_GLOB = /^[A-Z*]{1,4}$/;
 const KINDS = ["major", "minor", "gened", "university"] as const;
-const PROGRAM_KEYS = ["id", "name", "short", "kind", "family", "buckets", "patch", "constraints", "notes", "sources"];
+const PROGRAM_KEYS = ["id", "name", "short", "kind", "family", "college", "aliases", "buckets", "patch", "constraints", "notes", "sources"];
 const BUCKET_KEYS = ["id", "label", "match", "courses", "credits", "choose", "maxCourses", "useGroup", "gened", "noShare", "discipline", "note"];
 const CONSTRAINT_KEYS: Record<string, string[]> = {
-  minFrom: ["buckets", "match", "courses"],
+  minFrom: ["buckets", "match", "courses", "credits"],
   maxFrom: ["buckets", "match", "courses", "credits"],
   maxEach: ["buckets", "groups", "omit", "courses", "credits"],
   distinct: ["buckets", "groups", "omit", "min"],
@@ -254,7 +254,7 @@ export function loadProgramFile(file: string, data: unknown): Program[] {
     const min = () => count(o.min, `${path}.min`);
     switch (kind) {
       case "minFrom":
-        return [{ kind, id, label, buckets: buckets(), match: match(), courses: count(o.courses, `${path}.courses`) }];
+        return [{ kind, id, label, buckets: buckets(), match: match(), ...limits() }];
       case "maxFrom":
         return [{ kind, id, label, buckets: buckets(), match: match(), ...limits() }];
       case "distinct":
@@ -296,6 +296,8 @@ export function loadProgramFile(file: string, data: unknown): Program[] {
       kind,
       // Tracks of one major are mutually exclusive; by default a major's family is its file.
       ...(o.family !== undefined ? { family: ident(o.family, `${path}.family`) } : kind === "major" ? { family: stem } : {}),
+      ...opt(o, "college", str, path),
+      ...opt(o, "aliases", strs, path),
       buckets,
       ...(constraints && { constraints }),
       ...opt(o, "notes", strs, path),

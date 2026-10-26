@@ -235,7 +235,7 @@ export interface Need {
 // "At least N from bucket X" where X itself requires N courses restates that requirement.
 export function redundantConstraint(pr: ProgramResult, id: string): boolean {
   const con = pr.program.constraints?.find((x) => x.id === id);
-  if (con?.kind !== "minFrom" || con.buckets.length !== 1) return false;
+  if (con?.kind !== "minFrom" || con.buckets.length !== 1 || con.courses === undefined || con.credits !== undefined) return false;
   const b = pr.buckets.find((x) => x.bucket.id === con.buckets[0]);
   return !!b && b.bucket.courses === con.courses;
 }

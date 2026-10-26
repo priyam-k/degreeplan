@@ -5,8 +5,12 @@ other program, add a file here. It is picked up automatically: majors and minors
 and `gened`/`university` programs are always audited.
 
 `load.ts` checks every field when the app builds and when tests run, so a typo fails with the file and the
-location (for example `bad.yaml at buckets[2].cours: unknown field`) instead of quietly matching nothing. Run
-`npm test` after editing.
+location (for example `bad.yaml at buckets[2].cours: unknown field`) instead of quietly matching nothing.
+
+Each file should have a test in `tests/` (see `tests/ras.test.ts`) that audits a realistic completed plan, usually
+the department's four-year plan, and expects nothing unmet, plus a few plans that should fail. `testkit.ts` loads
+one file on its own, so `npx vitest run src/programs/tests/<name>.test.ts` checks just that file. Run `npm test`
+before committing.
 
 ## A small example
 
@@ -16,6 +20,8 @@ id: example-minor
 name: Example Minor
 short: Example minor        # optional; used on chips and buttons
 kind: minor                 # major | minor | gened | university
+college: Computer, Mathematical & Natural Sciences   # groups programs in the picker
+aliases: [EXAMPLE STUDIES]  # other names a Testudo transcript may use
 buckets:
   - CMSC131                 # a bare course code = that one course is required
   - id: core
@@ -75,7 +81,7 @@ Constraints apply to the courses already assigned to the listed `buckets`. Each 
 
 | Kind | Fields | Meaning |
 | --- | --- | --- |
-| `minFrom` | `buckets`, `match`, `courses` | at least N of those courses match |
+| `minFrom` | `buckets`, `match`, `courses` and/or `credits` | at least N courses (or credits) match |
 | `maxFrom` | `buckets`, `match`, `courses` and/or `credits` | at most N courses (or credits) match |
 | `maxEach` | `buckets`, `groups`, `courses`/`credits`, optional `omit` | one `maxFrom` per group; `{id}` and `{label}` in the rule's id and label are filled from each group |
 | `distinct` | `buckets`, `groups`, `min`, optional `omit` | the courses cover at least `min` different groups (each course counts for one group) |
@@ -88,6 +94,18 @@ Groups are `{ id, label, match }`. Options are `{ label, slots }`; the label def
 - a course (`PHYS161`);
 - a list of alternatives (`[BSCI180, BSCI171]`, labelled `BSCI180/BSCI171`);
 - `{ match, count, label }` for "two of …".
+
+## Program fields
+
+| Field | Meaning |
+| --- | --- |
+| `id`, `name`, `kind` | required. `name` is the catalog name; tracks put the track in parentheses: `Computer Science Major (Data Science)`. |
+| `short` | compact name for chips, e.g. `CS`, `CompE`, `RAS minor` |
+| `college` | the college that offers it, as named in the picker (see the existing files) |
+| `family` | tracks of one major share a family and are mutually exclusive. Defaults to the file name for majors. |
+| `aliases` | other names for matching a Testudo transcript's "Major:" or "Minor:" line (the program name and family name are tried already, case-insensitively, by prefix) |
+| `buckets`, `constraints`, `patch` | the requirements |
+| `notes`, `sources` | rules that aren't machine-checked (grades, GPA, sequencing), and the catalog pages used |
 
 ## Sharing between programs
 
