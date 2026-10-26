@@ -284,7 +284,7 @@ body.col-resizing, body.col-resizing * { cursor: col-resize !important; user-sel
 .theme-pick .theme-grounds button:hover { color: var(--ink); background: none; }
 .theme-pick .theme-grounds button.on { color: var(--ink); }
 /* springy selections (useSpringIndicator moves and sizes these) */
-.theme-thumb, .swatch-ring, .program-ring { position: absolute; top: 0; left: 0; pointer-events: none; will-change: transform, width, height; }
+.theme-thumb, .swatch-ring { position: absolute; top: 0; left: 0; pointer-events: none; will-change: transform, width, height; }
 .theme-thumb { border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-card); }
 .theme-accents { position: relative; display: flex; gap: 10px; padding-left: 2px; }
 .theme-pick button.swatch, .theme-pick button.swatch:hover { width: 22px; height: 22px; padding: 0; border-radius: 999px; background: var(--sw); }
@@ -810,7 +810,7 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; user-select:
   background: var(--surface); box-shadow: var(--shadow-card); transition: background-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 .program-card:hover { background: var(--surface-hover); }
-.program-ring { z-index: 1; border-radius: var(--radius-md); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.program-card.on { box-shadow: var(--shadow-card), inset 0 0 0 1.5px var(--accent); }
 .pc-text { display: flex; flex-direction: column; min-width: 0; }
 .pc-name { font-weight: 600; letter-spacing: -0.005em; }
 .pc-sub { font-size: 12px; color: var(--ink-muted); }
@@ -942,7 +942,7 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; user-select:
   /* a semester's table scrolls inside its card rather than widening the page */
   .semester { overflow-x: auto; border-right: none; }
   .semester table { min-width: 580px; }
-  .program-list { position: relative; top: auto; flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  .program-list { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
   .program-card { flex: none; width: 240px; }
   .pl-hint { display: none; }
   .pd-head { padding: 16px; }

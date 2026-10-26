@@ -1,7 +1,7 @@
 // Program-centric view: pick a major, minor, GenEd or university requirements and see each
 // requirement as slots filled by your courses (colored by status), what's still open, the
 // soonest courses that would fill it, and the rules that span requirements.
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { AuditResult, BucketResult, Plan, PlanCourse, Program, ProgramResult, ConstraintResult } from "../types";
 import type { Catalog } from "../catalog";
 import type { SetPlan } from "../App";
@@ -25,7 +25,6 @@ import { shortTerm } from "../flow/FlowView";
 import { CourseSearch } from "../ui/CourseSearch";
 import { Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
-import { useSpringIndicator } from "../ui/useSpringIndicator";
 import { CourseInfo } from "./CourseInfo";
 import { STATUS_LABEL } from "./SemesterTable";
 
@@ -43,13 +42,10 @@ type Seg = "done" | "inprogress" | "planned" | "open";
 const segOf = (c?: PlanCourse): Seg =>
   !c ? "open" : c.status === "completed" || c.status === "transfer" ? "done" : c.status === "inprogress" ? "inprogress" : "planned";
 
-// The programs down the side; the selection ring glides between cards.
+// The programs down the side.
 function ProgramList({ results, selected, onSelect, courseById }: { results: ProgramResult[]; selected: string; onSelect: (id: string) => void; courseById: Map<string, PlanCourse> }) {
-  const list = useRef<HTMLElement>(null);
-  const ring = useSpringIndicator(list, selected, { press: 0.4 });
   return (
-    <nav className="program-list" ref={list}>
-      <span className="program-ring" ref={ring} aria-hidden />
+    <nav className="program-list">
       {results.map((r) => {
         const u = programUnits(r, courseById);
         const total = u.done + u.inprogress + u.planned + u.open;
