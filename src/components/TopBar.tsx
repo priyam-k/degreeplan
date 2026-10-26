@@ -142,7 +142,7 @@ function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResul
   const [query, setQuery] = useState("");
   const chosen = plan.programIds.map(programById).filter((p): p is Program => !!p);
   const done = (id: string) => audit?.programs.find((r) => r.program.id === id)?.satisfied;
-  const label = chosen.length ? chosen.map(abbrev).join(" · ") : "Choose programs";
+
   const inPlan = new Set(chosen.map(familyKey));
   const words = normalizeName(query).split(" ").filter(Boolean);
   const results = ENTRIES.filter((e) => !inPlan.has(e.key) && words.every((w) => e.search.includes(w)));
@@ -157,6 +157,7 @@ function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResul
 
   // Majors first, then minors; each in the order the plan lists them.
   const ordered = [...chosen.filter((p) => p.kind === "major"), ...chosen.filter((p) => p.kind !== "major")];
+  const label = ordered.length ? ordered.map(abbrev).join(" · ") : "Choose programs";
   return (
     <Popover
       button={
@@ -166,7 +167,7 @@ function ProgramPicker({ plan, audit, setPlan }: { plan: Plan; audit: AuditResul
       }
       buttonClassName="btn tb-programs"
       align="end"
-      width={360}
+      width={384}
     >
       <div className="program-picker">
         <div className="pp-title">In this plan</div>
