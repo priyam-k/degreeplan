@@ -5,6 +5,7 @@ id: ras-minor
 name: Robotics and Autonomous Systems Minor
 short: RAS minor
 kind: minor
+college: Engineering
 buckets:
   - { id: enme480, label: ENME480 Intro to Robotics, match: ENME480, courses: 1 }
   - { id: enae450, label: ENAE450 Robotics Programming, match: ENAE450, courses: 1 }
