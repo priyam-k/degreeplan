@@ -4,9 +4,11 @@
 //   UMDIO_YEARS=4     how many years of schedules to read
 //   FULL=1            re-fetch every semester instead of reusing older ones from the current courses.json
 //   FORCE=1           write even if the catalog shrank by more than 5%
+//   UMDIO_CACHE=dir   keep each semester's raw umd.io response there and reuse it, so changes to the
+//                     parsing below can be re-run without another hours-long download
 // umd.io is slow (minutes per semester), so by default only the newest few terms, and any
 // semester missing from the current file, are downloaded; past schedules don't change.
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 async function getJson(url, tries = 8) {
   for (let i = 0; ; i++) {
@@ -46,7 +48,19 @@ async function semesters() {
   return terms.filter((t) => t > latest - YEARS * 100).map(String);
 }
 
+const CACHE = process.env.UMDIO_CACHE;
 async function fetchSemester(sem) {
+  const file = CACHE && `${CACHE}/umdio-${sem}.json`;
+  if (file && existsSync(file)) return JSON.parse(readFileSync(file, "utf8"));
+  const list = await downloadSemester(sem);
+  if (file) {
+    mkdirSync(CACHE, { recursive: true });
+    writeFileSync(file, JSON.stringify(list));
+  }
+  return list;
+}
+
+async function downloadSemester(sem) {
   const pages = new Map();
   let failed = 0;
   let next = 1;
@@ -70,7 +84,7 @@ async function fetchSemester(sem) {
       if (d.length < 100) done = true;
     }
   };
-  await Promise.all(Array.from({ length: 3 }, worker));
+  await Promise.all(Array.from({ length: 5 }, worker));
   if (failed) throw new Error(`umd.io ${sem}: ${failed} page(s) failed`);
   return [...pages.keys()].sort((a, b) => a - b).flatMap((p) => pages.get(p));
 }
@@ -107,6 +121,12 @@ function fromDescription(desc, label) {
 const restrictionIn = (desc) =>
   fromDescription(desc, "Restrictions?") ?? (/\bRestricted to\b[^.]*/.exec(desc ?? "")?.[0].trim() || null);
 
+// Student-run courses often open the description with unlabelled prerequisites:
+// "Minimum grade of C- in CMSC216, CMSC250, CMSC320; ...; and permission of ... department. This course..."
+const UNLABELLED = /^\s*(?:(?:A\s+)?minimum grade|must have (?:completed|taken)|completion of|C- or better|grade of C-)/i;
+const prereqInDescription = (desc) =>
+  fromDescription(desc, "PRE-?REQUISITES?") ?? (desc && UNLABELLED.test(desc) ? tidy(desc.split(SECTION_END)[0].split(/\.\s+(?=[A-Z])/)[0]) : null);
+
 // A schedule lists upcoming topics courses before their topic is set: no description, no
 // prerequisites, the bare catalog title. Such an entry says nothing about the course.
 const placeholder = (desc, prereq, restriction) => !desc?.trim() && !prereq && !restriction;
@@ -121,8 +141,9 @@ const toEntry = (c) => {
     cr: lo || 0,
     mx: hi && hi !== lo ? hi : null,
     g: (c.gen_ed || []).filter((a) => a.length),
-    p: cleanPrereq(rel.prereqs) ?? fromDescription(c.description, "PRE-?REQUISITES?"),
-    r: tidy(rel.restrictions ?? "") ?? restrictionIn(c.description),
+    p: cleanPrereq(rel.prereqs) ?? prereqInDescription(c.description),
+    // a restriction can also ride along at the end of the prerequisite text
+    r: tidy(rel.restrictions ?? "") ?? restrictionIn(rel.prereqs) ?? restrictionIn(c.description),
     x: rel.credit_granted_for || null,
   };
 };
@@ -198,8 +219,8 @@ for (;;) {
     const pre = conds.find((s) => /^Pre-?requisites?\s*:/i.test(s));
     const res = conds.find((s) => /^Restrictions?\s*:/i.test(s));
     const cgf = conds.find((s) => s.startsWith("Credit only granted for"));
-    const p = cleanPrereq(pre?.replace(/^[^:]*:\s*/, "")) ?? fromDescription(c.description, "PRE-?REQUISITES?");
-    const r = tidy(res?.replace(/^[^:]*:\s*/, "") ?? "") ?? restrictionIn(c.description);
+    const p = cleanPrereq(pre?.replace(/^[^:]*:\s*/, "")) ?? prereqInDescription(c.description);
+    const r = tidy(res?.replace(/^[^:]*:\s*/, "") ?? "") ?? restrictionIn(pre) ?? restrictionIn(c.description);
     // an untitled placeholder keeps the topic, prerequisites and restriction an actual offering had
     const keep = prev && placeholder(c.description, p, r);
     courses.set(c.course_code, {
@@ -208,8 +229,9 @@ for (;;) {
       cr: c.min_credits,
       mx: c.max_credits,
       g: prev?.g?.length ? prev.g : c.gen_eds?.length ? [c.gen_eds] : [],
-      p: keep ? prev.p ?? null : p,
-      r: keep ? prev.r ?? null : r,
+      // Jupiterp sometimes lists no prerequisite or restriction that umd.io's schedule has
+      p: (keep ? null : p) ?? prev?.p ?? null,
+      r: (keep ? null : r) ?? prev?.r ?? null,
       x: cgf ? cgf.replace(/^Credit only granted for:\s*/, "").replace(/\.\s*$/, "").trim() : prev?.x ?? null,
     });
   }

@@ -28,7 +28,7 @@ import { CourseSearch } from "../ui/CourseSearch";
 import { Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
 import { startDrag } from "../ui/drag";
-import { OfferedBadges, PrereqNotes, prereqNotes } from "../components/CourseInfo";
+import { OfferedBadges, PrereqNotes, TopicHistory, prereqNotes } from "../components/CourseInfo";
 import { progressOf } from "../components/AuditPanel";
 import { STATUS_LABEL } from "../components/SemesterTable";
 
@@ -721,9 +721,21 @@ function Details(props: {
         {!req && !notes.length && <span className="muted">None</span>}
       </Section>
 
+      {cat?.r && (
+        <Section title="Restriction">
+          <div className="fd-req">{cat.r}</div>
+        </Section>
+      )}
+
       <Section title="Offered">
         <OfferedBadges code={node.code} catalog={catalog} />
       </Section>
+
+      {cat?.v && (
+        <Section title="Recent topics">
+          <TopicHistory cat={cat} />
+        </Section>
+      )}
 
       {planned && (
         <Section title="If you drop it">
