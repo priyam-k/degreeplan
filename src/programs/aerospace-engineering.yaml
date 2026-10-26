@@ -1,0 +1,159 @@
+# UMD Aerospace Engineering B.S. — 2025-26 catalog (2026-27 identical), requirements for students starting
+# Fall 2025 or later. See docs/research/aerospace-engineering.md.
+# Format: README.md in this folder.
+
+kind: major
+short: Aero
+college: Engineering
+aliases: ["ENGINEERING: AEROSPACE", "ENGR: AEROSPACE", Aerospace Engineering]
+notes: $NOTES
+sources: $SOURCES
+
+defs:
+  SOURCES:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/aerospace-engineering/aerospace-engineering-major/
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/
+    - https://aero.umd.edu/undergraduate/current-students/advising-support
+    - https://aero.umd.edu/sites/aero.umd.edu/files/AE-Degree-Plan_Updated_2026-06-26-2.pdf
+    - https://docs.google.com/document/d/1KhQwxsgR8CifJfc0TFxkqTH8IWGxc6av62uInPMdUNA/edit
+  NOTES:
+    - C- or better in every engineering (EN**) course, basic science and technical course (Clark School and department).
+    - 2.0 GPA in major courses (departmental, basic sciences, engineering sciences, track, technical electives, professional writing).
+    - "Clark School 45-credit review: ENES100, MATH141, PHYS161 and CHEM135 (or CHEM271, or CHEM131 + CHEM134) with C- or better."
+    - 124 credits minimum for the degree (more than the university's 120).
+    - The technical elective must be on the department's approved non-ENAE list or approved by petition before registering; complete the Senior Audit a semester ahead.
+    - ENAE398H (1 cr/term, up to 3) and ENAE499 (repeatable to 6 cr) count once per code here; enter repeats as one course with the combined credits.
+    - Courses that were renumbered (ENAE414→310, 311→410, 482→492, 484→494) count under either number. Students who started before Fall 2025 follow the older curriculum, which this file doesn't model.
+
+  # Required 400-level ENAE courses in both tracks, and old-curriculum versions of required courses.
+  ENAE_REQUIRED_4XX: [ENAE410, ENAE414, ENAE423, ENAE432, ENAE464, ENAE480, ENAE481, ENAE482, ENAE483, ENAE484]
+  AERONAUTICAL: [ENAE403, ENAE455, ENAE491, ENAE492]
+  ASTRONAUTICAL: [ENAE404, ENAE457, ENAE493, ENAE494]
+
+  # Department list of approved non-ENAE technical electives (300/400-level math, science or engineering).
+  # PHYS374 and ENME483 are on the list but no longer in the catalog, so they are left out.
+  TECH_LIST:
+    - [AMSC420, AMSC460, AMSC466, AOSC431, AOSC432, AOSC433, AOSC434]
+    - [ASTR320, ASTR410, ASTR421, ASTR422, ASTR430, ASTR435]
+    - [BIOE411, BIOE415, CMSC330, ENCE340, ENCE405, ENCE489I, ENEE350, ENEE351, ENEE461, ENES489A, ENES489P, BMGT438A]
+    - [ENFP312, ENMA300, ENMA426, ENMA465, ENMA470, ENRE447]
+    - [ENME332, ENME382, ENME400, ENME407, ENME408, ENME416, ENME420, ENME423, ENME425, ENME430, ENME431]
+    - [ENME440, ENME445, ENME454, ENME461, ENME470, ENME472, ENME480, ENME485]
+    - [ENME489, ENME489L, ENME413, ENME489P, ENME489U] # ENME489L Bio-Inspired Robotics is now ENME413
+    - [MATH310, MATH401, MATH405, MATH406, MATH410, MATH416, MATH420, MATH462, MATH463, MATH464]
+    - [PHYS371, PHYS373, PHYS410, PHYS411, PHYS420, STAT400, STAT410]
+
+  CORE:
+    # Engineering sciences
+    - ENES100
+    - { id: enes200, label: ENES200 or ENEE200, match: [ENES200, ENEE200], courses: 1 }
+    - id: mechanics
+      label: ENAE222 (or ENES102 + ENES220)
+      match: [ENAE222, ENES102, ENES220]
+      courses: 1
+    - ENES232
+    # Aerospace core
+    - ENAE100
+    - { id: enae202, label: ENAE202 Computing Fundamentals, match: [ENAE202, ENME202], courses: 1, note: ENME202 is the same course. }
+    - ENAE203
+    - ENAE283
+    - ENAE284
+    - ENAE301
+    - { id: enae310, label: ENAE310 Incompressible Aerodynamics, match: [ENAE310, ENAE414], courses: 1 }
+    - ENAE325
+    - ENAE362
+    - ENAE364
+    - ENAE380
+    - { id: enae410, label: ENAE410 Compressible Aerodynamics, match: [ENAE410, ENAE311], courses: 1 }
+    - ENAE423
+    - ENAE432
+    - ENAE480
+    # Math and basic sciences
+    - { id: math140, label: MATH140 Calculus I, match: MATH140, courses: 1 }
+    - { id: math141, label: MATH141 Calculus II, match: MATH141, courses: 1 }
+    - { id: math241, label: MATH241 Calculus III (or 340), match: [MATH241, MATH340], courses: 1 }
+    - id: linalg-de
+      label: MATH243 (or MATH246 + 240/461)
+      match: [MATH243, ENEE290, MATH246, MATH240, MATH461, MATH341]
+      courses: 1
+    - { id: chem, label: CHEM135 (or 131 + 134), match: [CHEM135, CHEM271, CHEM131, CHEM134], courses: 1 }
+    - PHYS161
+    - PHYS260
+    - PHYS261
+    - PHYS270
+    - PHYS271
+
+  CORE_CONSTRAINTS:
+    - kind: anySet
+      id: mechanics-option
+      label: ENAE222, or ENES102 + ENES220
+      buckets: [mechanics]
+      options:
+        - slots: [ENAE222]
+        - slots: [ENES102, ENES220]
+    - kind: anySet
+      id: linalg-de-option
+      label: MATH243, or MATH246 + MATH240/461
+      buckets: [linalg-de]
+      options:
+        - slots: [[MATH243, ENEE290]]
+        - slots: [MATH246, [MATH240, MATH461]]
+        - { label: MATH341 (honors), slots: [MATH341] }
+    - kind: anySet
+      id: chem-option
+      label: CHEM135, CHEM271, or CHEM131 + CHEM134
+      buckets: [chem]
+      options:
+        - slots: [CHEM135]
+        - slots: [CHEM271]
+        - slots: [CHEM131, CHEM134]
+    - { kind: maxFrom, id: enae398, label: ≤ 3 credits of ENAE398H, buckets: [enae-electives], match: ENAE398, credits: 3 }
+
+  ENAE_ELECTIVES_NOTE: >-
+    Two ENAE electives: any 400-level ENAE course not required for your track (courses required in the other track
+    count), or up to 3 credits of ENAE398H Honors Research for one of them. ENAE499 repeatable to 6 credits.
+  TECH_NOTE: >-
+    One 300/400-level math, science or engineering course outside ENAE from the department's approved list.
+    Unlisted courses need written approval from the Undergraduate Director before registering (waive).
+
+programs:
+  - id: aero-aeronautical
+    name: Aerospace Engineering Major (Aeronautical Track)
+    buckets:
+      - ...$CORE
+      - ENAE403
+      - ENAE455
+      - ENAE491
+      - { id: enae492, label: ENAE492 Aeronautical Systems Design, match: [ENAE492, ENAE482], courses: 1 }
+      - id: enae-electives
+        label: ENAE electives (6 cr)
+        match: { any: [ENAE400-499, ENAE398], except: [$ENAE_REQUIRED_4XX, $AERONAUTICAL] }
+        credits: 6
+        note: $ENAE_ELECTIVES_NOTE
+      - id: tech-elective
+        label: Technical elective (non-ENAE)
+        # ASTR450 Orbital Dynamics is approved for the aeronautical track only (students without ENAE404).
+        match: [$TECH_LIST, ASTR450]
+        courses: 1
+        note: $TECH_NOTE
+    constraints: $CORE_CONSTRAINTS
+
+  - id: aero-astronautical
+    name: Aerospace Engineering Major (Astronautical Track)
+    buckets:
+      - ...$CORE
+      - ENAE404
+      - ENAE457
+      - ENAE493
+      - { id: enae494, label: ENAE494 Space Systems Design, match: [ENAE494, ENAE484], courses: 1 }
+      - id: enae-electives
+        label: ENAE electives (6 cr)
+        match: { any: [ENAE400-499, ENAE398], except: [$ENAE_REQUIRED_4XX, $ASTRONAUTICAL] }
+        credits: 6
+        note: $ENAE_ELECTIVES_NOTE
+      - id: tech-elective
+        label: Technical elective (non-ENAE)
+        match: $TECH_LIST
+        courses: 1
+        note: $TECH_NOTE
+    constraints: $CORE_CONSTRAINTS

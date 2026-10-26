@@ -1,6 +1,6 @@
 # UMD Degree Planner
 
-A semester-by-semester planner for UMD students. It audits requirements for CS, Math and the Robotics minor, plus GenEd and university rules, and enforces the double-counting limits between programs.
+A semester-by-semester planner for UMD students. It audits requirements for UMD's most common majors and several popular minors, plus GenEd and university rules, and enforces the double-counting limits between programs.
 
 ```sh
 npm install
@@ -57,12 +57,26 @@ Everything runs in the browser, so the site is static files on GitHub Pages.
 
 | Program | Tracks | Spec |
 |---|---|---|
-| Computer Science B.S. | General, Cybersecurity, Data Science, Machine Learning, Quantum Information | [docs/research/cs-major.md](docs/research/cs-major.md) |
-| Mathematics B.S. | Applied, Traditional, Statistics | [docs/research/math-major.md](docs/research/math-major.md) |
-| Robotics & Autonomous Systems minor | — | [docs/research/ras-minor.md](docs/research/ras-minor.md) |
-| GenEd + university rules | — | [docs/research/gened-and-university.md](docs/research/gened-and-university.md) |
+| Computer Science B.S. | General, Cybersecurity, Data Science, Machine Learning, Quantum Information | [cs-major.md](docs/research/cs-major.md) |
+| Mathematics B.S. | Applied, Traditional, Statistics | [math-major.md](docs/research/math-major.md) |
+| Computer Engineering B.S., Electrical Engineering B.S. | — | [ece.md](docs/research/ece.md) |
+| Mechanical Engineering B.S. | — | [mechanical-engineering.md](docs/research/mechanical-engineering.md) |
+| Aerospace Engineering B.S. | Aeronautical, Astronautical | [aerospace-engineering.md](docs/research/aerospace-engineering.md) |
+| Biological Sciences B.S. | General Biology; Cell Biology and Genetics; Ecology and Evolution; Microbiology; Physiology and Neurobiology; Individualized Studies | [biology.md](docs/research/biology.md) |
+| Information Science B.S. | General; Data Science, Cybersecurity and Privacy, Digital Curation and Health Information cognates | [information-science.md](docs/research/information-science.md) |
+| Public Health Science B.S. | — | [public-health-science.md](docs/research/public-health-science.md) |
+| Finance, Accounting, Marketing, and Operations Management & Business Analytics B.S. | Accounting: Public Accounting, Business and Accounting Advisory | [business.md](docs/research/business.md) |
+| Psychology | B.A., B.S. | [psychology.md](docs/research/psychology.md) |
+| Criminology and Criminal Justice B.A. | — | [criminology.md](docs/research/criminology.md) |
+| Economics | B.A., B.S. | [economics.md](docs/research/economics.md) |
+| Government and Politics | B.A., B.S. | [government-politics.md](docs/research/government-politics.md) |
+| Minors: Statistics, Mathematics, Computer Science, Data Science, General Business, Technology Entrepreneurship and Corporate Innovation | — | [minors.md](docs/research/minors.md) |
+| Robotics & Autonomous Systems minor | — | [ras-minor.md](docs/research/ras-minor.md) |
+| GenEd + university rules | — | [gened-and-university.md](docs/research/gened-and-university.md) |
 
-All encodings follow the 2025-26 catalog. The research found no requirement changes in 2026-27.
+The majors are UMD's ten largest (IRPA's Fall 2021 enrollment report) plus Computer Engineering, Electrical and Aerospace Engineering, and the rest of the Smith School's largest majors. Each spec lists its sources, the readings chosen where the catalog is ambiguous, and what is left as a note rather than checked. Rules that need a department's judgement (an approved elective, a petition) are waivers.
+
+All encodings follow the 2025-26 catalog; each spec notes any 2026-27 changes.
 
 ## How the audit works
 

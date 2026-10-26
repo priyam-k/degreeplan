@@ -1,0 +1,325 @@
+# UMD Biological Sciences B.S. — 2025-26 catalog, all six specializations. See docs/research/biology.md.
+# 2026-27 differences (accepted too): BSCI161 + BSCI171 → BSCI180; BSCI330 → BSCI331 + BSCI332.
+# Format: README.md in this folder.
+
+kind: major
+short: Bio
+college: Computer, Mathematical & Natural Sciences
+notes: $NOTES
+sources: $SOURCES
+
+defs:
+  SOURCES:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/biological-sciences/
+    - https://web.archive.org/web/20251112012234/https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/biological-sciences/
+    - https://bsci.umd.edu/specialize
+  NOTES:
+    - C- or better in every major course (basic, supporting and advanced); 2.0 GPA in the major and overall.
+    - Limited Enrollment Program with benchmark courses (bsci.umd.edu/benchmarks); 120 credits for the degree.
+    - First semester - UNIV100/CMNS100 or another approved freshman seminar (department degree sheet, not in the catalog; not checked).
+    - A lab counts toward the two upper-level labs only with a C- or better in its pre-/co-requisite lecture.
+    - Several semesters of research may count as one of the two labs with advisor approval (waive the lab rule).
+    - Special topics (BSCI328/338/339/348/439) count only if approved for the specialization (see Testudo) — the planner accepts any topic.
+    - Integrated Life Sciences honors - HLSC322 replaces BSCI222 and HLSC374 replaces BSCI374.
+    - Credit is granted for only one of BSCI223/BSCI283; neither counts as an upper-level lab.
+    - "Not checked: chemistry-major sequences (CHEM146/177, 237/247) or PHYS161/260/270 in place of the listed chemistry and physics — ask an advisor."
+  # Spliced into every track's aliases (the family name "Biological Sciences" is tried already).
+  ALIASES: [BIOLOGICAL SCIENCES, BIOLOGICAL SCI, BIOL SCIENCES, Biological Sciences Major]
+
+  # --- Basic program and supporting courses (same for every specialization) ----------------------------
+  BASIC:
+    - BSCI160
+    - BSCI170
+    - id: intro-lab
+      label: "Intro biology lab (BSCI180, or BSCI161 + 171)"
+      match: [BSCI161, BSCI171, BSCI180]
+      courses: 1
+      note: 2025-26 lists BSCI161 and BSCI171; from Fall 2026 BSCI180 replaces both. AP/IB credit counts.
+    - BSCI207
+    - { id: bsci222, label: BSCI222 Principles of Genetics, match: [BSCI222, HLSC322], courses: 1 }
+    - id: math
+      label: "Math: MATH135 + 136, 140 + 141 or 140 + 135"
+      match: [MATH135, MATH136, MATH140, MATH141]
+      courses: 2
+    - { id: chem131, label: CHEM131 + CHEM132 General Chemistry I, match: [CHEM131, CHEM132], courses: 2 }
+    - { id: chem231, label: CHEM231 + CHEM232 Organic Chemistry I, match: [CHEM231, CHEM232], courses: 2 }
+    - { id: chem241, label: CHEM241 + CHEM242 Organic Chemistry II, match: [CHEM241, CHEM242], courses: 2 }
+    - { id: chem271, label: CHEM271 + CHEM272 Energetics & Bioanalytical, match: [CHEM271, CHEM272], courses: 2 }
+    - { id: phys1, label: PHYS131 or PHYS141, match: [PHYS131, PHYS141], courses: 1 }
+    - { id: phys2, label: PHYS132 or PHYS142, match: [PHYS132, PHYS142], courses: 1 }
+  BASIC_RULES:
+    - kind: anySet
+      id: intro-lab-set
+      label: "BSCI180, or both BSCI161 and BSCI171"
+      buckets: [intro-lab]
+      options:
+        - { label: BSCI161 + BSCI171 (2025-26), slots: [BSCI161, BSCI171] }
+        - { label: BSCI180 (2026-27), slots: [BSCI180] }
+    - kind: anySet
+      id: math-set
+      label: A two-course math pairing
+      buckets: [math]
+      options:
+        - slots: [MATH135, MATH136]
+        - slots: [MATH140, MATH141]
+        - slots: [MATH140, MATH135]
+
+  # --- Advanced program building blocks ------------------------------------------------------------------
+  # Upper-level courses the catalog or the department degree sheets mark as labs ("(Lab)", "w/Lab",
+  # "Laboratory", or the "requires C- in the lecture to count as a lab" footnote).
+  LABS:
+    - [BSCI330, BSCI332, BSCI333, BSCI335, BSCI337, BSCI348C, BSCI364, BSCI374, HLSC374, BSCI393]
+    - [BSCI405, BSCI411, BSCI412, BSCI414, BSCI415, BSCI423, BSCI424, BSCI425, BSCI442, BSCI451]
+    - [BSCI454, BSCI455, BSCI467, BSCI480, BSCI481, BSCI487, BSCI497, BCHM464]
+  SPECIAL_TOPICS: [BSCI328-328, BSCI338-339, BSCI348-348, BSCI439-439]
+  HONORS_SEMINAR: [BSCI378H, BSCI398H]
+  RESEARCH: [BSCI379-379, BSCI389-389, BSCI399-399]
+  STATS: [BIOM301, STAT400, STAT464]
+  CELL_BIO_LAB:
+    id: cell-bio
+    label: BSCI330 (or BSCI331 + 332) Cell Biology & Physiology
+    match: [BSCI330, BSCI331, BSCI332]
+    credits: 4
+    note: BSCI330 (4 cr, 2025-26) became BSCI331 lecture + BSCI332 lab (2026-27).
+  ENRICHMENT:
+    id: enrichment
+    label: Enrichment (3 cr)
+    match: [BSCI300-499, CHEM300-499, BCHM300-499, HLSC374]
+    credits: 3
+    note: Any 300-400 BSCI, CHEM or BCHM course not used elsewhere. Other departments with advisor permission (waive). Doesn't count as a lab.
+  ENRICHMENT_CAP: { kind: maxFrom, id: enrichment-cap, label: Enrichment counts at most 3 credits, buckets: [enrichment], match: "*", credits: 4 }
+
+  # --- Specialization area lists (catalog plus the department degree sheets) -------------------------------
+  CEBG_CELL:
+    - [BSCI343, BSCI353, BSCI404, BSCI406, BSCI417, BSCI422, BSCI423, BSCI430]
+    - [BSCI432, BSCI433, BSCI436, BSCI442, BSCI443, BSCI454, BSCI455]
+  CEBG_GENETICS: [BSCI381, BSCI402, BSCI405, BSCI406, BSCI407, BSCI411, BSCI412, BSCI414, BSCI415, BSCI416, BCHM465]
+  CEBG_OTHER: [BSCI223, BSCI283, BSCI374, HLSC374, BSCI425, BSCI427, BSCI437, BCHM464]
+
+  ECEV_300:
+    - [BSCI330, BSCI331, BSCI332, BSCI333, BSCI334, BSCI335, BSCI337, BSCI360, BSCI363]
+    - [BSCI364, BSCI366, BSCI373, BSCI374, HLSC374, BSCI392, BSCI393]
+  ECEV_400:
+    - [BSCI400, BSCI401, BSCI403, BSCI405, BSCI407, BSCI410, BSCI426, BSCI430, BSCI431, BSCI460, BSCI461]
+    - [BSCI462, BSCI464, BSCI465, BSCI467, BSCI471, BSCI473, BSCI475, BSCI476, BSCI477, BSCI480]
+    - [BSCI481, BSCI483, BSCI487, BSCI494, BSCI497]
+
+  GENB_GE: [BCHM465, BSCI370, BSCI381, BSCI402, BSCI405, BSCI407, BSCI410, BSCI411, BSCI412, BSCI414, BSCI415, BSCI416, BSCI471, BSCI476]
+  GENB_CDP:
+    - [BCHM462, BCHM464, BSCI330, BSCI331, BSCI332, BSCI342, BSCI343, BSCI348C, BSCI353, BSCI355, BSCI357]
+    - [BSCI403, BSCI404, BSCI406, BSCI413, BSCI417, BSCI420, BSCI422, BSCI423, BSCI424, BSCI425, BSCI430]
+    - [BSCI431, BSCI432, BSCI433, BSCI436, BSCI437, BSCI442, BSCI443, BSCI446, BSCI447, BSCI450, BSCI451]
+    - [BSCI452, BSCI453, BSCI454, BSCI455, BSCI456]
+  GENB_EBO:
+    - [BSCI333, BSCI334, BSCI335, BSCI337, BSCI338B, BSCI348M, BSCI360, BSCI361, BSCI363, BSCI364, BSCI366]
+    - [BSCI373, BSCI392, BSCI393, BSCI400, BSCI401, BSCI403, BSCI426, BSCI460, BSCI462, BSCI464, BSCI465]
+    - [BSCI467, BSCI473, BSCI477, BSCI480, BSCI481, BSCI483, BSCI487, BSCI494, BSCI497]
+
+  MICB_AREA: [BSCI411, BSCI417, BSCI422, BSCI423, BSCI424, BSCI437, BSCI464, BSCI348J, BSCI348M]
+
+  PHNB_AREA:
+    - [BCHM462, BCHM464, BCHM465, BSCI343, BSCI355, BSCI357, BSCI360, BSCI370, BSCI374, HLSC374, BSCI381]
+    - [BSCI401, BSCI402, BSCI403, BSCI404, BSCI406, BSCI407, BSCI410, BSCI414, BSCI416, BSCI420, BSCI422]
+    - [BSCI423, BSCI425, BSCI430, BSCI431, BSCI433, BSCI442, BSCI443, BSCI446, BSCI447, BSCI451, BSCI441]
+    - [BSCI452, BSCI453, BSCI454, BSCI455, BSCI456]
+
+  # CMNS departments, for the Individualized Studies "courses outside CMNS" rule.
+  CMNS_DEPTS:
+    - [AMSC100-899, AOSC100-899, ASTR100-899, BCHM100-899, BIOI100-899, BIOL100-899, BIOM100-899, BIPH100-899]
+    - [BSCI100-899, BSCV100-899, CBMG100-899, CHEM100-899, CHPH100-899, CMNS100-899, CMSC100-899, DATA100-899]
+    - [ENTM100-899, GEOL100-899, HLSC100-899, MATH100-899, MOCB100-899, NACS100-899, NEUR100-899, PHSC100-899]
+    - [PHYS100-899, STAT100-899]
+
+programs:
+  # General Biology first: a transcript that names no specialization defaults to it.
+  - id: bio-gen
+    name: Biological Sciences Major (General Biology)
+    sources: ["...$SOURCES", https://bsci.umd.edu/s/GENB-GENEd-2024.pdf]
+    aliases: ["...$ALIASES", "Biological Sciences: General Biology", BIOLOGICAL SCIENCES GENERAL BIOLOGY, GENB]
+    buckets:
+      - ...$BASIC
+      - { id: biochem, label: BCHM461 or BCHM463 Biochemistry, match: [BCHM461, BCHM463], choose: 1 }
+      - id: quant
+        label: "Quantitative: BIOM301, BSCI374, STAT400/464 or MATH240"
+        match: [BIOM301, BSCI374, HLSC374, STAT400, STAT464, MATH240]
+        choose: 1
+        note: A math course above MATH240 with advisor approval (waive).
+      - id: area
+        label: General Biology area courses (20 cr)
+        match: [$GENB_GE, $GENB_CDP, $GENB_EBO, BSCI223, BSCI283, $SPECIAL_TOPICS, $HONORS_SEMINAR, $RESEARCH]
+        credits: 20
+        note: 20-21 credits (27 with the required courses), at least one 3-credit course from each of the three areas.
+    constraints:
+      - ...$BASIC_RULES
+      - { kind: minFrom, id: advanced-27, label: Advanced Program ≥ 27 credits, buckets: [biochem, quant, area], match: "*", credits: 27 }
+      - { kind: minFrom, id: labs, label: Two 300-400 level lab courses, buckets: [biochem, quant, area], match: $LABS, courses: 2 }
+      - kind: distinct
+        id: genb-areas
+        label: One course from each General Biology area
+        buckets: [area]
+        min: 3
+        groups:
+          - { id: ge, label: Genetics & Evolution, match: $GENB_GE }
+          - { id: cdp, label: "Cell Biology, Development & Physiology", match: $GENB_CDP }
+          - { id: ebo, label: "Ecology, Behavior & Organismal", match: $GENB_EBO }
+      - { kind: minFrom, id: genb-ge-3, label: ≥ 3 cr in Genetics & Evolution, buckets: [area], match: $GENB_GE, credits: 3 }
+      - { kind: minFrom, id: genb-cdp-3, label: "≥ 3 cr in Cell Biology, Development & Physiology", buckets: [area], match: $GENB_CDP, credits: 3 }
+      - { kind: minFrom, id: genb-ebo-3, label: "≥ 3 cr in Ecology, Behavior & Organismal", buckets: [area], match: $GENB_EBO, credits: 3 }
+      - { kind: maxFrom, id: research-cap, label: ≤ 3 research credits, buckets: [area], match: $RESEARCH, credits: 3 }
+      - { kind: maxFrom, id: honors-cap, label: ≤ 1 credit of honors seminar, buckets: [area], match: $HONORS_SEMINAR, credits: 1 }
+
+  - id: bio-cbg
+    name: Biological Sciences Major (Cell Biology and Genetics)
+    sources: ["...$SOURCES", https://bsci.umd.edu/s/CEBG-GENEd-2023-2z9a.pdf]
+    aliases: ["...$ALIASES", "Biological Sciences: Cell Biology & Genetics", BIOLOGICAL SCIENCES CELL BIOLOGY AND GENETICS, CEBG]
+    buckets:
+      - ...$BASIC
+      - BCHM461
+      - BCHM462
+      - $CELL_BIO_LAB
+      - BSCI410
+      - BSCI420
+      - id: area
+        label: CEBG area courses (8 cr)
+        match: [$CEBG_CELL, $CEBG_GENETICS, $CEBG_OTHER, $STATS, $SPECIAL_TOPICS, $HONORS_SEMINAR]
+        credits: 8
+        note: One course from the Cell Biology group and one from the Genetics group; at most one statistics course.
+      - $ENRICHMENT
+    constraints:
+      - ...$BASIC_RULES
+      - kind: minFrom
+        id: advanced-27
+        label: Advanced Program ≥ 27 credits
+        buckets: [bchm461, bchm462, cell-bio, bsci410, bsci420, area, enrichment]
+        match: "*"
+        credits: 27
+      - { kind: minFrom, id: labs, label: Two 300-400 level lab courses, buckets: [bchm461, bchm462, cell-bio, bsci410, bsci420, area], match: $LABS, courses: 2 }
+      - kind: distinct
+        id: cebg-groups
+        label: One Cell Biology and one Genetics course
+        buckets: [area]
+        min: 2
+        groups:
+          - { id: cell, label: Cell Biology, match: $CEBG_CELL }
+          - { id: genetics, label: Genetics, match: $CEBG_GENETICS }
+      - { kind: maxFrom, id: stats-cap, label: At most one statistics course, buckets: [area], match: $STATS, courses: 1 }
+      - $ENRICHMENT_CAP
+      - { kind: maxFrom, id: research-cap, label: ≤ 3 research credits, buckets: [area, enrichment], match: $RESEARCH, credits: 3 }
+      - { kind: maxFrom, id: honors-cap, label: ≤ 1 credit of honors seminar, buckets: [area, enrichment], match: $HONORS_SEMINAR, credits: 1 }
+
+  - id: bio-ee
+    name: Biological Sciences Major (Ecology and Evolution)
+    sources: ["...$SOURCES", https://bsci.umd.edu/s/ECEV-GENEd-2023-95sx.pdf]
+    aliases: ["...$ALIASES", "Biological Sciences: Ecology & Evolution", BIOLOGICAL SCIENCES ECOLOGY AND EVOLUTION, ECEV]
+    buckets:
+      - ...$BASIC
+      - BSCI361
+      - BSCI370
+      - { id: stats, label: "BIOM301, STAT400 or STAT464", match: $STATS, choose: 1 }
+      - id: area
+        label: Ecology & Evolution area courses (14 cr)
+        match: [$ECEV_300, $ECEV_400, $SPECIAL_TOPICS, $HONORS_SEMINAR]
+        credits: 14
+        note: At least two 400-level courses. BSCI460 + 461 together count as one 400-level course.
+      - $ENRICHMENT
+    constraints:
+      - ...$BASIC_RULES
+      - { kind: minFrom, id: advanced-27, label: Advanced Program ≥ 27 credits, buckets: [bsci361, bsci370, stats, area, enrichment], match: "*", credits: 27 }
+      - { kind: minFrom, id: labs, label: Two 300-400 level lab courses, buckets: [bsci361, bsci370, stats, area], match: $LABS, courses: 2 }
+      - { kind: minFrom, id: ecev-400, label: Two 400-level area courses, buckets: [area], match: BSCI400-499, courses: 2 }
+      - $ENRICHMENT_CAP
+      - { kind: maxFrom, id: research-cap, label: ≤ 3 research credits, buckets: [area, enrichment], match: $RESEARCH, credits: 3 }
+      - { kind: maxFrom, id: honors-cap, label: ≤ 1 credit of honors seminar, buckets: [area, enrichment], match: $HONORS_SEMINAR, credits: 1 }
+
+  - id: bio-micro
+    name: Biological Sciences Major (Microbiology)
+    sources: ["...$SOURCES", https://bsci.umd.edu/s/MICB-GENEd-2023-mr6s.pdf]
+    aliases: ["...$ALIASES", "Biological Sciences: Microbiology", BIOLOGICAL SCIENCES MICROBIOLOGY, MICB]
+    buckets:
+      - ...$BASIC
+      - id: bsci283
+        label: BSCI283 Principles of Microbiology
+        match: [BSCI283, BSCI223]
+        choose: 1
+        note: BSCI223 only with the Undergraduate Program Director's permission.
+      - BSCI412
+      - BSCI443
+      - id: biochem
+        label: "BCHM461 + 462, or BCHM463 + 465"
+        match: [BCHM461, BCHM462, BCHM463, BCHM465]
+        choose: 2
+      - id: area
+        label: Microbiology area courses (7 cr)
+        match: [$MICB_AREA, BSCI338-339, BSCI348-348, BSCI439-439, $HONORS_SEMINAR]
+        credits: 7
+        note: Must include a 300-400 level lab. Credit for only one of BSCI424/BSCI348J.
+      - $ENRICHMENT
+    constraints:
+      - ...$BASIC_RULES
+      - kind: anySet
+        id: biochem-pair
+        label: A biochemistry pair
+        buckets: [biochem]
+        options:
+          - slots: [BCHM461, BCHM462]
+          - slots: [BCHM463, BCHM465]
+      - { kind: minFrom, id: advanced-27, label: Advanced Program ≥ 27 credits, buckets: [bsci283, bsci412, bsci443, biochem, area, enrichment], match: "*", credits: 27 }
+      - { kind: minFrom, id: labs, label: Two 300-400 level lab courses, buckets: [bsci283, bsci412, bsci443, biochem, area], match: $LABS, courses: 2 }
+      - { kind: minFrom, id: area-lab, label: A lab among the area courses, buckets: [area], match: $LABS, courses: 1 }
+      - $ENRICHMENT_CAP
+      - { kind: maxFrom, id: research-cap, label: ≤ 3 research credits, buckets: [area, enrichment], match: $RESEARCH, credits: 3 }
+      - { kind: maxFrom, id: honors-cap, label: ≤ 1 credit of honors seminar, buckets: [area, enrichment], match: $HONORS_SEMINAR, credits: 1 }
+
+  - id: bio-pn
+    name: Biological Sciences Major (Physiology and Neurobiology)
+    sources: ["...$SOURCES", https://bsci.umd.edu/s/PHNB-GENEd-2023-fx5k.pdf]
+    aliases: ["...$ALIASES", "Biological Sciences: Physiology & Neurobiology", BIOLOGICAL SCIENCES PHYSIOLOGY AND NEUROBIOLOGY, PHNB]
+    buckets:
+      - ...$BASIC
+      - { id: biochem, label: BCHM461 or BCHM463 Biochemistry, match: [BCHM461, BCHM463], choose: 1 }
+      - $CELL_BIO_LAB
+      - BSCI353
+      - { id: bsci450, label: BSCI450 Mammalian Systems Physiology, match: [BSCI450, BSCI440, BSCI338L], choose: 1, note: Formerly BSCI440 / BSCI338L. }
+      - id: area
+        label: Physiology & Neurobiology area courses (11 cr)
+        match: [$PHNB_AREA, $STATS, $SPECIAL_TOPICS, $HONORS_SEMINAR]
+        credits: 11
+        note: At most one statistics course (BIOM301, STAT400, STAT464).
+      - $ENRICHMENT
+    constraints:
+      - ...$BASIC_RULES
+      - { kind: minFrom, id: advanced-27, label: Advanced Program ≥ 27 credits, buckets: [biochem, cell-bio, bsci353, bsci450, area, enrichment], match: "*", credits: 27 }
+      - { kind: minFrom, id: labs, label: Two 300-400 level lab courses, buckets: [biochem, cell-bio, bsci353, bsci450, area], match: $LABS, courses: 2 }
+      - { kind: maxFrom, id: stats-cap, label: At most one statistics course, buckets: [area], match: $STATS, courses: 1 }
+      - $ENRICHMENT_CAP
+      - { kind: maxFrom, id: research-cap, label: ≤ 3 research credits, buckets: [area, enrichment], match: $RESEARCH, credits: 3 }
+      - { kind: maxFrom, id: honors-cap, label: ≤ 1 credit of honors seminar, buckets: [area, enrichment], match: $HONORS_SEMINAR, credits: 1 }
+
+  - id: bio-ivs
+    name: Biological Sciences Major (Individualized Studies)
+    aliases: ["...$ALIASES", "Biological Sciences: Individualized Studies", BIOLOGICAL SCIENCES INDIVIDUALIZED STUDIES, BIVS]
+    buckets:
+      - ...$BASIC
+      - id: core
+        label: Biochemistry / quantitative (6 cr)
+        match: [BCHM300-499, $STATS, STAT400-499, BSCI374, HLSC374, MATH240-499]
+        credits: 6
+        note: Advisor-approved; the planner accepts upper-level BCHM, statistics, BSCI374 and MATH ≥ 240.
+      - id: area
+        label: Individualized Studies area courses (21 cr)
+        match: "*200-499"
+        credits: 21
+        note: Advisor-approved courses supporting the approved BIVS topic (any 200-400 course is accepted here).
+    constraints:
+      - ...$BASIC_RULES
+      - { kind: minFrom, id: advanced-27, label: Advanced Program ≥ 27 credits, buckets: [core, area], match: "*", credits: 27 }
+      - { kind: minFrom, id: labs, label: Two 300-400 level lab courses, buckets: [core, area], match: $LABS, courses: 2 }
+      - { kind: maxFrom, id: lower-cap, label: ≤ 4 credits at the 200 level, buckets: [area], match: "*200-299", credits: 4 }
+      - { kind: minFrom, id: outside-min, label: ≥ 3 credits outside CMNS, buckets: [area], match: { any: ["*200-499"], except: $CMNS_DEPTS }, credits: 3 }
+      - { kind: maxFrom, id: outside-max, label: ≤ 6 credits outside CMNS, buckets: [area], match: { any: ["*200-499"], except: $CMNS_DEPTS }, credits: 6 }
+      - { kind: minFrom, id: research-paper, label: 2 credits of research (BIVS paper), buckets: [area], match: $RESEARCH, credits: 2 }
+      - { kind: maxFrom, id: research-cap, label: ≤ 3 research credits, buckets: [area], match: $RESEARCH, credits: 3 }
+    notes:
+      - "...$NOTES"
+      - Requires a proposal approved by the Assistant Dean / Biological Sciences Director; all advanced courses need advisor approval.
+      - Outside-CMNS courses (3-6 cr) must support the BIVS topic; the 2-credit research paper is written under the advisor (BSCI379/389/399 assumed).

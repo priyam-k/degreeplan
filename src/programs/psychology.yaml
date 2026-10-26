@@ -1,0 +1,165 @@
+# UMD Psychology B.A. and B.S. — 2025-26 catalog. 2026-27 changes only the B.S. math/science
+# totals (see notes). See docs/research/psychology.md.
+# Format: README.md in this folder.
+
+kind: major
+college: Behavioral & Social Sciences
+aliases: [PSYCHOLOGY]
+sources: $SOURCES
+
+defs:
+  SOURCES:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/psychology/psychology-major/
+    - https://psyc.umd.edu/undergraduate/degree-requirements-bs-and-ba
+    - https://psyc.umd.edu/undergraduate/psyc-courses-psyc-syllabi
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/
+  BS_SOURCES:
+    - https://psyc.umd.edu/sites/psyc.umd.edu/files/2025-03/BS%20Revised%202022_0.pdf
+
+  NOTES:
+    - C- or better in every PSYC course used for the major, except PSYC100 (or PSYC221 when PSYC100 came from AP), which needs a B-.
+    - "Limited Enrollment Program: PSYC100 (B-), BSCI170 (C-) and MATH120/140 (C-) by the 45-credit review, a 2.0 UMD GPA, and a 2.7 GPA for students who change into the major."
+    - MATH136 (and MATH130) count for the math gateway only for Biological Sciences majors (or MATH136 taken before declaring PSYC).
+    - 2.0 GPA across all courses used for the major (BSOS).
+    - "BSOS: 15 upper-level credits within the final 30 credits (sequencing; not checked here)."
+    - The multicultural course is required of students who declared after Fall 2021 schedule adjustment.
+    - At most 3 PSYC courses per semester (PSYC123, 303, 309G/P/R, 389, 478 and 479 don't count toward this cap).
+    - PSYC123, 303, 309F/G/P/R, 389, 409, 468H, 469H, 478, 479, 498x and 499H never count toward the major.
+    - PSYC309x/489x letters are reused for different topics. Themes here follow the department list; a topic missing from it counts toward the 25 credits but not a theme (ask an advisor, then waive).
+    - PSYC489J is listed under Theme I (Human Brain Mapping) and Theme III (Advanced Statistics); this planner puts it in Theme I.
+
+  # Department theme lists (psyc-courses-psyc-syllabi, current and Nov 2025 versions combined).
+  THEME1:
+    - [PSYC202, PSYC206, PSYC207, PSYC301, PSYC302, PSYC304, PSYC307, PSYC310, PSYC341, PSYC355]
+    - [PSYC401, PSYC402, PSYC403, PSYC404, PSYC406, PSYC407, PSYC410, PSYC411, PSYC413, PSYC414, PSYC417]
+    - [PSYC431, PSYC440, PSYC442, PSYC443, PSYC455, PSYC489G, PSYC489J, PSYC489N, PSYC489X]
+  THEME2:
+    - [PSYC210, PSYC234, PSYC262, PSYC330, PSYC332, PSYC336, PSYC337, PSYC344, PSYC353, PSYC381, PSYC391]
+    - [PSYC425, PSYC432, PSYC433, PSYC434, PSYC435, PSYC436, PSYC437, PSYC444, PSYC445, PSYC457, PSYC459A]
+    - [PSYC489A, PSYC489E, PSYC489M, PSYC489Q, PSYC489V, PSYC489W]
+  THEME3:
+    - [PSYC221, PSYC232, PSYC237, PSYC309D, PSYC309I, PSYC334, PSYC354, PSYC356, PSYC357, PSYC361, PSYC362]
+    - [PSYC416, PSYC420, PSYC423, PSYC424, PSYC426, PSYC447, PSYC450, PSYC451, PSYC452, PSYC456]
+    - [PSYC460, PSYC463, PSYC464, PSYC465, PSYC489F, PSYC489H, PSYC489I, PSYC489K, PSYC489P, PSYC489T, PSYC489Y]
+    # Spring 2027 reuses these letters for other topics (Decoding the Brain; ADHD).
+    - { any: [PSYC489C], except: { topic: PSYC489C, terms: [Spring 2027] } }
+    - { any: [PSYC489O], except: { topic: PSYC489O, terms: [Spring 2027] } }
+  MULTICULTURAL:
+    - [PSYC232, PSYC262, PSYC336, PSYC354, PSYC391, PSYC447, PSYC489E, PSYC489F]
+    - { topic: PSYC489Q, terms: [Spring 2026, Spring 2027] } # Psychology of the Black Experience
+  # 4-credit labs (bold on the department list).
+  LABS: [PSYC401, PSYC407, PSYC410, PSYC417, PSYC420, PSYC433, PSYC440, PSYC450, PSYC456, PSYC457, PSYC459A]
+  NOT_APPLICABLE:
+    - [PSYC303, PSYC309F, PSYC309G, PSYC309P, PSYC309R, PSYC389, PSYC409]
+    - [PSYC468H, PSYC469H, PSYC478, PSYC479, PSYC498-498, PSYC499]
+
+  CORE:
+    - { id: psyc100, label: PSYC100 Intro to Psychology, match: PSYC100, courses: 1, note: B- or better (LEP gateway). }
+    - PSYC200
+    - PSYC300
+    - id: electives
+      label: 8 more PSYC courses (25 cr)
+      match: { any: [PSYC200-499], except: [PSYC200, PSYC300, $NOT_APPLICABLE] }
+      courses: 8
+      credits: 25
+      note: Any PSYC course that applies to the major. The theme, multicultural, 400-level and lab rules below pick from these.
+    - { id: gateway-math, label: Math gateway (MATH120/140), match: [MATH120, MATH140, MATH130, MATH136], courses: 1, note: "C- or better. MATH130/136: Biological Sciences majors only." }
+    - { id: gateway-bsci, label: BSCI170 Biology gateway, match: BSCI170, courses: 1, note: C- or better. }
+
+  CORE_RULES:
+    - { kind: minFrom, id: theme1, label: "≥ 2 from Theme I: Mind, Brain & Behavior", buckets: [electives], match: $THEME1, courses: 2 }
+    - { kind: minFrom, id: theme2, label: "≥ 2 from Theme II: Mental Health & Interventions", buckets: [electives], match: $THEME2, courses: 2 }
+    - { kind: minFrom, id: theme3, label: "≥ 2 from Theme III: Social, Developmental & Organizational", buckets: [electives], match: $THEME3, courses: 2 }
+    - { kind: minFrom, id: multicultural, label: A multicultural PSYC course, buckets: [electives], match: $MULTICULTURAL, courses: 1 }
+    - kind: minFrom
+      id: upper400
+      label: Two 400-level 3-credit (non-lab) PSYC courses
+      buckets: [electives]
+      match: { any: [PSYC400-499], except: [$LABS, $NOT_APPLICABLE] }
+      courses: 2
+    - { kind: minFrom, id: lab, label: A 4-credit PSYC lab, buckets: [electives], match: $LABS, courses: 1 }
+
+  # B.S. list (department PDF, updated 02/02/2022). CHEM231/232-style pairs are separate courses here.
+  BS_LIST:
+    - [BSCI201, BSCI202, BSCI207, BSCI222, BSCI223, BSCI224, BSCI230, BSCI330, BSCI312, BSCI342, BSCI360, BSCI361]
+    - [BSCI363, BSCI370, BSCI375, BSCI380, BSCI390, BSCI394, BSCI410, BSCI412, BSCI413, BSCI414, BSCI415, BSCI416]
+    - [BSCI417, BSCI420, BSCI421, BSCI422, BSCI423, BSCI424, BSCI425, BSCI426, BSCI430, BSCI433, BSCI434, BSCI436]
+    - [BSCI437, BSCI440, BSCI441, BSCI442, BSCI443, BSCI444, BSCI445, BSCI446, BSCI447, BSCI451, BSCI462, BSCI463]
+    - [BSCI464, BSCI465, BSCI470, BSCI471, BSCI473, BSCI474, BSCI485]
+    - [BCHM261, BCHM461, BCHM462, BCHM463, BCHM464, BCHM465, BCHM485]
+    - [CHEM227, CHEM231, CHEM232, CHEM237, CHEM241, CHEM242, CHEM247, CHEM271, CHEM272, CHEM276, CHEM277]
+    - [CHEM401, CHEM403, CHEM425, CHEM441, CHEM450, CHEM460, CHEM474, CHEM481, CHEM482, CHEM483, CHEM484]
+    - [CHEM491, CHEM492, CHEM493]
+    - [CMSC114, CMSC131, CMSC132, CMSC212, CMSC214, CMSC250, CMSC311, CMSC330, CMSC351, CMSC411, CMSC412]
+    - [CMSC414, CMSC415, CMSC417, CMSC420, CMSC421, CMSC422, CMSC423, CMSC424, CMSC426, CMSC427, CMSC430]
+    - [CMSC433, CMSC434, CMSC435, CMSC450, CMSC451, CMSC452, CMSC456, CMSC460, CMSC462, CMSC466, CMSC475, CMSC477]
+    - [MATH121, MATH131, MATH141, MATH221, MATH241, MATH242, MATH246, MATH274, MATH310, MATH340, MATH341]
+    - [MATH400, MATH401, MATH402, MATH403, MATH404, MATH405, MATH406, MATH410, MATH411, MATH412, MATH414]
+    - [MATH420, MATH424, MATH430, MATH431, MATH432, MATH436, MATH437, MATH445, MATH446, MATH450, MATH452]
+    - [MATH456, MATH461, MATH462, MATH463, MATH464, MATH475]
+    - [NEUR305, NEUR306, NEUR405]
+    - [PHYS141, PHYS142, PHYS161, PHYS165, PHYS171, PHYS174, PHYS260, PHYS261, PHYS270, PHYS271, PHYS272]
+    - [PHYS273, PHYS275, PHYS276, PHYS374, PHYS375, PHYS401, PHYS402, PHYS404, PHYS405, PHYS406, PHYS410]
+    - [PHYS411, PHYS420, PHYS426, PHYS429, PHYS431, PHYS441, PHYS451, PHYS461, PHYS463, PHYS465, PHYS474]
+    - [PHYS483, PHYS485]
+    - [PSYC302, PSYC304, PSYC341, PSYC355, PSYC401, PSYC403, PSYC406, PSYC407, PSYC414, PSYC417, PSYC420]
+    - [PSYC433, PSYC437, PSYC440, PSYC450, PSYC464]
+    - [STAT400, STAT401, STAT405, STAT410, STAT420, STAT430, STAT440, STAT464, STAT470]
+  # Lab courses on that list (bold and underlined).
+  BS_LABS:
+    - [BSCI201, BSCI202, BSCI222, BSCI223, BSCI224, BSCI230, BSCI330, BSCI312, BSCI380, BSCI412, BSCI414]
+    - [BSCI415, BSCI421, BSCI424, BSCI434, BSCI442, BSCI445, BSCI474, BSCI485, BCHM465]
+    - [CHEM227, CHEM232, CHEM242, CHEM272, CHEM277, CHEM425, CHEM483, CHEM484, CHEM491, CHEM492, CHEM493]
+    - [CMSC114, CMSC131, CMSC132, CMSC214, CMSC330, CMSC412, NEUR405]
+    - [PHYS141, PHYS142, PHYS174, PHYS261, PHYS271, PHYS275, PHYS276, PHYS375]
+    - [PSYC401, PSYC407, PSYC417, PSYC420, PSYC433, PSYC440, PSYC450]
+
+programs:
+  - id: psyc-ba
+    name: Psychology Major (B.A.)
+    short: Psych (BA)
+    buckets: $CORE
+    constraints: $CORE_RULES
+    notes: $NOTES
+
+  - id: psyc-bs
+    name: Psychology Major (B.S.)
+    short: Psych (BS)
+    buckets:
+      - ...$CORE
+      - id: bs-advanced
+        label: B.S. advanced math/science (3 courses, 10 cr)
+        match: $BS_LIST
+        courses: 3
+        credits: 10
+        note: From the department's B.S. list. A PSYC course used here can't also count for a theme, the 400-level rule or the 25 credits.
+    patch:
+      gateway-bsci:
+        label: BSCI170 (+ BSCI171 lab)
+        match: [BSCI170, BSCI171]
+        courses: 1
+        maxCourses: 2
+        note: C- or better in BSCI170. BSCI171 counts toward the B.S. math/science total and labs.
+    constraints:
+      - ...$CORE_RULES
+      - { kind: minFrom, id: bsci170, label: BSCI170 Biology gateway, buckets: [gateway-bsci], match: BSCI170, courses: 1 }
+      - { kind: minFrom, id: bs-lab, label: One B.S. advanced course is a lab, buckets: [bs-advanced], match: $BS_LABS, courses: 1 }
+      - kind: minFrom
+        id: bs-total
+        label: "B.S. math & science: 5 courses / 17 cr"
+        buckets: [gateway-math, gateway-bsci, bs-advanced]
+        match: "*"
+        courses: 5
+        credits: 17
+      - kind: minFrom
+        id: bs-labs
+        label: Two math/science lab courses (BSCI171 counts)
+        buckets: [gateway-bsci, bs-advanced]
+        match: [BSCI171, $BS_LABS]
+        courses: 2
+    notes:
+      - ...$NOTES
+      - The B.S. math/science courses need a 2.0 average together (a D can count if offset).
+      - "2026-27 catalog: 5 courses / 16 credits with at least one lab, and BSCI171 is no longer named. This planner encodes 2025-26 (17 credits, two labs)."
+      - BSCI338 special topics count only with PSYC advisor permission (waive). PSYC courses used for the B.S. must be added to the audit by an advisor.
+    sources: ["...$SOURCES", "...$BS_SOURCES"]

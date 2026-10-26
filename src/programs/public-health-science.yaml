@@ -1,0 +1,77 @@
+# UMD Public Health Science B.S. (College Park) — 2025-26 catalog. See docs/research/public-health-science.md.
+# 2026-27 differs only in the biology lab (BSCI180 added as an alternative to BSCI171); both are accepted here.
+# Format: README.md in this folder.
+
+id: phsc
+name: Public Health Science Major
+short: PHSC
+kind: major
+college: Public Health
+aliases: [PUBLIC HEALTH SCIENCE, PUBLIC HEALTH SCI, PUBLIC HLTH SCIENCE]
+
+defs:
+  # PHSC Options master list (go.umd.edu/phsclasses, read 2026-10), plus former numbers of listed
+  # courses and the PHSC-coded 300-400 courses the catalog restricts to PHSC majors.
+  OPTIONS:
+    - [AMST320, ANTH323, AREC365, BCHM462, BCHM463, BSCI330, BSCI331, BSCI348E, BSCI348M, BSCI353, BSCI410]
+    - [BSCI417, BSCI422, BSCI424, BSCI437, BSCI483, BSST334, ENSP360, MIEH333, ENVH381, ENVH414, MIEH480]
+    - [ENVH426, PHSC426, EPIB330, EPIB445, EPIB463, FGSM320, FGSM340, FGSM370, FGSM390]
+    - [FMSC310, FMSC330, FMSC332, FMSC340, FMSC374, FMSC460, GBHL310, GBHL449A, GEOG373]
+    - [HLSA320, HLSA465, HLSA484, HLTH377, HLTH402, HLTH424, HLTH431, HLTH434, HLTH460, HLTH471]
+    - [INST402, INST451, INST452, INST462, KNES334, KNES389Y]
+    - [MIEH309, MIEH321, MIEH325, MIEH330, MIEH331, MIEH407, MIEH415, NFSC315, PEER312, PEER318, PEER322]
+    - [PSYC336, PSYC344, PSYC354, SOCY320, SOCY335, SPAN371, WGSS315]
+    - { any: [PHSC300-499], except: [PHSC415, PHSC450, PHSC497] }
+  SPH_PREFIXES: [EPIB300-499, FMSC300-499, HLSA300-499, HLTH300-499, KNES300-499, MIEH300-499, GBHL300-499, PHSC300-499, ENVH300-499]
+  EXPERIENTIAL: [PHSC389, PHSC399, MIEH309, ENVH381]
+
+buckets:
+  # Scientific foundations
+  - { id: math120, label: MATH120 Elementary Calculus I, match: [MATH120, MATH140], courses: 1, note: "MATH140 accepted as the higher calculus (unconfirmed; ask a PHSC advisor)." }
+  - { id: bsci170, label: BSCI170 Molecular & Cellular Biology, match: BSCI170, courses: 1 }
+  - { id: bsci-lab, label: BSCI180 (or 171) Biology lab, match: [BSCI180, BSCI171], courses: 1 }
+  - { id: bsci201, label: BSCI201 Anatomy & Physiology I, match: BSCI201, courses: 1 }
+  - { id: bsci202, label: BSCI202 Anatomy & Physiology II, match: BSCI202, courses: 1 }
+  - { id: chem131, label: CHEM131 General Chemistry I, match: [CHEM131, CHEM135, CHEM146], courses: 1, note: CHEM135/146 are credit-equivalent. }
+  - { id: chem132, label: CHEM132 General Chemistry lab, match: [CHEM132, CHEM136, CHEM177], courses: 1, note: CHEM136/177 are credit-equivalent. }
+  - { id: chem231, label: CHEM231 Organic Chemistry I, match: [CHEM231, CHEM237], courses: 1, note: "CHEM237 (honors, with lab) is credit-equivalent to CHEM231 + 232." }
+  # Own use-group so CHEM237 can cover both the lecture and the lab.
+  - { id: chem232, label: CHEM232 Organic Chemistry lab, match: [CHEM232, CHEM237], courses: 1, useGroup: orgo-lab }
+  - { id: bsci222, label: BSCI222 Principles of Genetics, match: BSCI222, courses: 1 }
+  - { id: bsci223, label: BSCI223 General Microbiology, match: [BSCI223, BSCI283], courses: 1 }
+  # Public health science foundations
+  - { id: sphl100, label: SPHL100 Foundations of Public Health, match: SPHL100, courses: 1 }
+  - { id: hlth366, label: HLTH366 Behavioral & Community Issues, match: HLTH366, courses: 1 }
+  - { id: epib301, label: EPIB301 Epidemiology, match: EPIB301, courses: 1 }
+  - { id: epib315, label: EPIB315 Biostatistics, match: [EPIB315, EPIB300], courses: 1 }
+  - { id: hlsa300, label: HLSA300 Health Policy & Services, match: HLSA300, courses: 1 }
+  - { id: mieh300, label: MIEH300 Environmental Health, match: MIEH300, courses: 1 }
+  - { id: phsc450, label: PHSC450 Social & Structural Inequities, match: PHSC450, courses: 1 }
+  - { id: knes320, label: KNES320 Physiology of Physical Activity, match: [KNES320, KNES360], courses: 1 }
+  - { id: phsc415, label: PHSC415 Public Health Biology, match: PHSC415, courses: 1 }
+  - { id: phsc497, label: PHSC497 Capstone, match: PHSC497, courses: 1 }
+  - id: options
+    label: PHSC Options (12 cr)
+    match: $OPTIONS
+    credits: 12
+    note: "Approved 300-400 level options (department list, go.umd.edu/phsclasses). Other courses can be approved by petition: waive the credits they cover."
+
+constraints:
+  - { kind: minFrom, id: options-sph, label: ≥ 3 option credits from the School of Public Health, buckets: [options], match: $SPH_PREFIXES, credits: 3 }
+  - { kind: maxFrom, id: options-experiential, label: ≤ 6 option credits of internship or research, buckets: [options], match: $EXPERIENTIAL, credits: 6 }
+  - { kind: maxFrom, id: options-hlth431, label: Only one of HLTH431 / GBHL310, buckets: [options], match: [HLTH431, GBHL310], courses: 1 }
+
+notes:
+  - C- or better in every major course (all 74 credits, options included).
+  - "Benchmark 1: CHEM131 and CHEM132 (C- or better) by the end of two semesters in the major. Benchmark 2: CHEM231 and CHEM232 by the end of four."
+  - PHSC450 and Professional Writing (FSPW) must be passed before PHSC497, which is taken in the final term with 100+ credits.
+  - HLTH366 needs one of HLTH130, HLTH230, PSYC100, SOCY100, SOCY105 or ANTH260 first (usually also a DSHS GenEd).
+  - A course used as a PHSC Option cannot also be the DSSP GenEd outside the major.
+  - Major courses may be taken at another institution (since Summer 2023) with a permission-to-enroll form.
+
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/public-health/public-health-science/public-health-science-major/
+  - https://sph.umd.edu/academics/departments-units/public-health-science/student-resources-public-health-science/curriculum-public-health-science-college-park
+  - https://docs.google.com/spreadsheets/d/1EXUt-mppC7Ql6t48ZXZHqwgHQEsjrxZmwRDz3vEDgCY
+  - https://sph.umd.edu/sites/default/files/2026-09/PHSC%20Sample%20Plan%20%26%20Checklist.pdf
+  - https://sph.umd.edu/academics/advising-resources/undergraduate-center-academic-success-and-achievement/casa-advising/undergraduate-center-academic-success-and-achievement-four-year-plans-and-benchmarks

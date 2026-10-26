@@ -1,0 +1,246 @@
+# UMD Robert H. Smith School of Business majors (B.S.): Finance, Accounting, Marketing, Operations Management &
+# Business Analytics. 2025-26 catalog; the 2026-27 catalog has the same rules (course retitles and one renumbered
+# statistics substitute only). Smith checklists (Finance Fall 2020, Accounting Fall 2024, Marketing Fall 2023/2025,
+# OMBA Fall 2025) agree with the catalog. See docs/research/business.md.
+# Format: README.md in this folder.
+
+kind: major
+college: Business
+sources: $SOURCES
+
+defs:
+  SOURCES:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/
+    - https://www.rhsmith.umd.edu/programs/undergraduate/academics/academic-majors
+  NOTES:
+    - C- or better (regular grading) in every Smith required course, including ECON, MATH and COMM; 2.0 GPA across Smith required courses.
+    - "Gateway (LEP): BMGT220, BMGT230/231 and MATH120/136/140 with C- or better by 45 credits (AP/IB and dual enrollment excluded); only one repeat of one gateway course."
+    - BMGT110 is required only of students admitted to Smith as freshmen. Transfer students waive it.
+    - 50% of the required BMGT credits must be taken at UMD. Checked here as ≥ 23 BMGT credits at UMD (half of the 45-credit BMGT minimum); the real threshold is half of the student's required BMGT credits, usually 25-28.
+    - At most 62 lower-level credits count toward the 120 (that is, 58 upper-level credits).
+    - From community colleges Smith accepts only intro business, business statistics and elementary accounting as BMGT credit; 300-400 level BMGT from non-AACSB schools is evaluated course by course.
+    - Professional Writing (FSPW) is checked by GenEd; Smith checklists name ENGL390-395 or ENGL398 (ENGL394 Business Writing is typical).
+
+  # Approved substitutes for BMGT230 / BMGT231 (catalog gateway footnote). EDMS451 was renumbered QMMS251 in 2026-27.
+  STATS:
+    - [BMGT230, BMGT231]
+    - [BIOM301, CCJS200, ECON230, ECON321, EDMS451, QMMS251, EPIB300, EPIB315, GEOG306, HLTH300, INST314, PSYC200, SOCY201]
+    - [BIOE372, ENCE302, ENEE324, ENME392, STAT400, STAT420]
+
+  # Freshman-sophomore school requirements.
+  LOWER_CORE:
+    - { id: bmgt110, label: BMGT110 Business Value Chain, match: BMGT110, courses: 1, note: "Freshman admits only; transfer students: waive" }
+    - { id: bmgt220, label: BMGT220 Accounting I, match: BMGT220, courses: 1 }
+    - { id: bmgt221, label: BMGT221 Accounting II, match: BMGT221, courses: 1 }
+    - { id: econ200, label: ECON200 Microeconomics, match: ECON200, courses: 1 }
+    - { id: econ201, label: ECON201 Macroeconomics, match: ECON201, courses: 1 }
+    - id: calc
+      label: Calculus (MATH120 or MATH140)
+      match: [MATH120, MATH140, MATH220, MATH130, MATH136]
+      courses: 1
+      note: MATH220/MATH130 are older numbers. MATH136 counts only if taken for a previous major.
+    - id: stats
+      label: Business statistics (BMGT230/231)
+      match: $STATS
+      courses: 1
+      note: Approved substitutes include ECON321, INST314, PSYC200, STAT400 and others on the catalog list.
+    - { id: oral-comm, label: Oral communication (COMM107/200 or any FSOC), gened: [FSOC], courses: 1 }
+
+  # Junior-senior school requirements.
+  UPPER_CORE:
+    - { id: bmgt301, label: BMGT301 Information Systems, match: BMGT301, courses: 1 }
+    - { id: bmgt340, label: BMGT340 Business Finance, match: BMGT340, courses: 1 }
+    - { id: bmgt350, label: BMGT350 Marketing Principles, match: BMGT350, courses: 1 }
+    - { id: bmgt364, label: BMGT364 Managing People & Orgs, match: BMGT364, courses: 1 }
+    - { id: bmgt367, label: BMGT367 Career Search Strategies, match: BMGT367, courses: 1 }
+    - { id: bmgt380, label: BMGT380 Business Law I, match: BMGT380, courses: 1 }
+    - { id: bmgt495, label: BMGT495 Strategic Management, match: BMGT495, courses: 1 }
+
+  # Smith degree-wide credit rules. Each counts courses already used elsewhere, so each has its own use-group.
+  SMITH_CREDITS:
+    - { id: bmgt-credits, label: 45 business (BMGT) credits, match: BMGT000-999, credits: 45, useGroup: bmgt45, noShare: true }
+    - id: bmgt-umd
+      label: BMGT credits at UMD (≥ 23)
+      match: { all: ["@umd", BMGT000-999] }
+      credits: 23
+      useGroup: bmgtumd
+      noShare: true
+      note: Approximates "50% of required BMGT credits at UMD".
+    - { id: upper58, label: 58 upper-level (300+) credits, match: "*300-999", credits: 58, useGroup: upper58, noShare: true }
+
+  # Accounting electives shared by both tracks. BMGT428 is a topics course (any topic, up to 9 credits).
+  ACCT_ELECTIVES: [BMGT311, BMGT313, BMGT323, BMGT410, BMGT411, BMGT417, BMGT422, BMGT423, BMGT424, BMGT428-428]
+
+  ACCT_CORE:
+    - { id: bmgt310, label: BMGT310 Intermediate Accounting I, match: BMGT310, courses: 1 }
+    - { id: bmgt321, label: BMGT321 Managerial Accounting, match: BMGT321, courses: 1 }
+    - { id: bmgt326, label: BMGT326 Accounting Systems, match: BMGT326, courses: 1 }
+
+  ACCT_ALIASES: [ACCOUNTING, "BUSINESS: ACCOUNTING", BUSINESS ACCOUNTING]
+
+  FIN_ECON: [ECON305, ECON325, ECON306, ECON326]
+  FIN_LIMITED: [BMGT349, BMGT448-448, BMGT449]
+
+  OMBA_LIST_A: [BMGT434, BMGT490, ENED490, BMGT435]
+  OMBA_LIST_B: [BMGT400, BMGT408V, BMGT401, BMGT408E, BMGT404, CMSC320, DATA320, BMGT485, INST453]
+
+programs:
+  - id: finance
+    name: Finance Major
+    short: Finance
+    family: finance
+    aliases: [FINANCE, "BUSINESS: FINANCE", BUSINESS FINANCE]
+    buckets:
+      - ...$LOWER_CORE
+      - ...$UPPER_CORE
+      - id: fin-econ
+        label: ECON330 or BMGT341
+        match: [ECON330, BMGT341]
+        choose: 1
+        note: Smith's upper-level economics requirement for Finance.
+      - { id: bmgt343, label: BMGT343 Investments, match: BMGT343, courses: 1 }
+      - { id: bmgt440, label: BMGT440 Advanced Financial Mgmt, match: BMGT440, courses: 1 }
+      - id: fin-electives
+        label: 4 finance electives
+        match:
+          - [BMGT342, BMGT347, BMGT441, BMGT442, BMGT443, BMGT444, BMGT445, BMGT446, BMGT447]
+          - $FIN_ECON
+          - $FIN_LIMITED
+        choose: 4
+        note: At most one intermediate ECON (305/325/306/326) and one of BMGT349/448/449.
+      - id: fin-option
+        label: One of BMGT310/313/332/430
+        match: [BMGT310, BMGT313, BMGT332, BMGT430, BMGT394H, BMGT438A, ECON423]
+        choose: 1
+        note: BMGT394H (formerly BMGT438A) and ECON423 are approved substitutes.
+      - ...$SMITH_CREDITS
+    constraints:
+      - { kind: maxFrom, id: fin-econ-max, label: ≤ 1 intermediate ECON course, buckets: [fin-electives], match: $FIN_ECON, courses: 1 }
+      - { kind: maxFrom, id: fin-limited-max, label: ≤ 1 of BMGT349/448/449, buckets: [fin-electives], match: $FIN_LIMITED, courses: 1 }
+    notes:
+      - ...$NOTES
+      - BMGT449 (Lemma Senbet Fund) needs Smith permission and BMGT443 as a corequisite.
+      - BMGT447 Computational Finance is on the list but not in the course catalog; it may not be offered.
+    sources:
+      - ...$SOURCES
+      - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/finance/finance-major/
+      - https://drive.google.com/file/d/1PTKA8eUvxUleozH9EvUCamwUkKX2_5XW/view
+      - https://drive.google.com/file/d/1zl__a5n-jNycoQgslANXfOQ3DfUBq1ZE/view
+
+  - id: accounting-public
+    name: Accounting Major (Public Accounting Track)
+    short: Accounting
+    family: accounting
+    aliases: $ACCT_ALIASES
+    buckets:
+      - ...$LOWER_CORE
+      - ...$UPPER_CORE
+      - ...$ACCT_CORE
+      - { id: bmgt311, label: BMGT311 Intermediate Accounting II, match: BMGT311, courses: 1 }
+      - { id: bmgt323, label: BMGT323 Taxation of Individuals, match: BMGT323, courses: 1 }
+      - { id: bmgt411, label: BMGT411 Ethics in Accounting, match: BMGT411, courses: 1 }
+      - { id: bmgt422, label: BMGT422 Auditing, match: BMGT422, courses: 1 }
+      - id: acct-elective
+        label: One of BMGT313/410/417/423/424/428
+        match: [BMGT313, BMGT410, BMGT417, BMGT423, BMGT424, BMGT428-428]
+        choose: 1
+      - ...$SMITH_CREDITS
+    notes:
+      - ...$NOTES
+      - For students entering Fall 2024 or later (earlier students may opt in). BMGT311, 323, 411 and 422 are required for the CPA in Maryland.
+      - Most states, Maryland included, require 150 credits for CPA licensure; the degree needs 120.
+    sources:
+      - ...$SOURCES
+      - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/accounting/accounting-major/
+      - https://drive.google.com/file/d/1jfNXQkyh1MekPbTe0ObZ_ia-_QgTCu3a/view
+      - https://drive.google.com/file/d/1v8e3iCQbtn6j90NkhcQaLFNfkuG7uIaw/view
+
+  - id: accounting-advisory
+    name: Accounting Major (Business and Accounting Advisory Track)
+    short: Accounting
+    family: accounting
+    aliases: $ACCT_ALIASES
+    buckets:
+      - ...$LOWER_CORE
+      - ...$UPPER_CORE
+      - ...$ACCT_CORE
+      - { id: acct-two, label: 2 accounting electives, match: $ACCT_ELECTIVES, choose: 2 }
+      - id: acct-broad
+        label: 1 business or accounting elective
+        match: [BMGT362, BMGT372, BMGT385, BMGT392, BMGT402, BMGT440, BMGT454, BMGT461, $ACCT_ELECTIVES]
+        choose: 1
+        note: BMGT362/372/385/392/402/440/454/461, or another accounting elective not used above.
+      - ...$SMITH_CREDITS
+    notes:
+      - ...$NOTES
+      - For students entering Fall 2024 or later (earlier students may opt in). Does not prepare for CPA exam eligibility.
+    sources:
+      - ...$SOURCES
+      - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/accounting/accounting-major/
+      - https://drive.google.com/file/d/1lul_RQfaaeX0G0FE2ROooAVc84KqcbN_/view
+      - https://drive.google.com/file/d/1sxnwZal5e80gvW6AjavevxGAFvDS1Y_N/view
+
+  - id: marketing
+    name: Marketing Major
+    short: Marketing
+    family: marketing
+    aliases: [MARKETING, "BUSINESS: MARKETING", BUSINESS MARKETING]
+    buckets:
+      - ...$LOWER_CORE
+      - ...$UPPER_CORE
+      - { id: bmgt351, label: BMGT351 Marketing Research, match: BMGT351, courses: 1 }
+      - { id: bmgt354, label: BMGT354 Consumer Analysis, match: BMGT354, courses: 1 }
+      - { id: bmgt457, label: BMGT457 Marketing Strategy, match: BMGT457, courses: 1 }
+      - id: mkt-electives
+        label: 3 marketing electives
+        match: [BMGT357, BMGT372, BMGT450, BMGT453, BMGT454, BMGT455, BMGT456, BMGT458-458, BMGT484]
+        choose: 3
+        note: BMGT357 counts for 3 credits at most; BMGT458 topics for 6 credits at most.
+      - ...$SMITH_CREDITS
+    constraints:
+      - { kind: maxFrom, id: mkt-458-max, label: ≤ 6 credits of BMGT458 topics, buckets: [mkt-electives], match: BMGT458-458, credits: 6 }
+    notes:
+      - ...$NOTES
+      - Fall 2023 renumbering - BMGT452 → 351, BMGT451 → 354, BMGT353 → 453, BMGT352 → 456. Older numbers are not matched here (waive).
+      - Smith lists BMGT408D (Google AdWords and Analytics) as a past substitute for BMGT484 (waive).
+    sources:
+      - ...$SOURCES
+      - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/marketing/marketing-major/
+      - https://drive.google.com/file/d/1of7M39imwUOPjnDF-sCFJTFPauGNlP_2/view
+      - https://drive.google.com/file/d/1hSmDqUTEpGBlUSoEtWvxGsrL6_EMdo9i/view
+
+  - id: omba
+    name: Operations Management & Business Analytics Major
+    short: OMBA
+    family: omba
+    aliases:
+      - OPERATIONS MANAGEMENT & BUSINESS ANALYTICS
+      - OPERATIONS MANAGEMENT AND BUSINESS ANALYTICS
+      - Operations Management
+      - OPERATIONS MGMT & BUSINESS ANALYTICS
+      - "BUSINESS: OPERATIONS MANAGEMENT"
+    buckets:
+      - ...$LOWER_CORE
+      - ...$UPPER_CORE
+      - { id: bmgt332, label: BMGT332 Quantitative Models, match: BMGT332, courses: 1 }
+      - { id: bmgt385, label: BMGT385 Operations Analytics, match: BMGT385, courses: 1 }
+      - { id: bmgt430, label: BMGT430 Data Modeling, match: BMGT430, courses: 1 }
+      - { id: bmgt431, label: BMGT431 Data Analytics & AI, match: BMGT431, courses: 1 }
+      - id: omba-electives
+        label: 2 electives (List A, or one A + one B)
+        match: [$OMBA_LIST_A, $OMBA_LIST_B]
+        choose: 2
+        note: "List A: BMGT434 (or BMGT490 for QUEST students), BMGT435. List B: BMGT400, 401, 404 (or CMSC/DATA320), 485 (or INST453)."
+      - ...$SMITH_CREDITS
+    constraints:
+      - { kind: minFrom, id: omba-list-a, label: ≥ 1 elective from List A, buckets: [omba-electives], match: $OMBA_LIST_A, courses: 1 }
+    notes:
+      - ...$NOTES
+      - Students heading to graduate study are advised to take MATH141, MATH240 and MATH241.
+      - BMGT490 QUEST Capstone (cross-listed ENED490) is open only to QUEST Honors students.
+      - BMGT400 and BMGT401 were BMGT408V and BMGT408E; the old topic numbers are accepted.
+    sources:
+      - ...$SOURCES
+      - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/decision-operations-information-technologies/operations-management-business-analytics-major/
+      - https://drive.google.com/file/d/1uiNDiVS2PMsxuiayMh2EAguCU2RiZxXk/view
+      - https://drive.google.com/file/d/1Vau0VZRUN4xH8aROIPqz-iOziwmYFRAl/view

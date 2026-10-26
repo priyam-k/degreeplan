@@ -1,0 +1,132 @@
+# UMD Information Science B.S. — 2025-26 catalog (2026-27 requirements identical). See docs/research/information-science.md.
+# Format: README.md in this folder.
+#
+# The 15 credits of major electives are either open INST electives (`infosci`) or one of four optional
+# cognate areas (the other programs). Cognate course lists come from the College of Information site.
+
+kind: major
+short: InfoSci
+college: Information
+aliases: [INFORMATION SCIENCE, INFO SCIENCE, INFORMATION SCI]
+notes: $NOTES
+sources: $SOURCES
+
+defs:
+  SOURCES:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/information/information-science-major/
+    - https://info.umd.edu/academics/bachelors-programs/bachelor-of-science-in-information-science-college-park/curriculum-cognate-areas/
+    - https://ischool.umd.edu/academics/bachelors-programs/handbook-policies-forms/
+    - https://info.umd.edu/wp-content/uploads/Bachelor-of-Science-in-Information-Science-GRADUATION-PLAN-1.pdf
+  NOTES:
+    - C- or better in every major requirement (benchmarks, core and electives); 2.0 average across major courses.
+    - "Benchmark I (MATH115+, PSYC100) within the first 30 credits after declaring; Benchmark II (STAT100, INST126, INST201) within 60. A benchmark not passed with C- in two attempts means leaving the major."
+    - All benchmarks must be passed before any upper-level major elective; Benchmark I before 300-level core courses.
+    - Benchmark and core courses must be taken at UMD once in the major (AP credit may satisfy benchmarks).
+    - Non-INST upper-level courses count as major electives only if approved by the program before enrolling (Upper-Level Major Elective Proposal Form) — waive the elective credits they cover.
+    - Cannot double-major or double-degree with the B.A. in Technology and Information Design.
+
+  # Courses the open-elective bucket must not take: the core, INST301 (the Shady Grove INST201) and
+  # INST491 (the TDI capstone; credit only for one of INST490/491).
+  CORE_CODES: [INST201, INST301, INST311, INST314, INST326, INST327, INST335, INST346, INST352, INST362, INST490, INST491]
+  ELECTIVE_MATCH: { any: [INST300-499], except: $CORE_CODES }
+
+  BENCHMARKS:
+    - { id: math115, label: MATH115 Precalculus (or higher), match: MATH115-499, courses: 1, note: Any MATH course at or above MATH115 counts. }
+    - { id: psyc100, label: PSYC100 Intro to Psychology, match: PSYC100, courses: 1 }
+    - { id: stat100, label: STAT100 Elementary Statistics, match: [STAT100, DATA100], courses: 1 }
+    - id: inst126
+      label: INST126 Intro to Programming (or GEOG276)
+      match: [INST126, GEOG276]
+      courses: 1
+      note: The catalog says other courses can fill this with advisor approval (waive).
+  CORE:
+    - { id: inst201, label: INST201 Intro to Information Science, match: [INST201, INST301], courses: 1 }
+    - { id: inst311, label: INST311 Information Organization, match: INST311, courses: 1 }
+    - { id: inst314, label: INST314 Statistics for InfoSci, match: INST314, courses: 1 }
+    - { id: inst326, label: INST326 Object-Oriented Programming, match: INST326, courses: 1 }
+    - { id: inst327, label: INST327 Database Design, match: INST327, courses: 1 }
+    - { id: inst335, label: INST335 Organizations & Teamwork, match: INST335, courses: 1 }
+    - { id: inst346, label: INST346 Technologies & Infrastructure, match: INST346, courses: 1 }
+    - { id: inst352, label: INST352 User Needs & Assessment, match: INST352, courses: 1 }
+    - { id: inst362, label: INST362 User-Centered Design, match: INST362, courses: 1 }
+    - { id: inst490, label: INST490 Integrated Capstone, match: INST490, courses: 1 }
+  CORE_IDS: [inst201, inst311, inst314, inst326, inst327, inst335, inst346, inst352, inst362, inst490]
+  CORE_UMD: { kind: maxFrom, id: core-umd, label: Core courses taken at UMD, buckets: $CORE_IDS, match: { any: ["*"], except: "@umd" }, courses: 0 }
+
+programs:
+  - id: infosci
+    name: Information Science Major
+    buckets:
+      - ...$BENCHMARKS
+      - ...$CORE
+      - id: electives
+        label: INST upper-level electives (15 cr)
+        match: $ELECTIVE_MATCH
+        credits: 15
+        note: Any 300-400 level INST course outside the core. Approved non-INST courses count too (waive).
+    constraints:
+      - $CORE_UMD
+
+  - id: infosci-data-science
+    name: Information Science Major (Data Science Cognate)
+    buckets:
+      - ...$BENCHMARKS
+      - ...$CORE
+      - id: cognate
+        label: 5 Data Science cognate courses
+        match: [INST354, INST377, INST410, INST414, INST447, INST462]
+        courses: 5
+        credits: 15
+        note: INST354, 377, 410, 414, 447, 462 (department list; any five).
+    constraints:
+      - $CORE_UMD
+
+  - id: infosci-cybersecurity
+    name: Information Science Major (Cybersecurity and Privacy Cognate)
+    buckets:
+      - ...$BENCHMARKS
+      - ...$CORE
+      - id: cognate
+        label: 5 Cybersecurity & Privacy courses
+        match: [INST364, INST365, INST366, INST464, INST466, INST467]
+        courses: 5
+        credits: 15
+        note: Five of INST364, 365, 366, 464, 466, 467. INST365 Ethical Hacking is not in the catalog yet; an advisor may accept the INST408C Ethical Hacking topic (waive).
+    constraints:
+      - $CORE_UMD
+
+  - id: infosci-digital-curation
+    name: Information Science Major (Digital Curation Cognate)
+    buckets:
+      - ...$BENCHMARKS
+      - ...$CORE
+      - id: cognate
+        label: Digital Curation courses (INST341/441/442/443)
+        match: [INST341, INST441, INST442, INST443]
+        courses: 4
+        note: The department lists four courses (INST448 has been dropped from the catalog).
+      - id: electives
+        label: INST upper-level elective (3 cr)
+        match: $ELECTIVE_MATCH
+        credits: 3
+        note: Fills the 15 major-elective credits. Approved non-INST courses count too (waive).
+    constraints:
+      - $CORE_UMD
+
+  - id: infosci-health-info
+    name: Information Science Major (Health Information Cognate)
+    buckets:
+      - ...$BENCHMARKS
+      - ...$CORE
+      - id: cognate
+        label: Health Information courses (INST402/451/452)
+        match: [INST402, INST451, INST452]
+        courses: 3
+        note: INST451 Consumer Health Informatics was INST408A before Fall 2023.
+      - id: electives
+        label: INST upper-level electives (6 cr)
+        match: $ELECTIVE_MATCH
+        credits: 6
+        note: Fills the 15 major-elective credits. Approved outside health courses count too (waive).
+    constraints:
+      - $CORE_UMD

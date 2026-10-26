@@ -117,7 +117,7 @@ export function DegreeView({ plan, programs, catalog, audit, setPlan, onFlow }: 
               <Ring u={u} />
               <span className="pc-text">
                 <span className="pc-name">{shortName(r.program)}</span>
-                <span className="pc-sub">{r.program.name.match(/\((.*)\)/)?.[1] ?? (r.program.kind === "minor" ? "Minor" : r.program.kind === "gened" ? "General Education" : "Graduation rules")}</span>
+                <span className="pc-sub">{r.program.name.match(/\((.*)\)/)?.[1] ?? ({ major: "Major", minor: "Minor", gened: "General Education", university: "Graduation rules" } as const)[r.program.kind]}</span>
                 <span className={`pc-status ${r.satisfied ? "ok" : "todo"}`}>
                   {u.open === 0 ? (r.satisfied ? (u.planned + u.inprogress ? "Complete with your plan" : "Complete") : "Check the rules") : `${Math.round(u.open)} of ${Math.round(total)} still open`}
                 </span>
@@ -224,7 +224,7 @@ function ProgramDetail({ r, audit, setPlan, onFlow, ...ctx }: Ctx & { r: Program
             <span className="status-dot st-planned" /> {fmt(u.planned)} planned
           </span>
           <span className={u.open ? "todo" : "ok"}>
-            <span className="status-dot open" /> {fmt(u.open)} open
+            <span className="status-dot open" /> {Math.ceil(u.open - 1e-9)} open
           </span>
           <span className="pd-finish">
             {r.satisfied ? (

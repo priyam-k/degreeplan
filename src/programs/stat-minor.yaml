@@ -1,0 +1,55 @@
+# Statistics Minor — 2025-26 catalog (requirements text identical in 2026-27). See docs/research/minors.md.
+# Format: README.md in this folder.
+
+id: stat-minor
+name: Statistics Minor
+short: Stat minor
+kind: minor
+college: Computer, Mathematical & Natural Sciences
+aliases: [STATISTICS]
+
+defs:
+  # STAT410 and SURV410 are the same course (credit for only one), as are STAT440 and SURV440.
+  PAIRS: [STAT400, STAT401, STAT410, SURV410, STAT420]
+  NOT_UMD: { any: ["*"], except: "@umd" }
+
+buckets:
+  - { id: calc3, label: MATH241 Calculus III (or 340), match: [MATH241, MATH340], courses: 1 }
+  - id: pair
+    label: "Probability & statistics pair"
+    match: $PAIRS
+    choose: 2
+    note: STAT400 + 401, STAT410 + 420, or STAT410 + 401.
+  - { id: stat430, label: STAT430 Statistical Computing (SAS), match: STAT430, courses: 1 }
+  - id: elective
+    label: One more STAT course
+    match: ["...$PAIRS", STAT422, STAT426, STAT440, SURV440, STAT470, MATH424]
+    choose: 1
+    note: A third course from the pairs, or STAT422/426/440/470 or MATH424.
+
+constraints:
+  - kind: anySet
+    id: pair-seq
+    label: A complete probability & statistics pair
+    buckets: [pair]
+    options:
+      - slots: [STAT400, STAT401]
+      - slots: [[STAT410, SURV410], STAT420]
+      - slots: [[STAT410, SURV410], STAT401]
+  - { kind: maxFrom, id: transfer-max, label: ≤ 2 courses taken elsewhere, buckets: [calc3, pair, stat430, elective], match: $NOT_UMD, courses: 2 }
+  - kind: maxFrom
+    id: transfer-upper
+    label: ≤ 1 upper-level course taken elsewhere
+    buckets: [calc3, pair, stat430, elective]
+    match: { all: ["*300-999", $NOT_UMD] }
+    courses: 1
+
+notes:
+  - Not open to Mathematics majors. A student may hold only one of the Mathematics, Statistics and Actuarial Mathematics minors.
+  - C- or better in each minor course; 2.0 minor GPA.
+  - STAT400 and ENEE324 are duplicate credit; ENEE324 is not listed as a substitute for STAT400 (ask the department).
+  - Some STAT courses need MATH240 or MATH461 as a prerequisite.
+  - Declare the minor no later than one year before graduation (department application form).
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/mathematics/statistics-minor/
+  - https://www-math.umd.edu/minors.html

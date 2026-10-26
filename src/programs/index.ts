@@ -56,20 +56,29 @@ for (const e of ENTRIES)
   e.search = norm([e.name, e.college, ...e.programs.flatMap((p) => [p.name, p.short ?? "", ...(p.aliases ?? [])])].join(" "));
 ENTRIES.sort((a, b) => a.name.localeCompare(b.name));
 
-// The program a transcript's "Major: ..." or "Minor: ..." line refers to, if we have it. Testudo
-// upper-cases and truncates these ("Minor: ROBOTICS AND AUTONOMOUS"), so names match by prefix either
-// way, and the longest matching name wins. A track named in the line is picked; otherwise the first.
+// The program a transcript's "Major: ..." or "Minor: ..." line refers to, if we have it. An exact name
+// wins; then the longest name the line starts with ("BIOLOGICAL SCIENCES: PHYSIOLOGY..."); then, since
+// Testudo truncates ("Minor: ROBOTICS AND AUTONOMOUS"), a name the line is the start of, but only if
+// that fits a single program ("ENGINEERING" alone matches nothing). Within a major, a track named in
+// the line is picked; otherwise the first track.
 export function matchTranscriptName(raw: string, kind: "major" | "minor"): Program | undefined {
   const t = norm(raw);
   if (t.length < 4) return undefined;
-  let best: { e: ProgramEntry; len: number } | undefined;
+  let exact: ProgramEntry | undefined;
+  let longer: { e: ProgramEntry; len: number } | undefined;
+  const truncated = new Set<ProgramEntry>();
   for (const e of ENTRIES) {
     if (e.kind !== kind) continue;
-    const names = [e.name, ...e.programs.flatMap((p) => [p.name, p.short ?? "", ...(p.aliases ?? [])])].map(norm).filter((n) => n.length >= 4);
-    for (const n of names) if ((n.startsWith(t) || t.startsWith(n)) && n.length > (best?.len ?? 0)) best = { e, len: n.length };
+    for (const n of [e.name, ...e.programs.flatMap((p) => [p.name, p.short ?? "", ...(p.aliases ?? [])])].map(norm)) {
+      if (n.length < 4) continue;
+      if (n === t) exact = e;
+      else if (t.startsWith(`${n} `) && n.length > (longer?.len ?? 0)) longer = { e, len: n.length };
+      else if (n.startsWith(t)) truncated.add(e);
+    }
   }
-  if (!best) return undefined;
-  return best.e.programs.find((p) => best.e.programs.length > 1 && t.includes(norm(trackName(p)))) ?? best.e.programs[0];
+  const e = exact ?? longer?.e ?? (truncated.size === 1 ? [...truncated][0] : undefined);
+  if (!e) return undefined;
+  return e.programs.find((p) => e.programs.length > 1 && t.includes(norm(trackName(p)))) ?? e.programs[0];
 }
 
 const majorIds = MAJORS.map((p) => p.id);

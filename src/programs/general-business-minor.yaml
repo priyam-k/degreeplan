@@ -1,0 +1,49 @@
+# General Business Minor — 2025-26 catalog with its Spring 2026 addendum (same as 2026-27). See docs/research/minors.md.
+# Format: README.md in this folder.
+
+id: general-business-minor
+name: General Business Minor
+short: GenBus minor
+kind: minor
+college: Business
+aliases: [GENERAL BUSINESS]
+
+buckets:
+  - id: accounting
+    label: BMIN210 Accounting (or BMGT220 + 221)
+    match: [BMIN210, BMGT220, BMGT221]
+    courses: 1
+  - { id: finance, label: BMIN345 Finance (or BMGT340), match: [BMIN345, BMGT340], choose: 1 }
+  - { id: marketing, label: BMIN355 Marketing (or BMGT350), match: [BMIN355, BMGT350], choose: 1 }
+  - { id: management, label: BMIN395 Management (or BMGT364), match: [BMIN395, BMGT364], choose: 1 }
+  - id: elective
+    label: "Elective: supply chain or information systems"
+    match: [BMIN375, BMGT372, BMIN305, BMGT301]
+    choose: 1
+    note: BMIN375 (or BMGT372), or BMIN305 (or BMGT301; BMIN305 replaced BMGT301 from Spring 2026).
+
+constraints:
+  - kind: anySet
+    id: accounting-set
+    label: BMIN210, or both BMGT220 and BMGT221
+    buckets: [accounting]
+    options:
+      - slots: [BMIN210]
+      - slots: [BMGT220, BMGT221]
+  - kind: maxFrom
+    id: transfer
+    label: ≤ 6 transfer credits
+    buckets: [accounting, finance, marketing, management, elective]
+    match: { any: ["*"], except: "@umd" }
+    credits: 6
+
+notes:
+  - Not open to declared Business (Smith School) majors.
+  - "Apply on a rolling basis: 2.0 GPA, 12 UMD credits and at least two semesters left; admission isn't guaranteed (about 250 admitted a year)."
+  - C- or better in every minor course; no pass/fail or audit.
+  - Only foundation courses may transfer (up to 6 credits); the rest must be taken at UMD.
+  - BMIN210 is a prerequisite for BMIN345.
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/business/general-business-minor/
+  - https://academiccatalog.umd.edu/undergraduate/addenda/#General_Business
+  - https://www.rhsmith.umd.edu/programs/undergraduate/academics/academic-minors

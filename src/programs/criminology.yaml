@@ -1,0 +1,63 @@
+# UMD Criminology and Criminal Justice B.A. — 2025-26 catalog (2026-27 identical). No tracks.
+# See docs/research/criminology.md.
+# Format: README.md in this folder.
+
+id: ccjs
+name: Criminology and Criminal Justice Major
+short: CCJS
+kind: major
+college: Behavioral & Social Sciences
+aliases:
+  - CRIMINOLOGY & CRIMINAL JUSTICE
+  - CRIMINOLOGY & CRIM JUSTICE
+buckets:
+  - CCJS100
+  - CCJS105
+  - id: ccjs200
+    label: CCJS200 Statistics (or approved alternative)
+    match:
+      - CCJS200
+      # Department-approved substitutes for CCJS200.
+      - [BIOM301, BMGT230, ECON230, ECON321, EPIB315, GEOG306, GEOL351, GVPT422, INST314, JOUR405]
+      - [PSYC200, QMMS251, QMMS451, EDMS451, SOCY201]
+    courses: 1
+  - CCJS230
+  - CCJS300
+  - id: cj
+    label: Two of CCJS340/342/345
+    match: [CCJS340, CCJS342, CCJS345]
+    choose: 2
+  - id: theory
+    label: One of CCJS450/451/454
+    match: [CCJS450, CCJS451, CCJS454]
+    choose: 1
+  - id: choice
+    label: 4 CCJS Courses of Choice (12 cr)
+    match: { any: [CCJS100-499], except: [CCJS332, CCJS386] }
+    courses: 4
+    credits: 12
+    note: Any CCJS course not used above (honors courses count). CCJS332 and CCJS386 never count.
+  - id: math
+    label: MATH107 or STAT100 (or calculus)
+    match: [MATH107, STAT100, MATH120, MATH130, MATH136, MATH140]
+    courses: 1
+    note: Calculus (MATH120/130/136/140) substitutes only with a C- or better.
+constraints:
+  - { kind: minFrom, id: choice-400, label: Two Courses of Choice at the 400 level, buckets: [choice], match: CCJS400-499, courses: 2 }
+  - { kind: maxFrom, id: indep-study, label: ≤ 1 independent study (CCJS399) as a Course of Choice, buckets: [choice], match: CCJS399, courses: 1 }
+  - { kind: maxFrom, id: internship, label: ≤ 1 internship (CCJS359/398) as a Course of Choice, buckets: [choice], match: [CCJS359, CCJS398], courses: 1 }
+notes:
+  - C- or better in every course used for the major; 2.0 GPA across the major (BSOS and CCJS).
+  - The independent study and the internship count for at most 3 credits each toward the Courses of Choice; this planner caps them at one course each but counts their full credits.
+  - "CCJS399 needs 56 credits, a B- in CCJS300 and a 3.0 GPA. Internships (CCJS359/398) need 56 credits and a 2.5 GPA; at most 12 internship credits count toward the degree."
+  - No course may fill both a named requirement and a Course of Choice (e.g. CCJS451 can't be both the theory course and a 400-level choice).
+  - The major is 36 CCJS credits; whether a non-CCJS statistics substitute for CCJS200 requires an extra CCJS course is unconfirmed (not checked).
+  - "Limited Enrollment Program: MATH107/STAT100 (or calculus) is the gateway course; department permission is needed for most CCJS classes."
+  - "BSOS: 15 upper-level credits within the final 30 credits (sequencing; not checked here)."
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/criminology-criminal-justice/criminology-criminal-justice-major/
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/criminology-criminal-justice/
+  - https://ccjs.umd.edu/content/ccjs-major-requirements
+  - https://ccjs.umd.edu/content/independent-studies
+  - https://ccjs.umd.edu/undergraduate/internship-program
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/

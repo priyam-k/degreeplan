@@ -1,0 +1,231 @@
+# UMD Computer Engineering B.S. and Electrical Engineering B.S. (ECE, Clark School of Engineering).
+# 2025-26 catalog; the 2026-27 "Requirements" tabs are word-for-word identical. The catalog defers the
+# course lists to the department (ece.umd.edu), so the elective categories follow the department pages
+# (fetched 2026-10-25). Encodes the curriculum for students entering Fall 2024 or later.
+# Two separate majors (not tracks), hence explicit families. See docs/research/ece.md.
+# Format: README.md in this folder.
+
+kind: major
+college: Engineering
+
+defs:
+  CATALOG_CE: https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/electrical-and-computer/computer-engineering-major/
+  CATALOG_EE: https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/electrical-and-computer/electrical-engineering-major/
+  SOURCES_COMMON:
+    - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/
+    - https://ece.umd.edu/undergraduate/current-students/courses/technical-electives
+    - https://ece.umd.edu/undergraduate/current-students/courses/prohibited
+  NOTES_COMMON:
+    - C- or better in every engineering, math and science course and in their prerequisites.
+    - ENEE101 and ENES100 may not be taken in the same semester.
+    - "Professional writing (any ENGL39x that carries FSPW; ENGL393 recommended) is checked by the GenEd audit. Engineering students are never exempt."
+    - "Clark School 45-credit review: ENES100, MATH141, PHYS161 and chemistry (CHEM135, CHEM271 or CHEM131+134) with C- or better and a 2.0 GPA."
+    - "General technical elective: the planner accepts 300-499 courses in AMSC, BCHM, BIOE, BSCI, CHBE (formerly ENCH), CHEM, CMSC, ENAE, ENCE, ENEE, ENES, ENFP, ENMA, ENME, ENNU, ENRE, MATH, PHYS, STAT, AOSC and GEOL, plus GEMS396/397/496/497 and NAVY300/400. It excludes the prohibited list, teacher courses, research and independent study, and other departments' capstones. Courses outside these prefixes need ECE approval: waive."
+    - Courses restricted to non-majors and Special Topics courses from other departments are approved case by case. The planner can't tell them apart.
+    - "Credit is granted for only one of a cross-listed pair, such as CMSC417/ENEE426, CMSC414/ENEE457 or CMSC422/ENEE436. The planner doesn't check this."
+
+  # --- Clark School and ECE foundation shared by both majors ---------------------------------------
+  CORE:
+    - { id: math140, label: MATH140 Calculus I, match: MATH140, courses: 1 }
+    - { id: math141, label: MATH141 Calculus II, match: MATH141, courses: 1 }
+    - { id: enee290, label: ENEE290 Diff. Equations & Linear Algebra, match: ENEE290, courses: 1 }
+    - PHYS161
+    - { id: phys260, label: PHYS260 & 261 Physics II + lab, match: [PHYS260, PHYS261], courses: 2 }
+    - id: chem
+      label: CHEM135 Chemistry for Engineers
+      match: [CHEM135, CHEM271, CHEM131, CHEM134]
+      courses: 1
+      note: CHEM271, or CHEM131 with CHEM134, also satisfies the Clark School chemistry requirement.
+    - ENES100
+    - { id: enee101, label: ENEE101 Intro to ECE, match: [ENEE101, ENEE301], courses: 1, note: Transfer students may substitute ENEE301. }
+    - { id: enee200, label: ENEE200 Engineering Ethics, match: ENEE200, courses: 1 }
+    - ENEE205
+    - ENEE222
+    - ENEE244
+    - ENEE245
+    - ENEE350
+  CHEM_RULE:
+    kind: anySet
+    id: chem-set
+    label: Chemistry (CHEM135, CHEM271, or CHEM131 + CHEM134)
+    buckets: [chem]
+    options:
+      - slots: [CHEM135]
+      - slots: [CHEM271]
+      - slots: [CHEM131, CHEM134]
+
+  # --- General technical electives (both majors) --------------------------------------------------
+  # ECE prohibited course list, plus research, independent study and other departments' capstones.
+  PROHIBITED:
+    - [BIOE371, BIOE455, BSCI329, CHEM395, CMSC411, ENES304, ENES480, ENES481, ENCE302, ENME350, ENME351]
+    - [MATH416, MATH470, MATH486, PHYS313, PHYS411, PHYS413, PHYS485, STAT400, STAT401, STAT410, DATA400, ENEE351]
+    - [MATH312-315, MATH478-499]
+  NOT_GENTECH:
+    - $PROHIBITED
+    - ["*386-386", "*399-399", "*499-499"]
+    - [AOSC493, BSCI349, BSCI359, BSCI379-379, BSCI389-389, CHBE333, CHBE369, CHBE468-468, CMSC395, ENAE398H, ENES305, ENFP350, ENFP429]
+    - [ENMA486, ENME488-488, GEOL393, GEOL394, PHYS389, PHYS398, PHYS406, PHYS407]
+    - [ENME472, ENAE482, ENAE484, ENCE465, ENCE466, ENCE467, ENMA487, ENMA490, CHBE446, BIOE485, BIOE486]
+    - [CMSC473, CMSC476, ENES424, ENES440, ENES490H, ENEE488]
+  GENTECH_ANY:
+    - [AMSC300-499, BCHM300-499, BIOE300-499, BSCI300-499, CHBE300-499, CHEM300-499, CMSC300-499]
+    - [ENAE300-499, ENCE300-499, ENEE300-499, ENES300-499, ENFP300-499, ENMA300-499, ENME300-499]
+    - [ENNU300-499, ENRE300-499, MATH300-499, PHYS300-499, STAT300-499, AOSC300-499, GEOL300-499]
+    - [GEMS396, GEMS397, GEMS496, GEMS497, NAVY300, NAVY400]
+
+  # --- Computer Engineering technical electives (26 credits, categories A-F) -----------------------
+  CE_A:
+    - [CMSC456, MATH456, ENEE456, AMSC460, CMSC460, AMSC466, CMSC466, CMSC475]
+    - [MATH241, MATH240, MATH401, MATH402, MATH403, MATH405, MATH406, MATH410, MATH411, MATH423, MATH461]
+    - [MATH462, MATH463, MATH464, PHYS270, PHYS271, PHYS420]
+    - { any: [PHYS400-499], except: [PHYS411, PHYS413, PHYS485, PHYS499, PHYS406, PHYS407] }
+  CE_B:
+    - [CMSC414, CMSC416, CMSC417, CMSC420, CMSC421, CMSC422, CMSC423, CMSC424, CMSC425, CMSC426, CMSC427]
+    - [CMSC430, CMSC433, CMSC434, CMSC436, CMSC451, CMSC452, CMSC457, CMSC472, CMSC474]
+    - [CMSC460, CMSC466, CMSC475]
+    - CMSC498-498 # any topic (ECE approval needed)
+  CE_C:
+    - [ENEE322, ENEE323, ENEE382, ENEE411, ENEE413, ENEE420, ENEE425, ENEE426, ENEE429Z, ENEE435, ENEE436]
+    - [ENEE439G, ENEE440, ENEE452, ENEE457, ENEE459A, ENEE459C, ENEE459P, ENEE460, ENEE464, ENEE474]
+    - [ENEE475, ENEE476, ENEE484, ENEE488, ENEE491, ENEE492, ENEE499]
+    - [ENEE459V, ENEE469O, ENEE489I, ENEE489Q, ENEE439M] # former codes of 452, 464, 484, 491, 436
+  CE_D:
+    - [ENEE415, ENEE416, ENEE427, ENEE445, ENEE459B, ENEE459L, ENEE461, ENEE473, ENEE493, ENEE499L]
+    - ENEE419M # former code of ENEE415
+  CE_E:
+    - [ENEE408A, ENEE408C, ENEE408D, ENEE408I, ENEE408J, ENEE408M, ENEE408N, ENEE408V, ENEE408W, CMSC435]
+    - ENEE439D # former code of ENEE408N
+  CE_F: { any: $GENTECH_ANY, except: [$NOT_GENTECH, ENEE305] }
+  CE_TE: [cat-a, cat-b, cat-c, cat-d, cat-e, cat-f, cat-more]
+
+  # --- Electrical Engineering technical electives (22 credits, categories A-C) ---------------------
+  EE_A:
+    - [ENEE411, ENEE413, ENEE420, ENEE425, ENEE426, ENEE429Z, ENEE435, ENEE436, ENEE439G, ENEE440, ENEE446]
+    - [ENEE452, ENEE457, ENEE459A, ENEE459C, ENEE459P, ENEE460, ENEE464, ENEE474, ENEE475, ENEE476]
+    - [ENEE484, ENEE488, ENEE489R, ENEE489W, ENEE491, ENEE492, ENEE499]
+    - [ENEE459V, ENEE469O, ENEE489I, ENEE489Q, ENEE439M] # former codes of 452, 464, 484, 491, 436
+  EE_B:
+    - [ENEE415, ENEE416, ENEE427, ENEE445, ENEE459B, ENEE459L, ENEE461, ENEE473, ENEE486, ENEE493, ENEE499L]
+    - ENEE419M # former code of ENEE415
+  EE_C:
+    - [ENEE408A, ENEE408C, ENEE408D, ENEE408I, ENEE408J, ENEE408M, ENEE408N, ENEE408V, ENEE408W]
+    - ENEE439D # former code of ENEE408N
+  # Department "Non-ENEE Course List" (rows marked Approved).
+  EE_NON_ENEE:
+    - [CHBE473, CHEM481, CMSC421, CMSC422, CMSC424, ENMA300, ENMA417, ENMA460, ENME331, ENME382, ENME430]
+    - [ENME473, ENME480, ENME489D, ENME489F, ENRE447, MATH310, MATH401, MATH402, MATH403, MATH405, MATH406]
+    - [MATH410, MATH411, MATH423, MATH430, MATH445, MATH462, MATH463, MATH464, PHYS371, PHYS375, PHYS401]
+    - [PHYS402, PHYS404, PHYS410, PHYS420, PHYS431, PHYS457, PHYS474, STAT426, STAT430, STAT464]
+  EE_TE: [ee-a, ee-b, ee-c, ee-more]
+
+programs:
+  - id: compe
+    name: Computer Engineering Major
+    short: CompE
+    family: compe
+    aliases: ["ENGINEERING: COMPUTER", Computer Engineering, COMPUTER ENGR, "ENGR: COMPUTER"]
+    buckets:
+      - ...$CORE
+      - CMSC250
+      - { id: cmsc132, label: CMSC132 Object-Oriented Programming II, match: CMSC132, courses: 1, note: "CMSC131 first, unless AP credit or the exemption exam." }
+      - CMSC216
+      - CMSC330
+      - CMSC351
+      - { id: os, label: Operating systems (CMSC412 or ENEE447), match: [CMSC412, ENEE447], courses: 1 }
+      - { id: enee304-322, label: ENEE304 or ENEE322, match: [ENEE304, ENEE322], courses: 1 }
+      - { id: probability, label: ENEE324 or STAT400, match: [ENEE324, STAT400, DATA400], courses: 1 }
+      - ENEE446
+      - id: cat-a
+        label: "Cat. A: Math & basic science (6 cr)"
+        match: $CE_A
+        credits: 6
+        note: At least 3 credits at the 400 level. Get advisor approval before any PHYS4xx. MATH240/461 duplicate ENEE290 for most students.
+      - { id: cat-b, label: "Cat. B: CS theory & applications (3 cr)", match: $CE_B, credits: 3, note: CMSC498 topics need ECE approval. Take CMSC460/466/475 under CMSC to use them here. }
+      - { id: cat-c, label: "Cat. C: EE theory & applications (6 cr)", match: $CE_C, credits: 6, note: ENEE459A is 1 credit and can't fill this category alone. }
+      - { id: cat-d, label: "Cat. D: Advanced lab (2 cr)", match: $CE_D, credits: 2, note: ENEE499L means two lab credits of ENEE499 (needs faculty and Associate Chair approval). }
+      - { id: cat-e, label: "Cat. E: Capstone design (3 cr)", match: $CE_E, credits: 3 }
+      - { id: cat-f, label: "Cat. F: General technical elective (3 cr)", match: $CE_F, credits: 3, note: Approximation of the department's open-ended list (see notes). }
+      - id: cat-more
+        label: Additional CompE technical electives
+        match: [$CE_A, $CE_B, $CE_C, $CE_D, $CE_E, $CE_F]
+        note: Any further course from categories A-F, to bring the technical electives to 26 credits.
+    constraints:
+      - $CHEM_RULE
+      - { kind: minFrom, id: te-26, label: Technical electives total ≥ 26 cr, buckets: $CE_TE, match: "*", credits: 26 }
+      - { kind: minFrom, id: cat-a-400, label: "Cat. A: ≥ 3 cr at the 400 level", buckets: [cat-a], match: "*400-499", credits: 3 }
+      - { kind: maxFrom, id: enee499-cat-c, label: "≤ 5 cr of ENEE499 in Cat. C", buckets: [cat-c], match: [ENEE499, ENEE499L], credits: 5 }
+      - { kind: maxFrom, id: enee499-total, label: ≤ 6 cr of ENEE488/499/499L, buckets: $CE_TE, match: [ENEE488, ENEE499, ENEE499L], credits: 6 }
+    notes:
+      - ...$NOTES_COMMON
+      - CMSC131 (or AP Computer Science A, or the CS exemption exam) is the prerequisite for CMSC132. It isn't a separate degree requirement.
+      - "A course counts toward only one technical-elective category. Foundation courses (CMSC330, CMSC351, CMSC412, ENEE350, ENEE446, ENEE447, and the ENEE304/322 used in the core) can't count as electives."
+      - ENEE305 and ENEE351 can't be used as CompE technical electives.
+      - Honors-program students may apply 6 credits of ENEE499 to Category C. The planner caps it at 5; waive if needed.
+      - Registering for a second advanced lab (D) or capstone (E) is restricted (permission at the start of the semester).
+      - CompE majors may not add a second major or degree in Electrical Engineering or Computer Science, nor the CS or CompE minors.
+      - "Optional Cybersecurity specialization (no separate transcript track): ENEE457 or CMSC414; CMSC456 or ENEE456; CMSC417 or ENEE426; ENEE459B, ENEE445 or ENEE408C; and one of CMSC420, 451, 433 or ENEE440."
+    sources:
+      - $CATALOG_CE
+      - https://ece.umd.edu/node/2153
+      - https://ece.umd.edu/undergraduate/degrees/bs-computer-engineering/technical-electives-0
+      - https://ece.umd.edu/undergraduate/degrees/bs-computer-engineering/cybersecurity
+      - ...$SOURCES_COMMON
+
+  - id: ee
+    name: Electrical Engineering Major
+    short: EE
+    family: ee
+    aliases: ["ENGINEERING: ELECTRICAL", Electrical Engineering, ELECTRICAL ENGR, "ENGR: ELECTRICAL"]
+    buckets:
+      - ...$CORE
+      - { id: math241, label: MATH241 Calculus III, match: MATH241, courses: 1 }
+      - { id: phys270, label: PHYS270 & 271 Physics III + lab, match: [PHYS270, PHYS271], courses: 2 }
+      - { id: enee150, label: ENEE150 Intermediate Programming, match: ENEE150, courses: 1, note: "ENEE140 first, unless AP CS A (5) or the ENEE150 placement exam." }
+      - ENEE304
+      - ENEE305
+      - ENEE323
+      - { id: enee324, label: ENEE324 Engineering Probability, match: ENEE324, courses: 1, note: STAT400 is not accepted for EE. }
+      - ENEE382
+      - id: ee-a
+        label: "Cat. A: Advanced theory & applications (3 cr)"
+        match: [$EE_A, $EE_C]
+        credits: 3
+        note: A second capstone (Cat. C) course may replace this. ENEE459A is 1 credit and can't fill it alone.
+      - { id: ee-b, label: "Cat. B: Advanced lab (2 cr)", match: $EE_B, credits: 2, note: ENEE499L means approved lab credits of ENEE499. }
+      - { id: ee-c, label: "Cat. C: Capstone design (3 cr)", match: $EE_C, credits: 3, note: ENEE499 can't be used here. }
+      - id: ee-more
+        label: More EE technical electives
+        match:
+          - $EE_A
+          - $EE_B
+          - $EE_C
+          - { any: [ENEE400-499], except: [ENEE456] }
+          - $EE_NON_ENEE
+        note: Any 400-level ENEE elective (except ENEE456) or an approved non-ENEE course, to reach 22 credits.
+      - id: gentech
+        label: General technical elective (3 cr)
+        match: { any: $GENTECH_ANY, except: $NOT_GENTECH }
+        credits: 3
+        note: Approximation of the department's open-ended list (see notes). An ENEE course used here can't also count as an EE elective.
+    patch:
+      enee101: { match: [ENEE101, ENEE301, ENES489P], note: Transfer students may substitute ENES489P (or ENEE301). }
+    constraints:
+      - $CHEM_RULE
+      - { kind: minFrom, id: te-22, label: EE technical electives total ≥ 22 cr, buckets: $EE_TE, match: "*", credits: 22 }
+      - { kind: maxFrom, id: non-enee, label: ≤ 7 cr of non-ENEE EE electives, buckets: $EE_TE, match: $EE_NON_ENEE, credits: 7 }
+      - { kind: maxFrom, id: enee499-total, label: ≤ 5 cr of ENEE488/499/499L, buckets: $EE_TE, match: [ENEE488, ENEE499, ENEE499L], credits: 5 }
+    notes:
+      - ...$NOTES_COMMON
+      - ENEE140 (or AP CS A, or the ENEE150 placement exam) is the prerequisite for ENEE150. It isn't a separate degree requirement.
+      - "The catalog allows up to 7 credits of approved non-ENEE EE electives. The department's requirements page says 9. The planner uses the catalog's 7; waive if your advisor allows 9."
+      - Non-ENEE courses can't fill Category B or C.
+      - ECE Honors students may apply 6 credits of ENEE499/499H. The planner caps it at 5; waive if needed.
+      - "Tracks (Communications & Signal Processing, Computer Engineering, Controls, Electrophysics, Microelectronics, Power Systems) are recommended but not required for students entering Fall 2024 or later."
+      - Registering for a second advanced lab or capstone is restricted (permission at the start of the semester).
+    sources:
+      - $CATALOG_EE
+      - https://ece.umd.edu/node/2148
+      - https://ece.umd.edu/undergraduate/degrees/bs-electrical-engineering/technical-electives
+      - https://ece.umd.edu/undergraduate/degrees/bs-electrical-engineering/specializations
+      - https://docs.google.com/spreadsheets/d/1nZc9iTHoDQnLJIpsKy3UbyormW4e6akMlmKFTyxCXd8
+      - ...$SOURCES_COMMON

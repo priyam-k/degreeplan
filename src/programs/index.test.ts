@@ -19,6 +19,11 @@ describe("program catalogue", () => {
     ["Mathematics", "major", "math-applied"],
     ["ROBOTICS AND AUTONOMOUS", "minor", "ras-minor"],
     ["Basket Weaving", "major", undefined],
+    ["Computer Engineering", "major", "compe"],
+    ["BIOLOGICAL SCIENCES: PHYSIOLOGY & NEUROBIOLOGY", "major", "bio-pn"],
+    ["COMPUTER SCIENCE", "minor", "cs-minor"],
+    ["ENGINEERING", "major", undefined],
+    ["COMPUTER", "major", undefined],
   ] as const)("transcript %s (%s) -> %s", (name, kind, id) => {
     expect(matchTranscriptName(name, kind)?.id).toBe(id);
   });

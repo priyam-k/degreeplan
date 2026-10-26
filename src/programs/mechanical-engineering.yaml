@@ -1,0 +1,93 @@
+# UMD Mechanical Engineering B.S. — 2025-26 catalog (2026-27 identical). See docs/research/mechanical-engineering.md.
+# Format: README.md in this folder.
+
+id: me
+name: Mechanical Engineering Major
+short: MechE
+kind: major
+college: Engineering
+aliases: ["ENGINEERING: MECHANICAL", "ENGR: MECHANICAL", Mechanical Engineering]
+
+defs:
+  # Out-of-major technical electives: 300/400-level CHEM, PHYS, BMGT, MATH, CMSC, ENES or other engineering
+  # (ME registration handout; the course map adds BMIN). Courses that duplicate a required ME course don't count.
+  OUTSIDE:
+    any:
+      - [CHEM300-499, PHYS300-499, BMGT300-499, BMIN300-499, MATH300-499, CMSC300-499]
+      - [ENES300-499, ENAE300-499, ENCE300-499, ENEE300-499, ENFP300-499, ENMA300-499, ENNU300-499, ENRE300-499]
+      - [BIOE300-499, CHBE300-499, ENBC300-499, ENEB300-499, ENMT300-499]
+    except:
+      - ENRE447 # counts as an in-major elective
+      # credit-only-granted-for duplicates of ENME331/332/272/382 and of MATH241/246
+      - [BIOE331, ENCE305, ENFP300, ENFP312, BIOE437, ENMA300, MATH340, MATH341]
+
+buckets:
+  # Engineering sciences (Clark School core)
+  - ENES100
+  - ENES102
+  - ENES220
+  - ENES221
+  - ENES232
+  - { id: enes200, label: ENES200 or ENEE200, match: [ENES200, ENEE200], courses: 1 }
+  # Major courses
+  - { id: enme202, label: ENME202 Computing Fundamentals, match: [ENME202, ENAE202], courses: 1, note: "ENAE202 is the same course. Credit by exam available." }
+  - { id: enme272, label: ENME272 Intro to CAD, match: ENME272, courses: 1, note: "Credit by exam available." }
+  - ENME331
+  - ENME332
+  - ENME350
+  - ENME351
+  - ENME361
+  - ENME371
+  - ENME382
+  - { id: enme392, label: ENME392 Statistical Methods, match: ENME392, courses: 1, note: "STAT400 or BMGT230 only with prior advisor approval (double majors/minors): waive." }
+  - ENME400
+  - ENME462
+  - ENME472
+  # Math and basic sciences
+  - { id: math140, label: MATH140 Calculus I, match: MATH140, courses: 1 }
+  - { id: math141, label: MATH141 Calculus II, match: MATH141, courses: 1 }
+  - { id: math241, label: MATH241 Calculus III (or 340), match: [MATH241, MATH340], courses: 1 }
+  - { id: math246, label: MATH246 Differential Equations (or 341), match: [MATH246, MATH341], courses: 1 }
+  - { id: chem, label: CHEM135 (or 131 + 134), match: [CHEM135, CHEM271, CHEM131, CHEM134], courses: 1 }
+  - PHYS161
+  - PHYS260
+  - PHYS261
+  - PHYS270
+  - PHYS271
+  # Technical electives
+  - id: tech-electives
+    label: Technical electives (15 cr)
+    match:
+      - { any: [ENME400-499], except: [ENME400, ENME462, ENME472] }
+      - ENRE447
+      - $OUTSIDE
+    credits: 15
+    note: >-
+      ENME 4xx (ENRE447 counts as in-major). Up to two may be 300/400-level CHEM, PHYS, BMGT, MATH, CMSC, ENES or
+      other engineering courses that don't duplicate a required ME course; confirm out-of-major choices with your advisor.
+
+constraints:
+  - kind: anySet
+    id: chem-option
+    label: CHEM135, CHEM271, or CHEM131 + CHEM134
+    buckets: [chem]
+    options:
+      - slots: [CHEM135]
+      - slots: [CHEM271]
+      - slots: [CHEM131, CHEM134]
+  - { kind: maxFrom, id: outside-major, label: ≤ 2 out-of-major technical electives, buckets: [tech-electives], match: $OUTSIDE, courses: 2 }
+
+notes:
+  - C- or better in every engineering degree requirement, including all MATH, PHYS and CHEM courses (Clark School).
+  - 2.0 GPA in major courses (departmental, basic sciences, engineering sciences, technical electives, professional writing).
+  - "Clark School 45-credit review: ENES100, MATH141, PHYS161 and CHEM135 (or CHEM271, or CHEM131 + CHEM134) with C- or better."
+  - Take ENME332 or ENME400 in the junior spring and the other in the senior fall (thermo-fluids vs. mechanics interest).
+  - Alternate courses for any requirement need written advisor approval before registering.
+  - ENME201 Careers in Mechanical Engineering is optional and not a degree requirement.
+  - 120 credits minimum for the degree (sample plan totals 124).
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/mechanical-engineering/mechanical-engineering-major/
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/
+  - https://eng.umd.edu/sites/clark.umd.edu/files/resource_documents/mechanical-fall-2025-gradlan-ADA.pdf
+  - https://meugrad.umd.edu/course-information/
+  - https://drive.google.com/drive/folders/1GxpvplaLTX_TBux4S_7tq9gitqDmI2S4

@@ -1,0 +1,66 @@
+# Data Science Minor — 2025-26 catalog (identical in 2026-27) plus data.umd.edu. See docs/research/minors.md.
+# Format: README.md in this folder.
+
+id: data-science-minor
+name: Data Science Minor
+short: DS minor
+kind: minor
+college: Computer, Mathematical & Natural Sciences
+aliases: [DATA SCIENCE]
+
+defs:
+  # DATA400, STAT400 and ENEE324 are one course for credit, as are STAT410 and SURV410.
+  PROB: [DATA400, STAT400, STAT410, SURV410, ENEE324]
+  NOT_UMD: { any: ["*"], except: "@umd" }
+  MINOR: [data110, data120, data200, discrete, intro, data350, prob]
+
+buckets:
+  - id: prereq
+    label: "Prerequisite: DATA100/STAT100/MATH135 or 400-level STAT"
+    match: [DATA100, STAT100, MATH135, STAT400-499, SURV410, SURV440, ENEE324, DATA400, BIOE372]
+    choose: 1
+    # "The prerequisite course does not count toward overlap with the major or another minor."
+    noShare: true
+    note: C- or better, before applying. AP Statistics (4+) counts.
+  - DATA110
+  - DATA120
+  - DATA200
+  - id: discrete
+    label: DATA250 Discrete Math (or CMSC250 + linear algebra)
+    match: [DATA250, CMSC250, MATH240, MATH341, MATH461]
+    courses: 1
+  - { id: intro, label: DATA320 Intro to Data Science (or CMSC320), match: [DATA320, CMSC320], choose: 1 }
+  - DATA350
+  - id: prob
+    label: DATA400 Probability & Statistics (or equivalent)
+    match: ["...$PROB", STAT400-499, CMSC498Y]
+    choose: 1
+    note: STAT400/410 or ENEE324 also count. If one of those was the prerequisite, take another 400-level STAT or CMSC498Y here.
+
+constraints:
+  - kind: anySet
+    id: discrete-set
+    label: DATA250, or CMSC250 with MATH240/341/461
+    buckets: [discrete]
+    options:
+      - slots: [DATA250]
+      - slots: [CMSC250, [MATH240, MATH341, MATH461]]
+  # DATA400's slot takes any 400-level STAT only when the prerequisite was itself a probability course.
+  - { kind: minFrom, id: prob-course, label: DATA400 or an equivalent probability course, buckets: [prereq, prob], match: $PROB, courses: 1 }
+  - { kind: maxFrom, id: transfer, label: ≤ 6 transfer credits, buckets: $MINOR, match: $NOT_UMD, credits: 6 }
+  - kind: minFrom
+    id: umd-upper
+    label: ≥ 6 upper-level credits at UMD
+    buckets: $MINOR
+    match: { all: ["*300-999", "@umd"] }
+    credits: 6
+
+notes:
+  - Not open to students in Mathematics (Statistics track), Computer Science (Data Science) or Computer Science (Machine Learning).
+  - "Limited seats: about 100 new students a year, by application to the program director (interview)."
+  - C- or better in every minor course and the prerequisite; course prerequisites are strictly enforced.
+  - MATH141 is a prerequisite for DATA250 and DATA400.
+  - CMSC250 + linear algebra replacing DATA250 count as one course for major overlap; this planner counts them as two (conservative).
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/computer-science/data-science-minor/
+  - https://data.umd.edu/prospective

@@ -17,7 +17,11 @@ interface Props {
   onDuplicate: () => void;
 }
 
-export const programsOf = (plan: Plan) => [...plan.programIds.map(programById).filter((p): p is NonNullable<typeof p> => !!p), ...ALWAYS];
+// The plan's majors, then its minors (each in the order added), then GenEd and university rules.
+export const programsOf = (plan: Plan) => {
+  const chosen = plan.programIds.map(programById).filter((p): p is NonNullable<typeof p> => !!p);
+  return [...chosen.filter((p) => p.kind === "major"), ...chosen.filter((p) => p.kind !== "major"), ...ALWAYS];
+};
 
 export function CompareView({ scenarios, active, catalog, highs, onOpen, onDuplicate }: Props) {
   const rows = useMemo(() => {

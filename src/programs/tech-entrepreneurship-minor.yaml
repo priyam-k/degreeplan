@@ -1,0 +1,31 @@
+# Technology Entrepreneurship and Corporate Innovation Minor — 2025-26 catalog (same in 2026-27). See docs/research/minors.md.
+# Format: README.md in this folder.
+
+id: tech-entrepreneurship-minor
+name: Technology Entrepreneurship and Corporate Innovation Minor
+short: TECI minor
+kind: minor
+college: Engineering
+aliases: [TECHNOLOGY ENTREPRENEURSHIP, TECH ENTREPRENEURSHIP, TECHNOLOGY ENTREPRENEURSHIP AND CORPORATE]
+
+buckets:
+  - id: courses
+    label: 15 credits of entrepreneurship courses
+    match:
+      - [ENES140, ENES210, ENES460, ENES461, ENES462, ENES463, ENES464, ENES466, ENES471]
+      - [HEIP143, HEIP240, HEIP241]
+      - [SMLP470, SMLP471, SMLP472, SMLP473, SMLP474]
+    credits: 15
+    note: Usually five 3-credit courses. SMLP courses are for the Terrapin Innovation Leadership Program (Shady Grove).
+
+constraints:
+  - { kind: minFrom, id: upper, label: ≥ 9 credits at the 400 level, buckets: [courses], match: "*400-499", credits: 9 }
+  - { kind: maxFrom, id: lower, label: ≤ 6 credits of 100/200-level courses, buckets: [courses], match: "*100-299", credits: 6 }
+
+notes:
+  - Open to any major. Submit the advising worksheet (rolling admission) at least one year before graduation.
+  - Several courses are the same course for credit (ENES210/ENES461; ENES463/SMLP472), so only one of each counts.
+  - ENES464, HEIP143, HEIP240 and HEIP241 are still listed in the catalog but haven't been offered recently.
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/engineering/technology-entrepreneurship-minor/
+  - https://ideafactory.umd.edu/learning/minor-in-technology-entrepreneurship

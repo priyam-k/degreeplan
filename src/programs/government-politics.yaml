@@ -1,0 +1,186 @@
+# UMD Government and Politics B.A. and B.S. — 2025-26 catalog (reconstructed: the 2025-26 page isn't archived; the
+# 2026-27 page and the 2025-26 IR major page bracket it). See docs/research/government-politics.md.
+# Format: README.md in this folder.
+
+kind: major
+short: GVPT
+college: Behavioral & Social Sciences
+aliases: [GOVERNMENT & POLITICS, GOVERNMENT AND POLITICS, GOVT & POLITICS, GOVT AND POLITICS]
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/government-politics/government-politics-major/
+  - https://gvpt.umd.edu/undergraduate/major-requirements
+  - https://gvpt.umd.edu/undergraduate/government-and-politics-major-requirements-bachelor-arts
+  - https://gvpt.umd.edu/undergraduate/government-and-politics-major-requirements-bachelor-science
+  - https://gvpt.umd.edu/undergraduate/gvpt-skills-requirement-approved-courses
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/
+
+defs:
+  NOTES:
+    - C- or better in every major course, taken for a regular grade; 2.0 GPA across all courses used for the major (BSOS rule too).
+    - A course may fill only one major requirement (enforced). Skills courses can't count anywhere else in the major.
+    - At most 42 GVPT credits without department permission (not checked).
+    - GVPT majors may not double-major or double-degree with the International Relations major.
+    - "BSOS: 15 upper-level credits must be earned within the final 30 credits (not checked)."
+    - "BSOS: a graduation plan must be filed with the college advising office on entering the major."
+    - "Foreign language exemptions (level 3 in high school, placement test, ACTFL interview, or a higher course than the intermediate one): waive the bucket."
+    - Approved skills and methods lists are the department's March 2026 sheets; topic numbers (GVPT429A, 479I, …) count only for the listed topics. Several quantitative courses are restricted to certain majors (e.g. ECON230/321 to ECON majors).
+
+  MATH_BENCHMARK:
+    id: math
+    label: Math benchmark (STAT100, MATH107/113/115/120/135/136/140)
+    match: [STAT100, DATA100, MATH107, MATH113, MATH115, MATH120, MATH135, MATH136, MATH140]
+    courses: 1
+    note: Can't also count as a quantitative skills course. MATH113/115 were added in 2025-26 (absent from the 2024-25 list).
+
+  # Elementary foreign language: the whole elementary sequence of one language. An intermediate course waives it
+  # (and may also count as the B.A. additional skills course), hence the separate use-group.
+  LANGUAGES:
+    - { label: Arabic (ARAB101-102), slots: [ARAB101, ARAB102] }
+    - { label: Chinese (CHIN121-122), slots: [CHIN121, CHIN122] }
+    - { label: French (FREN103), slots: [FREN103] }
+    - { label: German (GERS103), slots: [GERS103] }
+    - { label: Greek (GREK101-102), slots: [GREK101, GREK102] }
+    - { label: Greek (GREK111-112), slots: [GREK111, GREK112] }
+    - { label: Hebrew (HEBR106-107), slots: [HEBR106, HEBR107] }
+    - { label: Italian (ITAL103), slots: [ITAL103] }
+    - { label: Japanese (JAPN101-102), slots: [JAPN101, JAPN102] }
+    - { label: Korean (KORA101-102), slots: [KORA101, KORA102] }
+    - { label: Latin (LATN101-102), slots: [LATN101, LATN102] }
+    - { label: Persian (PERS103-104), slots: [PERS103, PERS104] }
+    - { label: Portuguese (PORT103), slots: [PORT103] }
+    - { label: Russian (RUSS101-102), slots: [RUSS101, RUSS102] }
+    - { label: Spanish (SPAN103), slots: [SPAN103] }
+    - { label: An intermediate course (waives elementary), slots: [$INTERMEDIATE] }
+  INTERMEDIATE: [ARAB201, CHIN206, FREN203, GERS203, GREK201, GREK211, HEBR206, ITAL203, JAPN201, KORA201, LATN201, PERS201, PORT203, RUSS201, SPAN203]
+  LANGUAGE_LEVEL: { kind: anySet, id: language-level, label: Whole elementary level of one language, buckets: [language], options: $LANGUAGES }
+  LANGUAGE:
+    id: language
+    label: Elementary foreign language
+    match: { slotOf: $LANGUAGES }
+    courses: 1
+    useGroup: language
+    note: The whole elementary level of one language (4-12 credits). Exempt by proficiency? Waive.
+
+  # Quantitative Skills, B.A. track (sheet updated 3/11/26).
+  QUANT_BA:
+    - [MATH107, MATH113, MATH115, MATH120, MATH135, MATH136, MATH140, MATH121, MATH141-499]
+    - [BIOM301, BMGT230, CCJS200, ECON230, ECON321, ENME392, GEOG306, GEOL351, INST314, JOUR405, PLCY610, PSYC200, QMMS451, SOCY201, STAT100, DATA100, STAT400]
+    - [ECON201, ECON300, ECON305, ECON306, ECON325, ECON326, ECON330, ECON402, ECON426, FMSC290, PLCY640]
+    - [GEOG170, GEOG372, GEOG373, GEOG376]
+    - [AREC380, ENST431, INST123, INST126, INST155, SDSB233, SDSB326, SURV400, SURV630]
+    - [CMSC474, ECON414, GVPT221, GVPT390, GVPT429D, PHIL170, PHIL171, PHIL370, PHIL470]
+    - [AAAS297, AAAS301, ANTH360, CCJS300, COMM307, EDHD306, EPIB315, FMSC302, GVPT320, GVPT368Q, GVPT373, GVPT392, GVPT393]
+    - [GVPT399A, GVPT399F, GVPT412, GVPT419P, GVPT429A, GVPT429B, GVPT429C, GVPT429F, GVPT429J, GVPT429K, GVPT429T, GVPT429W]
+    - [GVPT479I, GVPT479J, GVPT479L, GVPT479M, GVPT479O, GVPT601, GVPT628, HLTH200, PLCY304, PSYC300, SOCY202]
+  # Quantitative Skills, B.S. track (sheet updated 3/11/26).
+  QUANT_BS:
+    - [MATH107, MATH113, MATH115, MATH120, MATH135, MATH136, MATH140]
+    - [BIOM301, BMGT230, CCJS200, ECON230, ECON321, ECON422, ECON423, ECON424, ENME392, GEOG306, GEOL351, INST314, JOUR405]
+    - [PLCY610, PSYC200, QMMS451, SOCY201, STAT100, DATA100, STAT400, ECON402, ECON426, GEOG170, GEOG372, GEOG373, GEOG376]
+    - [AREC380, ENST431, INST123, INST126, INST155, SDSB233, SDSB326, SURV400, SURV630, HLTH200]
+    - [GVPT309C, GVPT373, GVPT390, GVPT392, GVPT393, GVPT399A, GVPT399F, GVPT412, GVPT419P]
+    - [GVPT429A, GVPT429B, GVPT429C, GVPT429F, GVPT429J, GVPT429K, GVPT429T, GVPT429W]
+    - [GVPT479I, GVPT479J, GVPT479L, GVPT479M, GVPT479O, GVPT601, GVPT628]
+
+  # B.S. GVPT Methods and Quantitative Methods lists (updated 3/31/26). IR/CP quantitative methods courses
+  # (309C, 412, 429F/J/K/T/W) also count as quantitative methods courses.
+  QUANT_METHODS:
+    - [GVPT309C, GVPT373, GVPT392, GVPT393, GVPT399A, GVPT399F, GVPT419P, GVPT429A, GVPT429B, GVPT429C]
+    - [GVPT479I, GVPT479J, GVPT479L, GVPT479M, GVPT479O, GVPT601, GVPT628, SURV630]
+    - [GVPT412, GVPT429F, GVPT429J, GVPT429K, GVPT429T, GVPT429W]
+  METHODS: [$QUANT_METHODS, GVPT368Q, GVPT390, GVPT429D]
+
+  GVPT170: { id: gvpt170, label: GVPT170 American Government, match: GVPT170, courses: 1 }
+  GVPT201: { id: gvpt201, label: GVPT201 Scope and Methods, match: GVPT201, courses: 1 }
+  ECON200: { id: econ200, label: ECON200 Principles of Microeconomics, match: ECON200, courses: 1 }
+
+programs:
+  - id: gvpt-ba
+    name: Government and Politics Major (B.A.)
+    buckets:
+      - $GVPT170
+      - $MATH_BENCHMARK
+      - { id: gvpt241, label: GVPT241 Political Philosophy, match: GVPT241, courses: 1 }
+      - $GVPT201
+      - id: choice
+        label: GVPT courses of choice, any level (9 cr)
+        match: GVPT100-499
+        courses: 3
+        credits: 9
+        note: The 200-level benchmark course may count here.
+      - id: choice-upper
+        label: GVPT courses of choice, 300-400 level (18 cr)
+        match: GVPT300-499
+        courses: 6
+        credits: 18
+      - $ECON200
+      - $LANGUAGE
+      - { id: quant, label: Quantitative skills course, match: $QUANT_BA, courses: 1 }
+      - id: additional
+        label: Second quantitative course or intermediate language
+        match: [$QUANT_BA, $INTERMEDIATE]
+        courses: 1
+        note: One more course from the B.A. quantitative list, or the first intermediate course of a language.
+    constraints:
+      - $LANGUAGE_LEVEL
+      - kind: minFrom
+        id: gvpt36
+        label: ≥ 36 GVPT credits
+        buckets: [gvpt170, gvpt241, gvpt201, choice, choice-upper, quant, additional]
+        match: GVPT100-499
+        credits: 36
+      - kind: minFrom
+        id: upper18
+        label: ≥ 18 upper-level GVPT credits
+        buckets: [gvpt170, gvpt241, gvpt201, choice, choice-upper, quant, additional]
+        match: GVPT300-499
+        credits: 18
+      - kind: minFrom
+        id: umd12
+        label: ≥ 12 upper-level GVPT credits at UMD
+        buckets: [choice, choice-upper]
+        match: { all: [GVPT300-499, "@umd"] }
+        credits: 12
+    notes:
+      - ...$NOTES
+      - "Benchmark: GVPT170, a 200-level GVPT course (not experiential learning; GVPT201 or 241 counts) and the math course, C- or better, within two semesters of entering the major; at least one of the GVPT courses not from AP/IB/CLEP. The 2025-26 catalog also required Academic Writing (C-)."
+      - Students are encouraged to concentrate their courses of choice in one subfield (no subfield rule).
+
+  - id: gvpt-bs
+    name: Government and Politics Major (B.S.)
+    buckets:
+      - $GVPT170
+      - $MATH_BENCHMARK
+      - $GVPT201
+      - { id: gvpt320, label: GVPT320 Advanced Empirical Research, match: GVPT320, courses: 1 }
+      - { id: methods, label: GVPT methods course (300-400), match: $METHODS, courses: 1 }
+      - { id: quant-methods, label: Two GVPT quantitative methods courses, match: $QUANT_METHODS, courses: 2, credits: 6 }
+      - { id: foundation, label: "GVPT200, 280 or 282", match: [GVPT200, GVPT280, GVPT282], courses: 1 }
+      - { id: choice, label: "GVPT courses of choice, any level (6 cr)", match: GVPT100-499, courses: 2, credits: 6 }
+      - { id: choice-upper, label: "GVPT courses of choice, 300-400 level (9 cr)", match: GVPT300-499, courses: 3, credits: 9 }
+      - $ECON200
+      - $LANGUAGE
+      - { id: quant, label: Two B.S. quantitative skills courses, match: $QUANT_BS, courses: 2 }
+    constraints:
+      - $LANGUAGE_LEVEL
+      - kind: minFrom
+        id: gvpt36
+        label: ≥ 36 GVPT credits
+        buckets: [gvpt170, gvpt201, gvpt320, methods, quant-methods, foundation, choice, choice-upper, quant]
+        match: GVPT100-499
+        credits: 36
+      - kind: minFrom
+        id: upper18
+        label: ≥ 18 upper-level GVPT credits
+        buckets: [gvpt170, gvpt201, gvpt320, methods, quant-methods, foundation, choice, choice-upper, quant]
+        match: GVPT300-499
+        credits: 18
+      - kind: minFrom
+        id: umd12
+        label: ≥ 12 upper-level GVPT credits at UMD
+        buckets: [gvpt320, methods, quant-methods, choice, choice-upper]
+        match: { all: [GVPT300-499, "@umd"] }
+        credits: 12
+    notes:
+      - ...$NOTES
+      - "Benchmark 1: GVPT170, GVPT201 and the math course (C- or better) within two semesters of entering the major; Benchmark 2: GVPT320 within one semester after that. The 2025-26 catalog also required Academic Writing (C-) in Benchmark 1."

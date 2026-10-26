@@ -22,3 +22,14 @@
 
 ## Catalog offering data
 `public/courses.json` gets a `t` field (semesters offered) from `npm run fetch-courses`. The refresh workflow keeps it current; see "Deploying" in the README.
+
+## Requirement engine gaps (from the 2026-10-25 program research)
+Each is approximated today and noted in the program file and its docs/research spec.
+- **Repeatable courses:** the solver counts a course code once, so ENAE398H (1 cr a term, up to 3) or a repeated research course can't add up. Students enter repeats as one course with the combined credits.
+- **Programs that exclude each other:** "not open to Math majors", CompE students can't add CS/EE or the CS minor, Math/Stat/Actuarial minors are mutually exclusive. Only noted today; a program-level `excludes` list could warn in the picker and the audit.
+- **Counting part of a course:** "counts at most 3 credits" (CCJS internship, Biology Enrichment).
+- **Order-dependent rules:** BSOS "15 upper-level credits within the final 30".
+- **Ratios:** Smith "50% of BMGT credits at UMD" (approximated as a fixed 23 credits).
+- **Per-program credit minimums above 120** (Aerospace's 124).
+- **Grouped substitutes counting as one course for overlap** (Data Science minor's CMSC250 + linear algebra for DATA250).
+- Each spec's "open questions" section lists catalog ambiguities worth confirming with an advisor.

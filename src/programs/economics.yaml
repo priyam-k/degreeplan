@@ -1,0 +1,130 @@
+# UMD Economics B.A. and B.S. — 2025-26 catalog (course requirements identical in 2026-27; only the benchmark
+# wording changed). See docs/research/economics.md.
+# Format: README.md in this folder.
+
+kind: major
+short: Econ
+college: Behavioral & Social Sciences
+aliases: [ECONOMICS, ECON]
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/economics/economics-major/
+  - https://econ.umd.edu/undergraduate/major-requirements
+  - https://docs.google.com/document/d/1Ss_mtrpY723u68m6_M68u0VnSy0OsnUklI2tnJh4xhE/mobilebasic
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/behavioral-social-sciences/
+
+defs:
+  NOTES:
+    - C- or better in every major course; 2.0 GPA across all courses used for the major (BSOS college rule too).
+    - A course may fill only one major requirement (enforced).
+    - Prerequisites are strictly enforced; at most 3 ECON courses per semester.
+    - "BSOS: 15 upper-level credits must be earned within the final 30 credits (not checked)."
+    - "BSOS: a graduation plan must be filed with the college advising office on entering the major."
+    - Designated B.A./B.S. course lists are the department's live list (econ.umd.edu); new courses get added over time, so an unlisted ECON course may still count with advisor approval (waive the bucket).
+    - Planning on an economics Ph.D.? The department says to take MATH140, 141, 240, 241, 246 (plus MATH410/411) and ECON422/423.
+
+  # Department "ECON BA & BS Approved Course List". Topics courses (398, 418, 468, 498) match every suffix.
+  BA300: [ECON310, ECON311, ECON312, ECON314, ECON315, ECON317, ECON327, ECON330, ECON340, ECON354, ECON371, ECON375, ECON398-398]
+  BA400:
+    - [ECON402, ECON418-418, ECON424, ECON425, ECON426, ECON443, ECON451, ECON453, ECON455, ECON456, ECON461]
+    - [ECON468-468, ECON472, ECON481, ECON484, ECON485, ECON486, ECON490]
+  BOTH400: [ECON401, ECON414, ECON417, ECON432, ECON433, ECON434, ECON435, ECON454, ECON465, ECON470]
+  BS400: [ECON406, ECON407, ECON410, ECON412, ECON415, ECON416, ECON423, ECON427, ECON442, ECON460, ECON465, ECON498-498]
+  # B.A. "Economics Courses of Choice: select one of" (quantitative methods). ECON425 was dropped in 2026-27.
+  QUANT: [ECON402, ECON414, ECON424, ECON425, ECON426]
+  # Approved experiential learning courses (≥ 3 credits in total).
+  EXPERIENTIAL:
+    - [ECON386, ECON387, CMSC131, BSOS288I, BSOS386, BSOS355, BSCV302, FGSM398, GEOG170, GEOG276, GEOG373]
+    - [GVPT377, MLAW388, SDSB233, BSOS233, UNIV305, UNIV306, UNIV362, COMM488I, EDCP108I, IDEA311, PSYC123]
+  # "Another statistics course" taken alongside MATH241 instead of ECON300 (unspecified; see notes).
+  EXTRA_STATS: [STAT400, DATA400, STAT410, STAT100, ECON230, BMGT230, ECON321]
+
+  PRINCIPLES:
+    - { id: econ200, label: ECON200 Principles of Microeconomics, match: ECON200, courses: 1 }
+    - { id: econ201, label: ECON201 Principles of Macroeconomics, match: ECON201, courses: 1 }
+
+programs:
+  - id: econ-ba
+    name: Economics Major (B.A.)
+    buckets:
+      - ...$PRINCIPLES
+      - { id: calc, label: MATH120 or MATH140 Calculus, match: [MATH120, MATH140], courses: 1 }
+      - { id: stats, label: ECON230 or BMGT230 Statistics, match: [ECON230, BMGT230], courses: 1 }
+      - { id: econ305, label: ECON305 Intermediate Macro, match: ECON305, courses: 1 }
+      - { id: econ306, label: ECON306 Intermediate Micro, match: ECON306, courses: 1 }
+      - { id: quant, label: One of ECON402/414/424/425/426, match: $QUANT, choose: 1 }
+      - id: ba-300
+        label: Two 300/400-level B.A. ECON courses
+        match: [$BA300, $BA400, $BOTH400]
+        courses: 2
+        credits: 6
+      - id: ba-400
+        label: Three 400-level B.A. ECON courses
+        match: [$BA400, $BOTH400]
+        courses: 3
+        credits: 9
+      - id: experiential
+        label: Experiential learning (ECON386) or another B.A. course
+        match: [$EXPERIENTIAL, $BA300, $BA400, $BOTH400]
+        credits: 3
+        note: ECON386 or an approved experiential course (several 1-2 credit ones may add up to 3), or one more 300/400-level B.A. ECON course. Other experiential courses need ECON advisor approval (waive).
+    constraints:
+      - kind: minFrom
+        id: credits
+        label: ≥ 41 major credits
+        buckets: [econ200, econ201, calc, stats, econ305, econ306, quant, ba-300, ba-400, experiential]
+        match: "*"
+        credits: 41
+    notes:
+      - ...$NOTES
+      - "Benchmark: ECON200, ECON201 and MATH120/140 (C- or better) within two semesters of entering the major. The 2025-26 catalog also required Academic Writing (C-) and one more GenEd course (D-); 2026-27 dropped those."
+      - ECON305/306 and ECON325/326 are equivalent pairs; credit is granted for only one of each.
+
+  - id: econ-bs
+    name: Economics Major (B.S.)
+    buckets:
+      - ...$PRINCIPLES
+      - { id: calc, label: MATH140 Calculus I, match: MATH140, courses: 1 }
+      - id: methods
+        label: ECON300, or MATH241 plus a statistics course
+        match: [ECON300, MATH241, $EXTRA_STATS]
+        courses: 1
+        note: "Catalog: students who take MATH241 instead of ECON300 must also take another statistics course."
+      - { id: stats, label: ECON321 or STAT401 Statistics, match: [ECON321, STAT401], courses: 1 }
+      - { id: econ325, label: ECON325 Intermediate Macro Analysis, match: ECON325, courses: 1 }
+      - { id: econ326, label: ECON326 Intermediate Micro Analysis, match: ECON326, courses: 1 }
+      - { id: econ422, label: ECON422 Econometrics, match: ECON422, courses: 1 }
+      - id: bs-400
+        label: Three 400-level B.S. ECON courses
+        match: [$BS400, $BOTH400]
+        courses: 3
+        credits: 9
+      - id: bs-ba-400
+        label: One 400-level B.S. or B.A. ECON course
+        match: [$BS400, $BOTH400, $BA400]
+        courses: 1
+        credits: 3
+      - id: bs-ba-300
+        label: One 300/400-level B.S. or B.A. ECON course
+        match: [$BA300, $BS400, $BOTH400, $BA400]
+        courses: 1
+        credits: 3
+    constraints:
+      - kind: anySet
+        id: methods-path
+        label: ECON300, or MATH241 + another statistics course
+        buckets: [methods]
+        options:
+          - { label: ECON300, slots: [ECON300] }
+          - label: MATH241 + a statistics course
+            slots: [MATH241, { label: a statistics course, match: $EXTRA_STATS, count: 1 }]
+      - kind: minFrom
+        id: credits
+        label: ≥ 41 major credits
+        buckets: [econ200, econ201, calc, methods, stats, econ325, econ326, econ422, bs-400, bs-ba-400, bs-ba-300]
+        match: "*"
+        credits: 41
+    notes:
+      - ...$NOTES
+      - "Benchmark: ECON200, ECON201, MATH140 and ECON300 (C- or better) within two semesters of entering the major. The 2025-26 catalog also required Academic Writing (C-) and one more GenEd course (D-); 2026-27 dropped those."
+      - "The statistics course that goes with MATH241 isn't named; this planner accepts STAT100/400/410, DATA400, ECON230/321 or BMGT230."
+      - ECON325/326 and ECON305/306 are equivalent pairs; credit is granted for only one of each.

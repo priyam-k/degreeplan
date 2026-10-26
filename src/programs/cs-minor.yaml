@@ -1,0 +1,52 @@
+# Computer Science Minor — 2025-26 catalog plus the CS department's current tracking sheet. See docs/research/minors.md.
+# Format: README.md in this folder.
+
+id: cs-minor
+name: Computer Science Minor
+short: CS minor
+kind: minor
+college: Computer, Mathematical & Natural Sciences
+aliases: [COMPUTER SCIENCE]
+
+defs:
+  CORE: [cmsc132, cmsc216, cmsc250, cmsc330, cmsc351, electives]
+
+buckets:
+  # The catalog lists CMSC132 as a requirement; the department now treats it as an admission gateway
+  # (with CMSC131 and MATH140), so it doesn't take one of the two major-overlap slots.
+  - { id: cmsc132, label: CMSC132 OOP II, match: CMSC132, courses: 1, noShare: true, note: Admission gateway (B- or better). }
+  # Required by the department's tracking sheet (not in the catalog list); a supporting course.
+  - { id: math141, label: MATH141 Calculus II, match: MATH141, courses: 1, noShare: true }
+  - CMSC216
+  - CMSC250
+  - CMSC330
+  - CMSC351
+  - id: electives
+    label: Two 400-level CMSC electives
+    match:
+      - [CMSC411, CMSC412, CMSC414, CMSC416, CMSC417, CMSC420, CMSC421, CMSC422, CMSC423, CMSC424, CMSC426, CMSC427]
+      - [CMSC430, CMSC431, CMSC433, CMSC434, CMSC435, CMSC436, CMSC451, CMSC452, CMSC454, CMSC456, CMSC457]
+      - [CMSC460, CMSC466, CMSC470, CMSC471, CMSC472, CMSC474]
+    courses: 2
+    note: One CMSC498 independent study (3 cr) may replace one with the Undergraduate Director's permission (waive).
+
+constraints:
+  - { kind: maxFrom, id: numerical, label: At most one of CMSC460/466, buckets: [electives], match: [CMSC460, CMSC466], courses: 1 }
+  - kind: minFrom
+    id: umd-upper
+    label: ≥ 6 upper-level credits at UMD
+    buckets: $CORE
+    match: { all: ["*300-999", "@umd"] }
+    credits: 6
+
+notes:
+  - "Limited enrollment: apply after CMSC131 (or 133/141), CMSC132 (or 142) and MATH140, each with B- or better, and a 3.0 UMD GPA."
+  - Not open to Computer Science or Computer Engineering majors, or the Immersive Media Design computing track.
+  - C- or better in every minor course (gateways excepted); 2.0 minor GPA; 2.0 cumulative GPA to stay in the minor.
+  - Students who place out of all three of CMSC132, 216 and 250 by exemption exam take one more 400-level course from the list.
+  - Be in the minor for at least two semesters (one academic year) before graduating.
+  - CMSC431 is on the department's list but not the 2025-26 catalog's.
+sources:
+  - https://academiccatalog.umd.edu/undergraduate/colleges-schools/computer-mathematical-natural-sciences/computer-science/computer-science-minor/
+  - https://undergrad.cs.umd.edu/computer-science-minor
+  - https://undergrad.cs.umd.edu/sites/undergrad.cs.umd.edu/files/images/u167/2608%20CS%20Minor%20Curriculum%20Tracking%20Sheet.pdf
