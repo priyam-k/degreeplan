@@ -2,3 +2,5 @@ misc
 node_modules
 dist
 *.tsbuildinfo
+# personal notes, kept out of the public repo
+TODO.md
