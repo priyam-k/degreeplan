@@ -7,6 +7,7 @@ import { ENTRIES, abbrev, displayName, familyKey, normalizeName, programById, tr
 import { ConfirmButton, Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
 import { ACCENTS, GROUNDS, useTheme } from "../ui/theme";
+import { useSpringIndicator } from "../ui/useSpringIndicator";
 
 export type View = "degree" | "plan" | "flow" | "compare";
 const VIEWS: { id: View; label: string }[] = [
@@ -34,15 +35,18 @@ interface Props {
 export function TopBar(p: Props) {
   const file = useRef<HTMLInputElement>(null);
   const [theme, setTheme] = useTheme();
+  const navRef = useRef<HTMLElement>(null);
+  const indicator = useSpringIndicator(navRef, p.view);
   const active = p.ws.scenarios.find((s) => s.id === p.ws.active) ?? p.ws.scenarios[0];
   return (
     <header className="topbar">
       <div className="brand">
         <span className="brand-mark">UMD</span> Degree Planner
       </div>
-      <nav className="segmented" aria-label="View">
+      <nav className="segmented" aria-label="View" ref={navRef}>
+        <span className="seg-indicator" ref={indicator} aria-hidden />
         {VIEWS.map((v) => (
-          <button key={v.id} className={p.view === v.id ? "on" : ""} onClick={() => p.onView(v.id)}>
+          <button key={v.id} data-key={v.id} className={p.view === v.id ? "on" : ""} aria-current={p.view === v.id ? "page" : undefined} onClick={() => p.onView(v.id)}>
             {v.label}
           </button>
         ))}

@@ -318,16 +318,23 @@ body.col-resizing, body.col-resizing * { cursor: col-resize !important; user-sel
 .brand-mark { background: var(--accent); color: var(--on-accent); font: 600 10.5px/1 var(--font-mono); letter-spacing: 0.08em; padding: 5px 8px 5px calc(8px + 0.08em); border-radius: 999px; }
 /* the view switcher is Caustic's glass nav pill */
 .segmented {
-  display: flex; gap: 2px; padding: 4px; border-radius: 999px;
+  position: relative; display: flex; gap: 2px; padding: 4px; border-radius: 999px;
   background: var(--glass-fill); -webkit-backdrop-filter: blur(3px) saturate(150%); backdrop-filter: blur(3px) saturate(150%);
   box-shadow: var(--shadow-glass);
 }
 .segmented button {
-  border: none; background: none; height: 30px; padding: 0 16px; border-radius: 999px; font-weight: 500; font-size: 13px; color: var(--ink-muted);
+  position: relative; border: none; background: none; height: 30px; padding: 0 16px; border-radius: 999px; font-weight: 500; font-size: 13px; color: var(--ink-muted);
   transition: color var(--fast) var(--ease), background-color var(--fast) var(--ease);
 }
 .segmented button:hover { color: var(--ink); }
-.segmented button.on { color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.segmented button.on { color: var(--ink); }
+/* the highlight under the active view; useSpringIndicator moves and stretches it */
+.seg-indicator {
+  position: absolute; top: 4px; left: 0; height: 30px; border-radius: 999px; pointer-events: none; transform-origin: center;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: inset 0 0.5px 0 color-mix(in srgb, white 12%, transparent), inset 0 0 0 0.5px color-mix(in srgb, var(--ink) 6%, transparent);
+  will-change: transform, width;
+}
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .undo-group { display: flex; gap: 2px; margin-right: 4px; }
 @media (max-width: 1180px) {
