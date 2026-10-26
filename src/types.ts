@@ -6,8 +6,12 @@ export interface CatalogCourse {
   mx: number | null; // max credits (variable-credit courses)
   g: string[][]; // GenEd alternatives: [["DSHS"],["DSHU","DVUP"]] = DSHS OR (DSHU + DVUP)
   p: string | null; // prerequisite text
+  r?: string | null; // restriction text ("Must be in ...; and permission of ..."); absent = none
   x: string | null; // "credit only granted for" text
   t?: number[]; // terms it appeared in the schedule of classes, YYMM (2408 = Fall 2024); absent = no history
+  // Topics courses reuse a code for different topics; each topic with its terms and prerequisites.
+  // Top-level n and p are the most recent offering's.
+  v?: { t: number[]; n: string; p: string | null }[];
 }
 
 export type CourseStatus = "completed" | "inprogress" | "planned" | "transfer";

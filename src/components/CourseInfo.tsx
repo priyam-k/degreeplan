@@ -2,7 +2,8 @@
 import type { Catalog } from "../catalog";
 import { exclusiveWith } from "../catalog";
 import { formatGeneds } from "../geneds";
-import { formatReq, reqCodes } from "../prereqs";
+import { formatReq, permissionNotes, reqCodes } from "../prereqs";
+import type { CatalogCourse } from "../types";
 import { catalogEntry, offeringOf, prereqOf, type Season } from "../flow/analysis";
 
 const SEASONS: { s: Season; short: string }[] = [
@@ -29,6 +30,49 @@ export function OfferedBadges({ code, catalog }: { code: string; catalog: Catalo
   );
 }
 
+const SEASON_OF: Record<number, string> = { 1: "Spring", 5: "Summer", 8: "Fall", 12: "Winter" };
+// 2608 -> "Fall 2026"
+export const yymmTerm = (t: number) => `${SEASON_OF[t % 100] ?? "Term"} 20${String(Math.floor(t / 100)).padStart(2, "0")}`;
+const isTopics = (cat: CatalogCourse) => /\b(?:special|selected) topics\b/i.test(cat.n);
+
+// The fine print the course-code checks can't express: permission required on top of the courses,
+// ways around them, and, for topics courses with nothing listed, a caution that it varies by topic.
+// After a course requirement each line reads as "And …" / "Or …".
+export function prereqNotes(cat: CatalogCourse, hasReq: boolean): { text: string; alt: boolean }[] {
+  const { required, alternatives } = permissionNotes(cat.p, cat.r);
+  const join = (word: string, t: string) => (hasReq ? `${word} ${t.charAt(0).toLowerCase()}${t.slice(1)}` : t);
+  const out = [...required.map((t) => ({ text: join("And", t), alt: false })), ...alternatives.map((t) => ({ text: join("Or", t), alt: true }))];
+  if (!hasReq && !out.length && !cat.p && isTopics(cat)) out.push({ text: "None listed. Topics courses vary by topic, so check Testudo.", alt: true });
+  return out;
+}
+
+export function PrereqNotes({ notes }: { notes: { text: string; alt: boolean }[] }) {
+  return (
+    <>
+      {notes.map((n) => (
+        <div key={n.text} className={`ci-perm ${n.alt ? "alt" : ""}`}>
+          {n.text}
+        </div>
+      ))}
+    </>
+  );
+}
+
+// Recent topics a reused topics code has had, newest first.
+export function TopicHistory({ cat }: { cat: CatalogCourse }) {
+  if (!cat.v?.length) return null;
+  const rows = [...cat.v].sort((a, b) => Math.max(...b.t) - Math.max(...a.t)).slice(0, 5);
+  return (
+    <ul className="ci-topics">
+      {rows.map((v) => (
+        <li key={v.n}>
+          <span className="muted">{[...v.t].sort((a, b) => b - a).slice(0, 2).map(yymmTerm).join(", ")}</span> {v.n.split(";").slice(1).join(";").trim()}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 interface Props {
   code: string;
   catalog: Catalog;
@@ -46,6 +90,7 @@ export function CourseInfo({ code, catalog, title, credits, grade, usage, warnin
   const cat = catalogEntry(code, catalog);
   const req = prereqOf(code, catalog);
   const excl = exclusiveWith(cat);
+  const notes = cat ? prereqNotes(cat, !!req) : [];
   const codeBtn = (c: string) =>
     onCode ? (
       <button key={c} className={`code-chip ${have ? (have(c) ? "have" : "need") : ""}`} onClick={() => onCode(c)}>
@@ -87,15 +132,29 @@ export function CourseInfo({ code, catalog, title, credits, grade, usage, warnin
           <>
             <dt>Prereqs</dt>
             <dd>
-              {req ? (
+              {req && (
                 <>
                   <div className="ci-req">{formatReq(req)}</div>
                   <div className="ci-codes">{reqCodes(req).map(codeBtn)}</div>
                 </>
-              ) : (
-                "None"
               )}
+              <PrereqNotes notes={notes} />
+              {!req && !notes.length && "None"}
             </dd>
+            {cat.r && (
+              <>
+                <dt>Restriction</dt>
+                <dd>{cat.r}</dd>
+              </>
+            )}
+            {cat.v && (
+              <>
+                <dt>Topics</dt>
+                <dd>
+                  <TopicHistory cat={cat} />
+                </dd>
+              </>
+            )}
           </>
         )}
         {excl.length > 0 && (

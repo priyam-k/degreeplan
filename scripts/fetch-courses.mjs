@@ -70,14 +70,46 @@ async function fetchSemester(sem) {
       if (d.length < 100) done = true;
     }
   };
-  await Promise.all(Array.from({ length: 4 }, worker));
+  await Promise.all(Array.from({ length: 3 }, worker));
   if (failed) throw new Error(`umd.io ${sem}: ${failed} page(s) failed`);
   return [...pages.keys()].sort((a, b) => a - b).flatMap((p) => pages.get(p));
 }
 
-const courses = new Map(); // code -> {c,n,cr,mx,g,p,x,t}
+const courses = new Map(); // code -> {c,n,cr,mx,g,p,r,x,t,v}
 const offered = new Map(); // code -> semesters it appeared in the schedule of classes, as YYMM numbers
 const source = new Map(); // code -> the semester its details came from, so older data never overwrites newer
+
+// Where one part of a course's fine print ends and the next begins.
+const SECTION_END =
+  /\s*(?:\b(?:Restrictions?|Corequisites?|Recommended|Additional information|Formerly|Also offered as)\s*:|\bCredit (?:only )?granted for|\bCross-listed with|\bJointly offered with|\bRestricted to\b|\bRepeatable\b|\bStudents must\b|\bOpen to\b)/;
+const tidy = (s) => s.replace(/\s+/g, " ").trim().replace(/[\s.;,]+$/, "") || null;
+
+// Prerequisite text, without whatever follows it: umd.io sometimes runs the course description
+// on ("...CMSC330 and CMSC351 Topics include blockchains..."), and descriptions add restrictions.
+function cleanPrereq(s) {
+  if (!s) return null;
+  let t = s.split(SECTION_END)[0];
+  const runOn = /\b[A-Z]{4}\d{3}[A-Z]?\)?\s+(?=(?!And\b|Or\b|Plus\b|Must\b|Minimum\b|Permission\b)[A-Z][a-z]+\s+[a-z])/.exec(t);
+  if (runOn) t = t.slice(0, runOn.index + runOn[0].trimEnd().length);
+  return tidy(t);
+}
+
+// Topics courses often state their prerequisites (and restrictions) only in the description:
+// "PREREQUISITES: Minimum grade C- in CMSC330 and CMSC351...; and permission of ... Department."
+// Take the marked text up to the end of its sentence or the next marker.
+function fromDescription(desc, label) {
+  if (!desc) return null;
+  const m = new RegExp(`\\b${label}\\s*:\\s*`, "i").exec(desc);
+  if (!m) return null;
+  const rest = desc.slice(m.index + m[0].length);
+  return tidy(rest.split(SECTION_END)[0].split(/\.\s+(?=[A-Z])/)[0]);
+}
+const restrictionIn = (desc) =>
+  fromDescription(desc, "Restrictions?") ?? (/\bRestricted to\b[^.]*/.exec(desc ?? "")?.[0].trim() || null);
+
+// A schedule lists upcoming topics courses before their topic is set: no description, no
+// prerequisites, the bare catalog title. Such an entry says nothing about the course.
+const placeholder = (desc, prereq, restriction) => !desc?.trim() && !prereq && !restriction;
 
 // umd.io first (oldest -> newest so newer semesters overwrite), then Jupiterp on top
 const toEntry = (c) => {
@@ -89,34 +121,67 @@ const toEntry = (c) => {
     cr: lo || 0,
     mx: hi && hi !== lo ? hi : null,
     g: (c.gen_ed || []).filter((a) => a.length),
-    p: rel.prereqs || null,
+    p: cleanPrereq(rel.prereqs) ?? fromDescription(c.description, "PRE-?REQUISITES?"),
+    r: tidy(rel.restrictions ?? "") ?? restrictionIn(c.description),
     x: rel.credit_granted_for || null,
   };
 };
+
+// Topics courses reuse a code for different topics term to term (CMSC389L is one course one fall
+// and another the next). Each topic's terms, title and prerequisites are kept as variants.
+const variants = new Map(); // code -> Map(title -> {t: YYMM[], n, p})
+function addVariant(code, term, e) {
+  if (!/;/.test(e.n)) return; // only titled topics ("Selected Topics in X; Robotics")
+  const byTitle = variants.get(code) ?? new Map();
+  const v = byTitle.get(e.n) ?? { t: [], n: e.n, p: e.p };
+  if (!v.t.includes(term)) v.t.push(term);
+  if (term >= Math.max(...v.t)) v.p = e.p ?? v.p;
+  byTitle.set(e.n, v);
+  variants.set(code, byTitle);
+}
 const yymm = (sem) => Number(sem.slice(2));
 const UMDIO_SEMESTERS = process.env.UMDIO === "0" ? [] : await semesters();
 const fresh = new Set(UMDIO_SEMESTERS.slice(-FRESH));
 console.log("umd.io semesters", UMDIO_SEMESTERS.join(" "));
 
 // Reuse what the current file already knows about older semesters.
-const previous = existsSync(OUT) && process.env.FULL !== "1" ? JSON.parse(readFileSync(OUT, "utf8")) : [];
+const current = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : [];
+const previous = process.env.FULL !== "1" ? current : [];
 const known = new Set(previous.flatMap((c) => c.t ?? []));
 const reuse = new Set(UMDIO_SEMESTERS.filter((s) => !fresh.has(s) && known.has(yymm(s))).map(yymm));
-for (const { t, ...c } of previous) {
+for (const { t, v, ...c } of previous) {
   courses.set(c.c, c);
   source.set(c.c, Math.max(0, ...(t ?? [])));
   const kept = (t ?? []).filter((x) => reuse.has(x));
   if (kept.length) offered.set(c.c, kept);
+  for (const variant of v ?? []) for (const term of variant.t.filter((x) => reuse.has(x))) addVariant(c.c, term, variant);
 }
 
 for (const sem of UMDIO_SEMESTERS) {
   if (reuse.has(yymm(sem))) continue;
-  const list = await fetchSemester(sem);
+  let list;
+  try {
+    list = await fetchSemester(sem);
+  } catch (e) {
+    // umd.io has bad hours; rather than lose the whole run, keep what the current file knew for this term
+    const old = current.filter((c) => c.t?.includes(yymm(sem)));
+    if (!old.length) throw e;
+    console.error(`${e.message}; keeping ${old.length} courses from the current catalog for ${sem}`);
+    for (const { t: _t, v: _v, ...c } of old) {
+      if (!courses.has(c.c)) courses.set(c.c, c);
+      offered.set(c.c, [...(offered.get(c.c) ?? []), yymm(sem)]);
+    }
+    continue;
+  }
   for (const c of list) {
-    if (yymm(sem) >= (source.get(c.course_id) ?? 0)) {
-      courses.set(c.course_id, toEntry(c));
+    const e = toEntry(c);
+    // a placeholder only marks the course as offered; it never replaces what an earlier term said
+    const known = courses.has(c.course_id);
+    if (yymm(sem) >= (source.get(c.course_id) ?? 0) && !(known && placeholder(c.description, e.p, e.r))) {
+      courses.set(c.course_id, e);
       source.set(c.course_id, yymm(sem));
     }
+    if (!placeholder(c.description, e.p, e.r)) addVariant(c.course_id, yymm(sem), e);
     offered.set(c.course_id, [...(offered.get(c.course_id) ?? []), yymm(sem)]);
   }
   console.log("umd.io", sem, list.length);
@@ -130,15 +195,21 @@ for (;;) {
   for (const c of d) {
     const prev = courses.get(c.course_code);
     const conds = c.conditions || [];
-    const pre = conds.find((s) => s.startsWith("Prerequisite"));
+    const pre = conds.find((s) => /^Pre-?requisites?\s*:/i.test(s));
+    const res = conds.find((s) => /^Restrictions?\s*:/i.test(s));
     const cgf = conds.find((s) => s.startsWith("Credit only granted for"));
+    const p = cleanPrereq(pre?.replace(/^[^:]*:\s*/, "")) ?? fromDescription(c.description, "PRE-?REQUISITES?");
+    const r = tidy(res?.replace(/^[^:]*:\s*/, "") ?? "") ?? restrictionIn(c.description);
+    // an untitled placeholder keeps the topic, prerequisites and restriction an actual offering had
+    const keep = prev && placeholder(c.description, p, r);
     courses.set(c.course_code, {
       c: c.course_code,
-      n: c.name,
+      n: keep && prev.n.startsWith(c.name) ? prev.n : c.name,
       cr: c.min_credits,
       mx: c.max_credits,
       g: prev?.g?.length ? prev.g : c.gen_eds?.length ? [c.gen_eds] : [],
-      p: pre ? pre.replace(/^Prerequisite:\s*/, "").trim() : prev?.p ?? null,
+      p: keep ? prev.p ?? null : p,
+      r: keep ? prev.r ?? null : r,
       x: cgf ? cgf.replace(/^Credit only granted for:\s*/, "").replace(/\.\s*$/, "").trim() : prev?.x ?? null,
     });
   }
@@ -146,8 +217,19 @@ for (;;) {
   if (d.length < 500) break;
 }
 
+const variantsOf = (code) => {
+  const vs = [...(variants.get(code)?.values() ?? [])].map((v) => ({ ...v, t: v.t.sort((a, b) => a - b) }));
+  return vs.length > 1 ? vs.sort((a, b) => a.t[0] - b.t[0]) : null;
+};
 const out = [...courses.values()]
-  .map((c) => (offered.has(c.c) ? { ...c, t: [...new Set(offered.get(c.c))].sort((a, b) => a - b) } : c))
+  .map((c) => {
+    const e = { ...c };
+    if (!e.r) delete e.r; // most courses have none; keep the file small
+    if (offered.has(c.c)) e.t = [...new Set(offered.get(c.c))].sort((a, b) => a - b);
+    const v = variantsOf(c.c);
+    if (v) e.v = v;
+    return e;
+  })
   .sort((a, b) => a.c.localeCompare(b.c));
 // A partial upstream outage shouldn't silently shrink the catalog.
 const before = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")).length : 0;

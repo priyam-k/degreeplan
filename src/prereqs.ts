@@ -428,3 +428,46 @@ export function concurrentCodes(text: string | null | undefined): string[] {
     }
   return [...out];
 }
+
+export interface PermissionNotes {
+  required: string[]; // e.g. "Permission of CMNS-Computer Science department"
+  alternatives: string[]; // ways around the course prerequisites, e.g. "permission of instructor"
+}
+
+const PERMISSION = /\b(?:(?:departmental|department|instructor)\s+(?:permission|approval|consent)|(?:permission|consent|approval)\s+(?:of|from)\s+(?:the\s+)?[^;,.()]+?(?=\s*(?:[;,.()]|\b(?:and|or)\s+(?:[A-Z]{4}\s?\d{3}|permission|consent|must|minimum|completion|a|an|one|two)\b|$)))/i;
+const COMPARABLE = /comparable content may contact the department|contact the department/i;
+
+const sentenceCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/**
+ * What the prerequisite and restriction text say about permission, which parsePrereq leaves out
+ * because it can't be checked: whether some permission is required on top of the courses, or
+ * offered as an alternative to them ("...; or permission of instructor"), and whether students
+ * with comparable coursework may ask the department.
+ */
+export function permissionNotes(prereq: string | null | undefined, restriction?: string | null): PermissionNotes {
+  const out: PermissionNotes = { required: [], alternatives: [] };
+  const add = (list: string[], s: string) => {
+    const t = sentenceCase(s.replace(/\s+/g, " ").trim());
+    if (!list.some((x) => x.toLowerCase() === t.toLowerCase())) list.push(t);
+  };
+  if (prereq) {
+    const parts = splitTop(prereq.replace(/\s+/g, " "), "dot").flatMap((sent) => splitTop(sent, "semi"));
+    for (const part of parts) {
+      const { conj, body } = splitConj(part);
+      if (COMPARABLE.test(body)) add(out.alternatives, "comparable coursework elsewhere (ask the department)");
+      const m = PERMISSION.exec(body);
+      if (!m) continue;
+      // "A or permission of X" inside a clause, or a clause led by "or", is an alternative
+      const before = body.slice(0, m.index);
+      const alt = conj === "or" || /\bor\s*$/i.test(before);
+      add(alt ? out.alternatives : out.required, m[0]);
+    }
+  }
+  if (restriction) {
+    const m = PERMISSION.exec(restriction);
+    if (m) add(out.required, m[0]);
+  }
+  out.alternatives = out.alternatives.filter((a) => !out.required.some((r) => r.toLowerCase() === a.toLowerCase()));
+  return out;
+}

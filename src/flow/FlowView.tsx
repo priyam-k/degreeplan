@@ -28,7 +28,7 @@ import { CourseSearch } from "../ui/CourseSearch";
 import { Popover } from "../ui/Popover";
 import { Icon } from "../ui/icons";
 import { startDrag } from "../ui/drag";
-import { OfferedBadges } from "../components/CourseInfo";
+import { OfferedBadges, PrereqNotes, prereqNotes } from "../components/CourseInfo";
 import { progressOf } from "../components/AuditPanel";
 import { STATUS_LABEL } from "../components/SemesterTable";
 
@@ -539,6 +539,7 @@ function Details(props: {
   const [swap, setSwap] = useState<string | null>(null);
   const cat = catalogEntry(node.code, catalog);
   const req = prereqOf(node.code, catalog);
+  const notes = cat ? prereqNotes(cat, !!req) : [];
   const planned = node.kind === "placed" && node.course!.status === "planned";
   const usage = node.kind === "placed" ? audit?.usage[node.course!.id] ?? [] : [];
   const openSlots = tl.slots.filter((s) => s.idx >= tl.firstOpen);
@@ -715,9 +716,9 @@ function Details(props: {
               </div>
             )}
           </>
-        ) : (
-          <span className="muted">None</span>
-        )}
+        ) : null}
+        <PrereqNotes notes={notes} />
+        {!req && !notes.length && <span className="muted">None</span>}
       </Section>
 
       <Section title="Offered">
