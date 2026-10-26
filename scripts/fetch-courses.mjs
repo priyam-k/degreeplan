@@ -95,14 +95,21 @@ const source = new Map(); // code -> the semester its details came from, so olde
 
 // Where one part of a course's fine print ends and the next begins.
 const SECTION_END =
-  /\s*(?:\b(?:Restrictions?|Corequisites?|Recommended|Additional information|Formerly|Also offered as)\s*:|\bCredit (?:only )?granted for|\bCross-listed with|\bJointly offered with|\bRestricted to\b|\bRepeatable\b|\bStudents must\b|\bOpen to\b)/;
-const tidy = (s) => s.replace(/\s+/g, " ").trim().replace(/[\s.;,]+$/, "") || null;
+  /\s*(?:\b(?:Restrictions?|Corequisites?|Recommended(?: prerequisites?)?|Additional information|Formerly|Also offered as)\s*:|\bCredit (?:only )?granted for|\bCross-listed with|\bJointly offered with|\bRestricted to\b|\bRepeatable\b|\bStudents must\b|\bOpen to\b)/;
+// umd.io also runs descriptions on with no period: "...International Relations program In this course, we will..."
+const RUN_ON = /(?<=[a-z)])\s+(?:This|These|In this|The|We|An|Topics|Introduc\w+|Explores|Examines|Provides|Focuses|Students will|A (?:study|survey|course|project))\s+[a-z].*$/s;
+const tidy = (s) => s.replace(/\s+/g, " ").replace(RUN_ON, "").trim().replace(/[\s.;,]+$/, "") || null;
+// Text before the next section; "Students must have completed ENES213" opening the text is the prerequisite itself.
+function upToSection(s) {
+  const lead = /^\s*Students must\b/.exec(s)?.[0].length ?? 0;
+  return s.slice(0, lead) + s.slice(lead).split(SECTION_END)[0];
+}
 
 // Prerequisite text, without whatever follows it: umd.io sometimes runs the course description
 // on ("...CMSC330 and CMSC351 Topics include blockchains..."), and descriptions add restrictions.
 function cleanPrereq(s) {
   if (!s) return null;
-  let t = s.split(SECTION_END)[0];
+  let t = upToSection(s);
   const runOn = /\b[A-Z]{4}\d{3}[A-Z]?\)?\s+(?=(?!And\b|Or\b|Plus\b|Must\b|Minimum\b|Permission\b)[A-Z][a-z]+\s+[a-z])/.exec(t);
   if (runOn) t = t.slice(0, runOn.index + runOn[0].trimEnd().length);
   return tidy(t);
@@ -116,7 +123,7 @@ function fromDescription(desc, label) {
   const m = new RegExp(`\\b${label}\\s*:\\s*`, "i").exec(desc);
   if (!m) return null;
   const rest = desc.slice(m.index + m[0].length);
-  return tidy(rest.split(SECTION_END)[0].split(/\.\s+(?=[A-Z])/)[0]);
+  return tidy(upToSection(rest).split(/\.\s+(?=[A-Z])/)[0]);
 }
 const restrictionIn = (desc) =>
   fromDescription(desc, "Restrictions?") ?? (/\bRestricted to\b[^.]*/.exec(desc ?? "")?.[0].trim() || null);
@@ -125,7 +132,7 @@ const restrictionIn = (desc) =>
 // "Minimum grade of C- in CMSC216, CMSC250, CMSC320; ...; and permission of ... department. This course..."
 const UNLABELLED = /^\s*(?:(?:A\s+)?minimum grade|must have (?:completed|taken)|completion of|C- or better|grade of C-)/i;
 const prereqInDescription = (desc) =>
-  fromDescription(desc, "PRE-?REQUISITES?") ?? (desc && UNLABELLED.test(desc) ? tidy(desc.split(SECTION_END)[0].split(/\.\s+(?=[A-Z])/)[0]) : null);
+  fromDescription(desc, "PRE-?REQUISITES?") ?? (desc && UNLABELLED.test(desc) ? tidy(upToSection(desc).split(/\.\s+(?=[A-Z])/)[0]) : null);
 
 // A schedule lists upcoming topics courses before their topic is set: no description, no
 // prerequisites, the bare catalog title. Such an entry says nothing about the course.
@@ -239,6 +246,18 @@ for (;;) {
   if (d.length < 500) break;
 }
 
+// Jupiterp only lists current courses, and umd.io's schedules leave many prerequisites out, so a
+// rebuild can find none for a course an earlier refresh read them for. Keep those, unless the title
+// changed (a topics course on a new topic).
+const before = new Map(current.map((c) => [c.c, c]));
+const squash = (s) => s.replace(/\s+/g, " ").trim();
+for (const c of courses.values()) {
+  const old = before.get(c.c);
+  if (!old || squash(old.n) !== squash(c.n)) continue;
+  c.p ??= old.p ?? null;
+  c.r ??= old.r ?? null;
+}
+
 const variantsOf = (code) => {
   const vs = [...(variants.get(code)?.values() ?? [])].map((v) => ({ ...v, t: v.t.sort((a, b) => a - b) }));
   return vs.length > 1 ? vs.sort((a, b) => a.t[0] - b.t[0]) : null;
@@ -254,9 +273,8 @@ const out = [...courses.values()]
   })
   .sort((a, b) => a.c.localeCompare(b.c));
 // A partial upstream outage shouldn't silently shrink the catalog.
-const before = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")).length : 0;
-if (out.length < before * 0.95 && process.env.FORCE !== "1") {
-  console.error(`refusing to write: ${out.length} courses vs ${before} before (FORCE=1 to override)`);
+if (out.length < current.length * 0.95 && process.env.FORCE !== "1") {
+  console.error(`refusing to write: ${out.length} courses vs ${current.length} before (FORCE=1 to override)`);
   process.exit(1);
 }
 writeFileSync(OUT, JSON.stringify(out));
