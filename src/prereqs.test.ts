@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import courses from "../public/courses.json";
 import {
   concurrentCodes,
+  permissionNotes,
   formatReq,
   isSatisfied,
   missingReq,
@@ -226,5 +227,31 @@ describe("real catalog data", () => {
       const r = parsePrereq(e.p);
       expect(typeof formatReq(r)).toBe("string");
     }
+  });
+});
+
+describe("permissionNotes", () => {
+  it.each([
+    [
+      "Minimum grade of C- in CMSC216 and CMSC250; and permission of CMNS-Computer Science department.",
+      null,
+      { required: ["Permission of CMNS-Computer Science department"], alternatives: [] },
+    ],
+    ["ARTT320 or permission of department.", null, { required: [], alternatives: ["Permission of department"] }],
+    [
+      "AAAS202 or AAAS100; or permission of BSOS-African American and Africana Studies department.",
+      null,
+      { required: [], alternatives: ["Permission of BSOS-African American and Africana Studies department"] },
+    ],
+    [
+      "ECON326 or AREC326; or students who have taken courses with comparable content may contact the department.",
+      null,
+      { required: [], alternatives: ["Comparable coursework elsewhere (ask the department)"] },
+    ],
+    ["BIOE437, BIOE457", "Permission of the Fischell Department of Bioengineering", { required: ["Permission of the Fischell Department of Bioengineering"], alternatives: [] }],
+    ["MATH140", "Must be in a major within the CMNS college", { required: [], alternatives: [] }],
+    [null, null, { required: [], alternatives: [] }],
+  ] as const)("%s / %s", (p, r, expected) => {
+    expect(permissionNotes(p, r)).toEqual(expected);
   });
 });
